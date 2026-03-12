@@ -65,10 +65,16 @@
 }
 
 .categoryPillActive {
-  composes: categoryPill;
-  border-color: var(--gold);
+  padding: 10px 22px;
+  border-radius: 28px;
+  border: 1px solid var(--gold);
   background: var(--gold);
   color: #000;
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  transition: all 0.2s;
+  cursor: pointer;
 }
 
 .saleToggle {
@@ -86,10 +92,17 @@
 }
 
 .saleToggleActive {
-  composes: saleToggle;
-  border-color: var(--gold);
+  padding: 10px 18px;
+  border-radius: 999px;
+  border: 1px solid var(--gold);
   background: var(--gold);
   color: #000;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  transition: all 0.2s;
+  cursor: pointer;
 }
 
 .productGrid {
@@ -189,10 +202,15 @@
 }
 
 .discountBadge {
-  composes: badge;
+  font-size: 10px;
+  font-weight: 700;
+  padding: 4px 10px;
+  border-radius: 4px;
+  letter-spacing: 1.2px;
+  font-family: 'Lato', sans-serif;
+  text-transform: uppercase;
   background: #C0392B;
   color: #fff;
-  padding: 4px 10px;
 }
 
 .lowStock {

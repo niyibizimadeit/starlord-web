@@ -191,6 +191,16 @@ img {
 
 /* ─── Mobile Specific ────────────────────────────────────────────────────── */
 @media (max-width: 767px) {
+  .home-sections {
+    display: flex;
+    flex-direction: column;
+  }
+  
+  .desktop-trustbar {
+    order: 3;
+    margin-top: 32px;
+  }
+  
   .banner-slider .banner-slide {
     min-height: 360px !important;
   }

@@ -1,7 +1,7 @@
 import { createServiceClient } from '@/lib/supabase/server';
 import BannerSlider from '@/components/BannerSlider';
 import ProductGrid from '@/components/ProductGrid';
-import CategoryStrip from '@/components/CategoryStrip';
+/* import CategoryStrip from '@/components/CategoryStrip'; */
 import TrustBar from '@/components/TrustBar';
 
 export const revalidate = 60;
@@ -24,15 +24,15 @@ export default async function HomePage({ searchParams }) {
   const badge    = params?.badge    || '';
 
   return (
-    <>
+    <main className="home-sections">
       <BannerSlider />
-      <TrustBar />
+      <TrustBar className="desktop-trustbar" />
       <ProductGrid
         initialProducts={products}
         initialCategory={category}
         initialSearch={search}
         initialBadge={badge}
       />
-    </>
+    </main>
   );
 }

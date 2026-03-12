@@ -6,33 +6,15 @@ import Image from 'next/image';
 import { useCart } from './CartContext';
 import styles from './ProductGrid.module.css';
 
-interface Product {
-  id: number | string;
-  name: string;
-  price: number;
-  old_price?: number;
-  image_url?: string;
-  badge?: 'HOT' | 'NEW' | 'SALE';
-  category: string;
-  stock?: number;
-}
-
-interface ProductGridProps {
-  initialProducts: Product[];
-  initialCategory?: string;
-  initialSearch?: string;
-  initialBadge?: string;
-}
-
 const PAGE_SIZE = 8;
 
 const CATEGORIES = ['All', 'Tech', 'Fashion'];
 
-function formatRWF(n: number): string {
+function formatRWF(n) {
   return `RWF ${Number(n).toLocaleString()}`;
 }
 
-function Badge({ text }: { text?: Product['badge'] }) {
+function Badge({ text }) {
   if (!text) return null;
   
   const badgeStyles = {
@@ -41,27 +23,27 @@ function Badge({ text }: { text?: Product['badge'] }) {
     SALE: 'badge badgeSale',
   };
   
-  const className = badgeStyles[text as keyof typeof badgeStyles] || 'badge badgeHot';
+  const className = badgeStyles[text] || 'badge badgeHot';
   
   return <span className={className}>{text}</span>;
 }
 
-function ProductCard({ product, onQuickAdd }: { product: Product; onQuickAdd: (product: Product) => void }) {
-  const [hovered, setHovered] = useState(false);
+function ProductCard({ product, onOpenModal }) {
   const discount = product.old_price
     ? Math.round((1 - product.price / product.old_price) * 100)
     : null;
 
-  const handleQuickAdd = (e: React.MouseEvent) => {
+  const handleOpenModal = (e) => {
     e.preventDefault();
     e.stopPropagation();
-    onQuickAdd(product);
+    onOpenModal(product);
   };
 
   return (
-    <Link href={`/products/${product.id}`} className={`${styles.productCard} ${styles.productCardArticle}`} onMouseEnter={() => setHovered(true)} onMouseLeave={() => setHovered(false)}>
-      <article>
-        <div className={styles.productImageContainer}>
+    <Link href={`/products/${product.id}`} className={`${styles.productCard} ${styles.productCardArticle}`}>
+      <div>
+        <article>
+          <div className={styles.productImageContainer}>
           {product.image_url ? (
             <Image
               src={product.image_url}
@@ -106,7 +88,7 @@ function ProductCard({ product, onQuickAdd }: { product: Product; onQuickAdd: (p
             <button
               className={`${styles.addToCartBtn}`}
               disabled={product.stock === 0}
-              onClick={handleQuickAdd}
+              onClick={handleOpenModal}
               aria-label={product.stock === 0 ? 'Out of stock' : 'Add to cart'}
               title={product.stock === 0 ? 'Out of stock' : 'Add to cart'}
             >
@@ -129,11 +111,12 @@ function ProductCard({ product, onQuickAdd }: { product: Product; onQuickAdd: (p
           </div>
         </div>
       </article>
+      </div>
     </Link>
   );
 }
 
-function SectionHeader({ title, subtitle }: { title: string; subtitle?: string }) {
+function SectionHeader({ title, subtitle }) {
   return (
     <div className={styles.sectionHeader}>
       <div className={styles.sectionHeaderTitleBar}>
@@ -150,25 +133,25 @@ export default function ProductGrid({
   initialCategory = 'All', 
   initialSearch = '', 
   initialBadge 
-}: ProductGridProps) {
+}) {
   const [category, setCategory] = useState(initialCategory);
   const [search, setSearch] = useState(initialSearch);
   const [saleOnly, setSaleOnly] = useState(initialBadge === 'SALE');
   const [page, setPage] = useState(1);
   const [loading, setLoading] = useState(false);
-  const [qtyModal, setQtyModal] = useState<{ open: boolean; product: Product | null }>({ open: false, product: null });
-  const [qty, setQty] = useState(1);
+  const [qtyModal, setQtyModal] = useState({ open: false, product: null });
+  const [selectedQty, setSelectedQty] = useState(1);
   const { addToCart } = useCart();
-  const sentinelRef = useRef<HTMLDivElement>(null);
+  const sentinelRef = useRef(null);
 
   const products = initialProducts || [];
 
-  const handleCategoryChange = useCallback((cat: string) => {
+  const handleCategoryChange = useCallback((cat) => {
     setCategory(cat);
     setPage(1);
   }, []);
 
-  const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleSearchChange = (e) => {
     const value = e.target.value;
     setSearch(value);
     setPage(1);
@@ -210,19 +193,19 @@ export default function ProductGrid({
     return () => observer.disconnect();
   }, [hasMore, loading, page]);
 
-  const openQtyModal = (product: Product) => {
+  const openQtyModal = (product) => {
     setQtyModal({ open: true, product });
-    setQty(1);
+    setSelectedQty(1);
   };
 
   const closeQtyModal = () => {
     setQtyModal({ open: false, product: null });
-    setQty(1);
+    setSelectedQty(1);
   };
 
   const addToCartHandler = () => {
     if (qtyModal.product) {
-      addToCart(qtyModal.product, qty);
+      addToCart(qtyModal.product, selectedQty);
       closeQtyModal();
     }
   };
@@ -284,20 +267,20 @@ export default function ProductGrid({
               </div>
 
               <div className={styles.modalProductInfo}>
-                <div className={styles.modalTotalPrice}>{formatRWF(qtyModal.product.price * qty)}</div>
+                <div className={styles.modalTotalPrice}>{formatRWF(qtyModal.product.price * selectedQty)}</div>
                 <div className={styles.modalProductName}>{qtyModal.product.name}</div>
                 <div className={styles.modalStock}>
-                  Stock: {qtyModal.product.stock ?? 'Unlimited'}
+                  Stock: {qtyModal.product?.stock !== undefined ? qtyModal.product.stock : 'Unlimited'}
                 </div>
               </div>
 
               <div className={styles.qtyControls}>
-                <button onClick={() => setQty(Math.max(1, qty - 1))} className={styles.qtyBtn}>
+                <button onClick={() => setSelectedQty(Math.max(1, selectedQty - 1))} className={styles.qtyBtn}>
                   −
                 </button>
-                <span className={styles.qtyDisplay}>{qty}</span>
+                <span className={styles.qtyDisplay}>{selectedQty}</span>
                 <button 
-                  onClick={() => setQty(Math.min(qty + 1, qtyModal.product.stock ?? 99))} 
+                  onClick={() => setSelectedQty(Math.min(selectedQty + 1, qtyModal.product?.stock ?? 99))} 
                   className={styles.qtyBtn}
                 >
                   +
@@ -306,10 +289,10 @@ export default function ProductGrid({
 
               <button
                 onClick={addToCartHandler}
-                disabled={qtyModal.product.stock === 0 || qty === 0}
+                disabled={qtyModal.product?.stock === 0 || selectedQty === 0}
                 className={styles.addToCartModalBtn}
               >
-                Add {qty} to Cart
+                Add {selectedQty} to Cart
               </button>
             </div>
           </div>
@@ -320,7 +303,7 @@ export default function ProductGrid({
           <>
             <div className={styles.productGrid}>
               {visible.map(product => (
-                <ProductCard key={product.id} product={product} onQuickAdd={openQtyModal} />
+                <ProductCard key={product.id} product={product} onOpenModal={openQtyModal} />
               ))}
             </div>
 
