@@ -1,5 +1,4 @@
 import { createServiceClient } from '@/lib/supabase/server';
-import DOMPurify from 'isomorphic-dompurify';
 
 function generateReference() {
   const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
@@ -79,8 +78,9 @@ export async function POST(request) {
     const total = subtotal + DELIVERY_FEE;
 
     // ── 7. Sanitise free-text inputs ──────────────────────────────────
-    const safeName    = DOMPurify.sanitize(customer.name).slice(0, 100);
-    const safeAddress = DOMPurify.sanitize(customer.address).slice(0, 300);
+    const stripHtml = (str) => str.replace(/<[^>]*>/g, '').replace(/[<>'"]/g, '').trim();
+    const safeName    = stripHtml(customer.name).slice(0, 100);
+    const safeAddress = stripHtml(customer.address).slice(0, 300);
 
     // ── 8. Handle account creation BEFORE order so we have user_id ───
     let userId = null;
