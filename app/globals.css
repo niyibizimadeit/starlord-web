@@ -151,18 +151,37 @@ img {
   .desktop-only { display: none !important; }
 }
 
-/* Product Grid Mobile 2-column */
+/* Product Grid Mobile 2-column with line spacing */
 @media (max-width: 767px) {
   .product-grid {
+    display: grid;
     grid-template-columns: repeat(2, 1fr);
-    gap: 12px;
+    gap: 20px;
+    padding: 0 8px;
+  }
+  .product-grid > * {
+    min-height: 380px;
   }
 }
 
-/* Product Grid Desktop */
+/* Product Grid Desktop - 4 equal columns perfect alignment */
 @media (min-width: 768px) {
   .product-grid {
-    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-    gap: 20px;
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 24px;
+  }
+}
+@media (max-width: 767px) {
+  .trustbar-mobile { 
+    gridTemplateColumns: 'repeat(2, 1fr)' !important;
+  } 
+  .trustbar-mobile > div:nth-child(2n) { 
+    borderRight: 'none' !important;
+  }
+  .banner-slider {
+    .banner-slide {
+      min-height: 360px !important;
+    }
   }
 }

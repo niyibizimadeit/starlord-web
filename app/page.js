@@ -49,71 +49,67 @@ function TrustBar() {
       borderBottom: '1px solid var(--border)',
       background: 'var(--bg)',
     }}>
-      <div className="container" style={{
+<div className="container trustbar-mobile" style={{
         display: 'grid',
-        gridTemplateColumns: '1fr',
+        gridTemplateColumns: 'repeat(4, 1fr)',
         gap: 0,
       }}>
         <div style={{
-          display: 'grid',
-          gridTemplateColumns: 'repeat(2, 1fr)',
-          gap: 0,
+          display: 'flex', alignItems: 'center', gap: 8,
+          padding: '14px 24px',
           borderRight: '1px solid var(--border-subtle)',
+          height: 20,
+          alignSelf: 'center',
         }}>
-          <div style={{
-            display: 'flex', alignItems: 'center', gap: 8,
-            padding: '14px 24px',
+          <span style={{ color: 'var(--gold)' }}><BoltIcon /></span>
+          <span style={{
+            fontSize: 12, color: 'var(--text-muted)',
+            fontWeight: 700, letterSpacing: 0.5,
           }}>
-            <span style={{ color: 'var(--gold)' }}><BoltIcon /></span>
-            <span style={{
-              fontSize: 12, color: 'var(--text-muted)',
-              fontWeight: 700, letterSpacing: 0.5,
-            }}>
-              Under 60s Checkout
-            </span>
-          </div>
-          <div style={{
-            display: 'flex', alignItems: 'center', gap: 8,
-            padding: '14px 24px',
-          }}>
-            <span style={{ color: 'var(--gold)' }}><ShieldIcon /></span>
-            <span style={{
-              fontSize: 12, color: 'var(--text-muted)',
-              fontWeight: 700, letterSpacing: 0.5,
-            }}>
-              Secure Payments
-            </span>
-          </div>
+            Under 60s Checkout
+          </span>
         </div>
         <div style={{
-          display: 'grid',
-          gridTemplateColumns: 'repeat(2, 1fr)',
-          gap: 0,
+          display: 'flex', alignItems: 'center', gap: 8,
+          padding: '14px 24px',
+          borderRight: '1px solid var(--border-subtle)',
+          height: 20,
+          alignSelf: 'center',
         }}>
-          <div style={{
-            display: 'flex', alignItems: 'center', gap: 8,
-            padding: '14px 24px',
+          <span style={{ color: 'var(--gold)' }}><ShieldIcon /></span>
+          <span style={{
+            fontSize: 12, color: 'var(--text-muted)',
+            fontWeight: 700, letterSpacing: 0.5,
           }}>
-            <span style={{ color: 'var(--gold)' }}><TruckIcon /></span>
-            <span style={{
-              fontSize: 12, color: 'var(--text-muted)',
-              fontWeight: 700, letterSpacing: 0.5,
-            }}>
-              Courier Delivery
-            </span>
-          </div>
-          <div style={{
-            display: 'flex', alignItems: 'center', gap: 8,
-            padding: '14px 24px',
+            Secure Payments
+          </span>
+        </div>
+        <div style={{
+          display: 'flex', alignItems: 'center', gap: 8,
+          padding: '14px 24px',
+          borderRight: '1px solid var(--border-subtle)',
+          height: 20,
+          alignSelf: 'center',
+        }}>
+          <span style={{ color: 'var(--gold)' }}><TruckIcon /></span>
+          <span style={{
+            fontSize: 12, color: 'var(--text-muted)',
+            fontWeight: 700, letterSpacing: 0.5,
           }}>
-            <span style={{ color: 'var(--gold)' }}><PhoneIcon /></span>
-            <span style={{
-              fontSize: 12, color: 'var(--text-muted)',
-              fontWeight: 700, letterSpacing: 0.5,
-            }}>
-              MoMo and Airtel
-            </span>
-          </div>
+            Courier Delivery
+          </span>
+        </div>
+        <div style={{
+          display: 'flex', alignItems: 'center', gap: 8,
+          padding: '14px 24px',
+        }}>
+          <span style={{ color: 'var(--gold)' }}><PhoneIcon /></span>
+          <span style={{
+            fontSize: 12, color: 'var(--text-muted)',
+            fontWeight: 700, letterSpacing: 0.5,
+          }}>
+            MoMo and Airtel
+          </span>
         </div>
       </div>
     </section>

@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import Link from 'next/link';
 
 const BANNERS = [
@@ -43,6 +43,8 @@ export default function BannerSlider() {
   const [current, setCurrent] = useState(0);
   const [paused,  setPaused]  = useState(false);
   const [isDark,  setIsDark]  = useState(true);
+  const touchStartX = useRef(0);
+  const touchStartY = useRef(0);
 
   useEffect(() => {
     const check = () => {
@@ -59,6 +61,36 @@ export default function BannerSlider() {
     setCurrent(c => (c + 1) % BANNERS.length);
   }, []);
 
+  const prev = useCallback(() => {
+    setCurrent(c => (c - 1 + BANNERS.length) % BANNERS.length);
+  }, []);
+
+  // Touch swipe
+  const handleTouchStart = useCallback((e) => {
+    touchStartX.current = e.touches[0].clientX;
+    touchStartY.current = e.touches[0].clientY;
+  }, []);
+
+  const handleTouchEnd = useCallback((e) => {
+    if (!touchStartX.current || !touchStartY.current) return;
+    const touchEndX = e.changedTouches[0].clientX;
+    const touchEndY = e.changedTouches[0].clientY;
+    const deltaX = touchStartX.current - touchEndX;
+    const deltaY = Math.abs(touchStartY.current - touchEndY.current);
+    
+    if (deltaY > 30) return; // Ignore vertical scroll
+    
+    if (Math.abs(deltaX) > 50) {
+      if (deltaX > 0) {
+        next();
+      } else {
+        prev();
+      }
+    }
+    touchStartX.current = 0;
+    touchStartY.current = 0;
+  }, [next, prev]);
+
   useEffect(() => {
     if (paused) return;
     const t = setInterval(next, 5000);
@@ -69,12 +101,16 @@ export default function BannerSlider() {
 
   return (
     <div
-      style={{ position: 'relative', overflow: 'hidden', userSelect: 'none' }}
+      className="banner-slider"
+      style={{ position: 'relative', overflow: 'hidden', userSelect: 'none', touchAction: 'pan-y' }}
       onMouseEnter={() => setPaused(true)}
       onMouseLeave={() => setPaused(false)}
+      onTouchStart={handleTouchStart}
+      onTouchEnd={handleTouchEnd}
     >
       {/* Slide */}
       <div
+        className="banner-slide"
         key={banner.id}
         style={{
           background: isDark ? banner.bg : banner.bgLight,
