@@ -26,13 +26,15 @@ export default async function HomePage({ searchParams }) {
   return (
     <main className="home-sections">
       <BannerSlider />
-      <TrustBar className="desktop-trustbar" />
       <ProductGrid
         initialProducts={products}
         initialCategory={category}
         initialSearch={search}
         initialBadge={badge}
       />
+      <TrustBar className="mobile-trustbar-below-products mobile-only-trustbar" />
     </main>
   );
+
+
 }

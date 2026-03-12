@@ -200,6 +200,23 @@ img {
     order: 3;
     margin-top: 32px;
   }
+
+  .mobile-trustbar-below-products {
+    margin-top: 24px;
+    margin-bottom: 64px;
+  }
+
+  @media (max-width: 767px) {
+    .mobile-only-trustbar {
+      display: block !important;
+    }
+  }
+
+  @media (min-width: 768px) {
+    .mobile-only-trustbar {
+      display: none !important;
+    }
+  }
   
   .banner-slider .banner-slide {
     min-height: 360px !important;
