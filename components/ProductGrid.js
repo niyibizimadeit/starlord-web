@@ -20,9 +20,9 @@ function Badge({ text }) {
   return (
     <span style={{
       background: s.bg, color: s.color,
-      fontSize: 9, fontWeight: 700,
-      padding: '2px 8px', borderRadius: 3,
-      letterSpacing: 1.5, fontFamily: 'Lato, sans-serif',
+      fontSize: 10, fontWeight: 700,
+      padding: '3px 10px', borderRadius: 4,
+      letterSpacing: 1.2, fontFamily: 'Lato, sans-serif',
       textTransform: 'uppercase',
     }}>
       {text}
@@ -45,7 +45,7 @@ function ProductCard({ product }) {
     >
       <article style={{
         background: 'var(--surface)',
-        borderRadius: 12,
+        borderRadius: 16,
         overflow: 'hidden',
         border: '1px solid var(--border)',
         height: '100%',
@@ -59,7 +59,7 @@ function ProductCard({ product }) {
         {/* Image */}
         <div style={{
           position: 'relative',
-          paddingTop: '100%',
+          paddingTop: '75%',
           background: 'var(--surface-2)',
           overflow: 'hidden',
         }}>
@@ -80,7 +80,7 @@ function ProductCard({ product }) {
               position: 'absolute', inset: 0,
               display: 'flex', alignItems: 'center', justifyContent: 'center',
               color: 'var(--text-faint)',
-              fontSize: 12, letterSpacing: 1,
+              fontSize: 14, letterSpacing: 1,
               textTransform: 'uppercase',
               fontWeight: 700,
             }}>
@@ -90,15 +90,15 @@ function ProductCard({ product }) {
 
           {/* Top badges */}
           <div style={{
-            position: 'absolute', top: 10, left: 10,
-            display: 'flex', flexDirection: 'column', gap: 4,
+            position: 'absolute', top: 12, left: 12,
+            display: 'flex', flexDirection: 'column', gap: 6,
           }}>
             <Badge text={product.badge} />
             {discount && (
               <span style={{
                 background: '#C0392B', color: '#fff',
-                fontSize: 9, fontWeight: 700,
-                padding: '2px 8px', borderRadius: 3,
+                fontSize: 10, fontWeight: 700,
+                padding: '4px 10px', borderRadius: 4,
                 letterSpacing: 1, fontFamily: 'Lato, sans-serif',
               }}>
                 -{discount}%
@@ -109,12 +109,12 @@ function ProductCard({ product }) {
           {/* Low stock */}
           {product.stock <= 5 && product.stock > 0 && (
             <div style={{
-              position: 'absolute', bottom: 10, right: 10,
-              background: 'rgba(0,0,0,0.75)',
-              backdropFilter: 'blur(4px)',
+              position: 'absolute', bottom: 12, right: 12,
+              background: 'rgba(0,0,0,0.8)',
+              backdropFilter: 'blur(8px)',
               color: 'var(--gold)',
-              fontSize: 10, fontWeight: 700,
-              padding: '3px 10px', borderRadius: 20,
+              fontSize: 11, fontWeight: 700,
+              padding: '4px 12px', borderRadius: 20,
             }}>
               {product.stock} left
             </div>
@@ -129,8 +129,8 @@ function ProductCard({ product }) {
               <span style={{
                 background: 'var(--surface)',
                 color: 'var(--text-muted)',
-                fontSize: 11, fontWeight: 700,
-                padding: '6px 16px', borderRadius: 4,
+                fontSize: 13, fontWeight: 700,
+                padding: '8px 20px', borderRadius: 6,
                 letterSpacing: 1, textTransform: 'uppercase',
               }}>
                 Sold Out
@@ -140,16 +140,16 @@ function ProductCard({ product }) {
         </div>
 
         {/* Info */}
-        <div style={{
-          padding: '14px 16px 16px',
+        <div className="product-grid-info" style={{
+          padding: '24px 24px 28px',
           flex: 1,
           display: 'flex',
           flexDirection: 'column',
-          gap: 6,
+          gap: 12,
         }}>
           <span style={{
-            fontSize: 10, color: 'var(--text-faint)',
-            textTransform: 'uppercase', letterSpacing: 1.5,
+            fontSize: 11, color: 'var(--text-faint)',
+            textTransform: 'uppercase', letterSpacing: 1.8,
             fontWeight: 700,
           }}>
             {product.category}
@@ -157,35 +157,35 @@ function ProductCard({ product }) {
 
           <h3 style={{
             fontFamily: 'Playfair Display, serif',
-            fontSize: 15,
+            fontSize: 20,
             fontWeight: 600,
             color: 'var(--text)',
-            lineHeight: 1.35,
+            lineHeight: 1.3,
             flex: 1,
           }}>
             {product.name}
           </h3>
 
-          <div style={{
+          <div className="price-row" style={{
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'space-between',
-            marginTop: 4,
+            marginTop: 'auto',
           }}>
             <div>
               <span style={{
-                fontSize: 16, fontWeight: 700,
-                color: 'var(--gold)',
+                fontSize: 22, fontWeight: 800,
+                color: 'var(--price-color)',
                 fontFamily: 'Lato, sans-serif',
               }}>
                 {formatRWF(product.price)}
               </span>
               {product.old_price && (
                 <span style={{
-                  fontSize: 12,
+                  fontSize: 14,
                   color: 'var(--text-faint)',
                   textDecoration: 'line-through',
-                  marginLeft: 8,
+                  marginLeft: 12,
                 }}>
                   {formatRWF(product.old_price)}
                 </span>
@@ -193,7 +193,7 @@ function ProductCard({ product }) {
             </div>
 
             <div style={{
-              width: 32, height: 32,
+              width: 44, height: 44,
               borderRadius: '50%',
               background: hovered ? 'var(--gold)' : 'var(--surface-2)',
               border: '1px solid var(--border)',
@@ -202,7 +202,7 @@ function ProductCard({ product }) {
               flexShrink: 0,
             }}>
               <svg
-                width="14" height="14"
+                width="18" height="18"
                 viewBox="0 0 24 24"
                 fill="none"
                 stroke={hovered ? '#000' : 'currentColor'}
@@ -223,12 +223,12 @@ function ProductCard({ product }) {
 
 function SectionHeader({ title, subtitle }) {
   return (
-    <div style={{ marginBottom: 24 }}>
-      <div style={{ display: 'flex', alignItems: 'center', gap: 16, marginBottom: 6 }}>
-        <div style={{ width: 3, height: 24, background: 'var(--gold)', borderRadius: 2 }} />
+    <div style={{ marginBottom: 32 }}>
+      <div style={{ display: 'flex', alignItems: 'center', gap: 20, marginBottom: 8 }}>
+        <div style={{ width: 4, height: 32, background: 'var(--gold)', borderRadius: 2 }} />
         <h2 style={{
           fontFamily: 'Playfair Display, serif',
-          fontSize: 'clamp(20px, 3vw, 28px)',
+          fontSize: 'clamp(24px, 4vw, 32px)',
           fontWeight: 700,
           color: 'var(--text)',
         }}>
@@ -237,8 +237,8 @@ function SectionHeader({ title, subtitle }) {
       </div>
       {subtitle && (
         <p style={{
-          fontSize: 13, color: 'var(--text-muted)',
-          marginLeft: 19, letterSpacing: 0.3,
+          fontSize: 14, color: 'var(--text-muted)',
+          marginLeft: 24, letterSpacing: 0.5,
         }}>
           {subtitle}
         </p>
@@ -309,7 +309,7 @@ export default function ProductGrid({
   }, [hasMore, loading]);
 
   return (
-    <div style={{ padding: '48px 0 80px' }}>
+    <div style={{ padding: '64px 0 96px' }}>
       <div className="container">
 
         {/* Section header */}
@@ -330,22 +330,22 @@ export default function ProductGrid({
           alignItems: 'center',
           justifyContent: 'space-between',
           flexWrap: 'wrap',
-          gap: 12,
-          marginBottom: 28,
+          gap: 16,
+          marginBottom: 40,
         }}>
           {/* Category pills */}
-          <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
+          <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap' }}>
             {CATEGORIES.map(cat => (
               <button
                 key={cat}
                 onClick={() => handleCategoryChange(cat)}
                 style={{
-                  padding: '8px 18px',
-                  borderRadius: 24,
+                  padding: '10px 22px',
+                  borderRadius: 28,
                   border: `1px solid ${category === cat ? 'var(--gold)' : 'var(--border)'}`,
                   background: category === cat ? 'var(--gold)' : 'var(--surface)',
                   color: category === cat ? '#000' : 'var(--text-muted)',
-                  fontSize: 12, fontWeight: 700,
+                  fontSize: 13, fontWeight: 700,
                   letterSpacing: 0.5,
                   transition: 'all 0.2s',
                 }}
@@ -355,33 +355,24 @@ export default function ProductGrid({
             ))}
           </div>
 
-          {/* Search + Sale toggle */}
-          <div style={{
-            display: 'flex',
-            alignItems: 'center',
-            gap: 10,
-            flexShrink: 0,
-          }}>
-            <button
-              type="button"
-              onClick={toggleSaleOnly}
-              style={{
-                padding: '8px 14px',
-                borderRadius: 999,
-                border: `1px solid ${saleOnly ? 'var(--gold)' : 'var(--border)'}`,
-                background: saleOnly ? 'var(--gold)' : 'var(--surface)',
-                color: saleOnly ? '#000' : 'var(--text-muted)',
-                fontSize: 11,
-                fontWeight: 700,
-                letterSpacing: 1,
-                textTransform: 'uppercase',
-              }}
-            >
-              On Sale
-            </button>
-
-            {/* ProductGrid search removed */}
-          </div>
+          {/* Sale toggle */}
+          <button
+            type="button"
+            onClick={toggleSaleOnly}
+            style={{
+              padding: '10px 18px',
+              borderRadius: 999,
+              border: `1px solid ${saleOnly ? 'var(--gold)' : 'var(--border)'}`,
+              background: saleOnly ? 'var(--gold)' : 'var(--surface)',
+              color: saleOnly ? '#000' : 'var(--text-muted)',
+              fontSize: 12,
+              fontWeight: 700,
+              letterSpacing: 1,
+              textTransform: 'uppercase',
+            }}
+          >
+            On Sale
+          </button>
         </div>
 
         {/* Product Grid */}
@@ -394,14 +385,14 @@ export default function ProductGrid({
             </div>
 
             {/* Infinite scroll sentinel */}
-            <div ref={sentinelRef} style={{ height: 1, marginTop: 40 }} />
+            <div ref={sentinelRef} style={{ height: 1, marginTop: 60 }} />
 
             {/* Loading indicator */}
             {loading && (
               <div style={{
-                textAlign: 'center', padding: '20px 0',
-                color: 'var(--text-muted)', fontSize: 13,
-                letterSpacing: 1, textTransform: 'uppercase',
+                textAlign: 'center', padding: '32px 0',
+                color: 'var(--text-muted)', fontSize: 14,
+                letterSpacing: 1.5, textTransform: 'uppercase',
                 fontWeight: 700,
               }}>
                 Loading more...
@@ -411,8 +402,8 @@ export default function ProductGrid({
             {/* End of results */}
             {!hasMore && visible.length > PAGE_SIZE && (
               <div style={{
-                textAlign: 'center', padding: '32px 0',
-                color: 'var(--text-faint)', fontSize: 12,
+                textAlign: 'center', padding: '48px 0',
+                color: 'var(--text-faint)', fontSize: 13,
                 letterSpacing: 2, textTransform: 'uppercase',
               }}>
                 All products loaded
@@ -422,17 +413,17 @@ export default function ProductGrid({
         ) : (
           <div style={{
             textAlign: 'center',
-            padding: '80px 0',
+            padding: '120px 0',
             color: 'var(--text-muted)',
           }}>
             <div style={{
-              fontSize: 13, letterSpacing: 2,
-              textTransform: 'uppercase', fontWeight: 700,
-              marginBottom: 8,
+              fontSize: 16, letterSpacing: 2.5,
+              textTransform: 'uppercase', fontWeight: 800,
+              marginBottom: 12,
             }}>
               No products found
             </div>
-            <div style={{ fontSize: 13, color: 'var(--text-faint)' }}>
+            <div style={{ fontSize: 14, color: 'var(--text-faint)' }}>
               Try a different search or category
             </div>
           </div>

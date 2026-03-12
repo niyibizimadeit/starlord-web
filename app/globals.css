@@ -44,6 +44,7 @@
 [data-theme="dark"] {
   --bg:             #1A1814;
   --surface:        #242018;
+
   --surface-2:      #2E291F;
   --surface-3:      #383228;
   --border:         #3D3830;
@@ -72,6 +73,7 @@
 html {
   background: var(--bg);
   color: var(--text);
+  
   font-family: 'Lato', sans-serif;
   font-size: 16px;
   scroll-behavior: smooth;
@@ -116,10 +118,20 @@ img {
 }
 
 /* ─── SCROLLBAR ─────────────────────────────────────────────────────────── */
-::-webkit-scrollbar { width: 6px; height: 6px; }
-::-webkit-scrollbar-track { background: var(--bg); }
-::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
-::-webkit-scrollbar-thumb:hover { background: var(--text-faint); }
+::-webkit-scrollbar { 
+  width: 6px; 
+  height: 6px; 
+}
+::-webkit-scrollbar-track { 
+  background: var(--bg); 
+}
+::-webkit-scrollbar-thumb { 
+  background: var(--border); 
+  border-radius: 3px; 
+}
+::-webkit-scrollbar-thumb:hover { 
+  background: var(--text-faint); 
+}
 
 /* ─── SELECTION ─────────────────────────────────────────────────────────── */
 ::selection {
@@ -135,9 +147,9 @@ img {
 
 /* ─── UTILITY ───────────────────────────────────────────────────────────── */
 .visually-hidden {
-  position: 'absolute';
   position: absolute;
-  width: 1px; height: 1px;
+  width: 1px; 
+  height: 1px;
   overflow: hidden;
   clip: rect(0,0,0,0);
   white-space: nowrap;
@@ -145,10 +157,14 @@ img {
 
 /* ─── RESPONSIVE NAV HELPERS ────────────────────────────────────────────── */
 @media (min-width: 768px) {
-  .mobile-only { display: none !important; }
+  .mobile-only { 
+    display: none !important; 
+  }
 }
 @media (max-width: 767px) {
-  .desktop-only { display: none !important; }
+  .desktop-only { 
+    display: none !important; 
+  }
 }
 
 /* Product Grid Mobile 2-column with line spacing */
@@ -172,20 +188,29 @@ img {
     gap: 24px;
   }
 }
+
+/* ─── Mobile Specific ────────────────────────────────────────────────────── */
 @media (max-width: 767px) {
-  .trustbar-mobile { 
-    gridTemplateColumns: 'repeat(2, 1fr)' !important;
-  } 
-  .trustbar-mobile > div:nth-child(2n) { 
-    borderRight: 'none' !important;
-  }
   .banner-slider .banner-slide {
     min-height: 360px !important;
   }
-  .product-grid .info {
-    padding: 12px 12px 12px;
+  .product-grid-info {
+    padding: 10px 12px 4px !important;
   }
   .product-grid h3 {
-    margin-bottom: 0 !important;
+    margin-bottom: 2px !important;
   }
+  .product-grid-info {
+    gap: 10px !important;
+  }
+  .product-grid-info h3 {
+    flex: none !important;
+  }
+  .product-grid > * {
+    min-height: 360px !important;
+  }
+  .product-grid .price-row {
+    margin-top: 0 !important;
+  }
+
 }
