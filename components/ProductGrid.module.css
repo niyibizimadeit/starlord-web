@@ -355,14 +355,16 @@
   text-transform: uppercase;
 }
 
-@media (max-width: 768px) {
+@media (max-width: 767px) {
   .searchInputContainer {
     display: none;
   }
 
   .productGrid {
-    grid-template-columns: repeat(2, 1fr) !important;
+    grid-template-columns: repeat(2, 1fr);
     gap: 16px;
+    width: 100%;
+    max-width: none;
   }
 
   .productInfo {

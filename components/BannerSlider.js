@@ -93,7 +93,7 @@ export default function BannerSlider() {
 
   useEffect(() => {
     if (paused) return;
-    const t = setInterval(next, 5000);
+    const t = setInterval(next, 3000);
     return () => clearInterval(t);
   }, [paused, next]);
 
@@ -231,7 +231,14 @@ export default function BannerSlider() {
         ))}
       </div>
 
-      {/* Prev / Next arrows */}
+      {/* Prev / Next arrows - Hidden on mobile */}
+      <style jsx>{`
+        @media (max-width: 767px) {
+          button[aria-label*="slide"] {
+            display: none !important;
+          }
+        }
+      `}</style>
       {['prev', 'next'].map(dir => (
         <button
           key={dir}
@@ -240,6 +247,7 @@ export default function BannerSlider() {
               ? (c - 1 + BANNERS.length) % BANNERS.length
               : (c + 1) % BANNERS.length
           )}
+          aria-label={dir === 'prev' ? 'Previous slide' : 'Next slide'}
           style={{
             position: 'absolute',
             top: '50%', transform: 'translateY(-50%)',
@@ -254,10 +262,9 @@ export default function BannerSlider() {
             transition: 'background 0.2s',
             backdropFilter: 'blur(4px)',
           }}
-          aria-label={dir === 'prev' ? 'Previous slide' : 'Next slide'}
         >
           {dir === 'prev' ? (
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+            <svg width="14" height="14" viewBox="0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
               <polyline points="15 18 9 12 15 6"/>
             </svg>
           ) : (
