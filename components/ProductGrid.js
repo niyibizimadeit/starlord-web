@@ -1,0 +1,475 @@
+'use client';
+
+import { useState, useEffect, useRef } from 'react';
+import Link from 'next/link';
+
+const PAGE_SIZE = 8;
+
+function formatRWF(n) {
+  return `RWF ${Number(n).toLocaleString()}`;
+}
+
+function Badge({ text }) {
+  if (!text) return null;
+  const styles = {
+    HOT:  { bg: '#C0392B', color: '#fff' },
+    NEW:  { bg: '#1E8449', color: '#fff' },
+    SALE: { bg: 'var(--gold)', color: '#fff' },
+  };
+  const s = styles[text] || styles.HOT;
+  return (
+    <span style={{
+      background: s.bg, color: s.color,
+      fontSize: 9, fontWeight: 700,
+      padding: '2px 8px', borderRadius: 3,
+      letterSpacing: 1.5, fontFamily: 'Lato, sans-serif',
+      textTransform: 'uppercase',
+    }}>
+      {text}
+    </span>
+  );
+}
+
+function ProductCard({ product }) {
+  const [hovered, setHovered] = useState(false);
+  const discount = product.old_price
+    ? Math.round((1 - product.price / product.old_price) * 100)
+    : null;
+
+  return (
+    <Link
+      href={`/products/${product.id}`}
+      style={{ display: 'block', height: '100%' }}
+      onMouseEnter={() => setHovered(true)}
+      onMouseLeave={() => setHovered(false)}
+    >
+      <article style={{
+        background: 'var(--surface)',
+        borderRadius: 12,
+        overflow: 'hidden',
+        border: '1px solid var(--border)',
+        height: '100%',
+        display: 'flex',
+        flexDirection: 'column',
+        transform: hovered ? 'translateY(-4px)' : 'translateY(0)',
+        boxShadow: hovered ? 'var(--shadow)' : 'var(--shadow-sm)',
+        transition: 'transform 0.25s ease, box-shadow 0.25s ease',
+      }}>
+
+        {/* Image */}
+        <div style={{
+          position: 'relative',
+          paddingTop: '100%',
+          background: 'var(--surface-2)',
+          overflow: 'hidden',
+        }}>
+          {product.image_url ? (
+            <img
+              src={product.image_url}
+              alt={product.name}
+              style={{
+                position: 'absolute', inset: 0,
+                width: '100%', height: '100%',
+                objectFit: 'cover',
+                transition: 'transform 0.4s ease',
+                transform: hovered ? 'scale(1.05)' : 'scale(1)',
+              }}
+            />
+          ) : (
+            <div style={{
+              position: 'absolute', inset: 0,
+              display: 'flex', alignItems: 'center', justifyContent: 'center',
+              color: 'var(--text-faint)',
+              fontSize: 12, letterSpacing: 1,
+              textTransform: 'uppercase',
+              fontWeight: 700,
+            }}>
+              No Image
+            </div>
+          )}
+
+          {/* Top badges */}
+          <div style={{
+            position: 'absolute', top: 10, left: 10,
+            display: 'flex', flexDirection: 'column', gap: 4,
+          }}>
+            <Badge text={product.badge} />
+            {discount && (
+              <span style={{
+                background: '#C0392B', color: '#fff',
+                fontSize: 9, fontWeight: 700,
+                padding: '2px 8px', borderRadius: 3,
+                letterSpacing: 1, fontFamily: 'Lato, sans-serif',
+              }}>
+                -{discount}%
+              </span>
+            )}
+          </div>
+
+          {/* Low stock */}
+          {product.stock <= 5 && product.stock > 0 && (
+            <div style={{
+              position: 'absolute', bottom: 10, right: 10,
+              background: 'rgba(0,0,0,0.75)',
+              backdropFilter: 'blur(4px)',
+              color: 'var(--gold)',
+              fontSize: 10, fontWeight: 700,
+              padding: '3px 10px', borderRadius: 20,
+            }}>
+              {product.stock} left
+            </div>
+          )}
+
+          {product.stock === 0 && (
+            <div style={{
+              position: 'absolute', inset: 0,
+              background: 'var(--overlay)',
+              display: 'flex', alignItems: 'center', justifyContent: 'center',
+            }}>
+              <span style={{
+                background: 'var(--surface)',
+                color: 'var(--text-muted)',
+                fontSize: 11, fontWeight: 700,
+                padding: '6px 16px', borderRadius: 4,
+                letterSpacing: 1, textTransform: 'uppercase',
+              }}>
+                Sold Out
+              </span>
+            </div>
+          )}
+        </div>
+
+        {/* Info */}
+        <div style={{
+          padding: '14px 16px 16px',
+          flex: 1,
+          display: 'flex',
+          flexDirection: 'column',
+          gap: 6,
+        }}>
+          <span style={{
+            fontSize: 10, color: 'var(--text-faint)',
+            textTransform: 'uppercase', letterSpacing: 1.5,
+            fontWeight: 700,
+          }}>
+            {product.category}
+          </span>
+
+          <h3 style={{
+            fontFamily: 'Playfair Display, serif',
+            fontSize: 15,
+            fontWeight: 600,
+            color: 'var(--text)',
+            lineHeight: 1.35,
+            flex: 1,
+          }}>
+            {product.name}
+          </h3>
+
+          <div style={{
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            marginTop: 4,
+          }}>
+            <div>
+              <span style={{
+                fontSize: 16, fontWeight: 700,
+                color: 'var(--gold)',
+                fontFamily: 'Lato, sans-serif',
+              }}>
+                {formatRWF(product.price)}
+              </span>
+              {product.old_price && (
+                <span style={{
+                  fontSize: 12,
+                  color: 'var(--text-faint)',
+                  textDecoration: 'line-through',
+                  marginLeft: 8,
+                }}>
+                  {formatRWF(product.old_price)}
+                </span>
+              )}
+            </div>
+
+            <div style={{
+              width: 32, height: 32,
+              borderRadius: '50%',
+              background: hovered ? 'var(--gold)' : 'var(--surface-2)',
+              border: '1px solid var(--border)',
+              display: 'flex', alignItems: 'center', justifyContent: 'center',
+              transition: 'all 0.2s',
+              flexShrink: 0,
+            }}>
+              <svg
+                width="14" height="14"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke={hovered ? '#000' : 'currentColor'}
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              >
+                <line x1="12" y1="5" x2="12" y2="19"/>
+                <line x1="5" y1="12" x2="19" y2="12"/>
+              </svg>
+            </div>
+          </div>
+        </div>
+      </article>
+    </Link>
+  );
+}
+
+function SectionHeader({ title, subtitle }) {
+  return (
+    <div style={{ marginBottom: 24 }}>
+      <div style={{ display: 'flex', alignItems: 'center', gap: 16, marginBottom: 6 }}>
+        <div style={{ width: 3, height: 24, background: 'var(--gold)', borderRadius: 2 }} />
+        <h2 style={{
+          fontFamily: 'Playfair Display, serif',
+          fontSize: 'clamp(20px, 3vw, 28px)',
+          fontWeight: 700,
+          color: 'var(--text)',
+        }}>
+          {title}
+        </h2>
+      </div>
+      {subtitle && (
+        <p style={{
+          fontSize: 13, color: 'var(--text-muted)',
+          marginLeft: 19, letterSpacing: 0.3,
+        }}>
+          {subtitle}
+        </p>
+      )}
+    </div>
+  );
+}
+
+export default function ProductGrid({
+  initialProducts,
+  initialCategory,
+  initialSearch,
+  initialBadge,
+}) {
+  const [category, setCategory] = useState(initialCategory || 'All');
+  const [search,   setSearch]   = useState(initialSearch   || '');
+  const [saleOnly, setSaleOnly] = useState(initialBadge === 'SALE');
+  const [page,     setPage     ] = useState(1);
+  const [loading,   setLoading]  = useState(false);
+  const products                 = initialProducts || [];
+  const sentinelRef = useRef(null);
+
+  const CATEGORIES = ['All', 'Tech', 'Fashion'];
+
+  // Handler that resets page when category changes
+  const handleCategoryChange = (cat) => {
+    setCategory(cat);
+    setPage(1);
+  };
+
+  // Handler that resets page when search changes
+  const handleSearchChange = (value) => {
+    setSearch(value);
+    setPage(1);
+  };
+
+  const toggleSaleOnly = () => {
+    setSaleOnly(prev => !prev);
+    setPage(1);
+  };
+
+  // Filter client-side for snappy UX
+  const filtered = products.filter(p => {
+    const matchCat    = category === 'All' || p.category === category;
+    const matchSearch = !search || p.name.toLowerCase().includes(search.toLowerCase());
+    const matchSale   = !saleOnly || p.badge === 'SALE';
+    return matchCat && matchSearch && matchSale;
+  });
+
+  const visible  = filtered.slice(0, page * PAGE_SIZE);
+  const hasMore  = visible.length < filtered.length;
+
+  // Infinite scroll observer
+  useEffect(() => {
+    const el = sentinelRef.current;
+    if (!el) return;
+    const observer = new IntersectionObserver(entries => {
+      if (entries[0].isIntersecting && hasMore && !loading) {
+        setLoading(true);
+        setTimeout(() => {
+          setPage(p => p + 1);
+          setLoading(false);
+        }, 400);
+      }
+    }, { rootMargin: '200px' });
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, [hasMore, loading]);
+
+  return (
+    <div style={{ padding: '48px 0 80px' }}>
+      <div className="container">
+
+        {/* Section header */}
+        <SectionHeader
+          title={
+            saleOnly
+              ? 'On Sale'
+              : category === 'All'
+              ? 'All Products'
+              : category
+          }
+          subtitle={`${filtered.length} items available`}
+        />
+
+        {/* Filters row */}
+        <div style={{
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+          flexWrap: 'wrap',
+          gap: 12,
+          marginBottom: 28,
+        }}>
+          {/* Category pills */}
+          <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
+            {CATEGORIES.map(cat => (
+              <button
+                key={cat}
+                onClick={() => handleCategoryChange(cat)}
+                style={{
+                  padding: '8px 18px',
+                  borderRadius: 24,
+                  border: `1px solid ${category === cat ? 'var(--gold)' : 'var(--border)'}`,
+                  background: category === cat ? 'var(--gold)' : 'var(--surface)',
+                  color: category === cat ? '#000' : 'var(--text-muted)',
+                  fontSize: 12, fontWeight: 700,
+                  letterSpacing: 0.5,
+                  transition: 'all 0.2s',
+                }}
+              >
+                {cat}
+              </button>
+            ))}
+          </div>
+
+          {/* Search + Sale toggle */}
+          <div style={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: 10,
+            flexShrink: 0,
+          }}>
+            <button
+              type="button"
+              onClick={toggleSaleOnly}
+              style={{
+                padding: '8px 14px',
+                borderRadius: 999,
+                border: `1px solid ${saleOnly ? 'var(--gold)' : 'var(--border)'}`,
+                background: saleOnly ? 'var(--gold)' : 'var(--surface)',
+                color: saleOnly ? '#000' : 'var(--text-muted)',
+                fontSize: 11,
+                fontWeight: 700,
+                letterSpacing: 1,
+                textTransform: 'uppercase',
+              }}
+            >
+              On Sale
+            </button>
+
+            {/* Search */}
+            <div style={{ position: 'relative', flexShrink: 0 }}>
+            <input
+              placeholder="Search..."
+              value={search}
+              onChange={e => handleSearchChange(e.target.value)}
+              style={{
+                background: 'var(--surface)',
+                border: '1px solid var(--border)',
+                borderRadius: 8,
+                padding: '8px 14px 8px 36px',
+                color: 'var(--text)',
+                fontSize: 13, outline: 'none',
+                width: 180,
+                transition: 'border-color 0.2s',
+              }}
+              onFocus={e => e.target.style.borderColor = 'var(--gold)'}
+              onBlur={e  => e.target.style.borderColor = 'var(--border)'}
+            />
+            <span style={{
+              position: 'absolute', left: 11,
+              top: '50%', transform: 'translateY(-50%)',
+              color: 'var(--text-faint)', pointerEvents: 'none',
+            }}>
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
+              </svg>
+            </span>
+          </div>
+          </div>
+        </div>
+
+        {/* Product Grid */}
+        {visible.length > 0 ? (
+          <>
+            <div style={{
+              display: 'grid',
+              gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))',
+              gap: 20,
+            }}>
+              {visible.map(p => (
+                <ProductCard key={p.id} product={p} />
+              ))}
+            </div>
+
+            {/* Infinite scroll sentinel */}
+            <div ref={sentinelRef} style={{ height: 1, marginTop: 40 }} />
+
+            {/* Loading indicator */}
+            {loading && (
+              <div style={{
+                textAlign: 'center', padding: '20px 0',
+                color: 'var(--text-muted)', fontSize: 13,
+                letterSpacing: 1, textTransform: 'uppercase',
+                fontWeight: 700,
+              }}>
+                Loading more...
+              </div>
+            )}
+
+            {/* End of results */}
+            {!hasMore && visible.length > PAGE_SIZE && (
+              <div style={{
+                textAlign: 'center', padding: '32px 0',
+                color: 'var(--text-faint)', fontSize: 12,
+                letterSpacing: 2, textTransform: 'uppercase',
+              }}>
+                All products loaded
+              </div>
+            )}
+          </>
+        ) : (
+          <div style={{
+            textAlign: 'center',
+            padding: '80px 0',
+            color: 'var(--text-muted)',
+          }}>
+            <div style={{
+              fontSize: 13, letterSpacing: 2,
+              textTransform: 'uppercase', fontWeight: 700,
+              marginBottom: 8,
+            }}>
+              No products found
+            </div>
+            <div style={{ fontSize: 13, color: 'var(--text-faint)' }}>
+              Try a different search or category
+            </div>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
