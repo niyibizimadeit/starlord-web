@@ -1,0 +1,9 @@
+<parameter name="content"># Task: Equalize mobile product name-to-price spacing with category-to-name
+
+## Steps:
+- [ ] 1. Create TODO.md with plan steps
+- [ ] 2. Edit components/ProductGrid.module.css: Change mobile .productTitle margin-bottom from 32px to 12px
+- [ ] 3. Verify edit successful, test spacing on mobile view
+- [ ] 4. Update TODO.md with completion
+- [ ] 5. Complete task
+</parameter>
