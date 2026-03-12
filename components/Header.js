@@ -223,7 +223,7 @@ export default function Header() {
         </div>
       </div>
 
-      {/* Mobile Search Bar — always visible, full width */}
+      {/* Mobile Search Bar — full width, stays for mobile */}
       <div style={{ padding: '0 16px 12px' }} className="mobile-search">
         <form onSubmit={handleSearchSubmit} style={{ display: 'flex', alignItems: 'center' }}>
           <input

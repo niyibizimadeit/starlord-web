@@ -135,6 +135,7 @@ img {
 
 /* ─── UTILITY ───────────────────────────────────────────────────────────── */
 .visually-hidden {
+  position: 'absolute';
   position: absolute;
   width: 1px; height: 1px;
   overflow: hidden;
@@ -148,4 +149,20 @@ img {
 }
 @media (max-width: 767px) {
   .desktop-only { display: none !important; }
+}
+
+/* Product Grid Mobile 2-column */
+@media (max-width: 767px) {
+  .product-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+  }
+}
+
+/* Product Grid Desktop */
+@media (min-width: 768px) {
+  .product-grid {
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 20px;
+  }
 }
