@@ -78,10 +78,14 @@ function ProductCard({ product, onOpenModal }) {
           <h3 className={styles.productTitle}>{product.name}</h3>
           
           <div className={`${styles.priceRow}`}>
-            <div>
-              <span className={styles.currentPrice}>{formatRWF(product.price)}</span>
+            <div className={styles.prices}>
+              <div className={styles.currentPriceLine}>
+                <span className={styles.currentPrice}>{formatRWF(product.price)}</span>
+              </div>
               {product.old_price && (
-                <span className={styles.oldPrice}>{formatRWF(product.old_price)}</span>
+                <div className={styles.oldPriceLine}>
+                  <span className={styles.oldPrice}>{formatRWF(product.old_price)}</span>
+                </div>
               )}
             </div>
 
@@ -108,6 +112,15 @@ function ProductCard({ product, onOpenModal }) {
                 <line x1="7" y1="7" x2="7" y2="7"/>
               </svg>
             </button>
+            {product.stock !== 0 && (
+              <button
+                className={styles.mobileAddToCartBtn}
+                onClick={handleOpenModal}
+                aria-label="Add to cart"
+              >
+                Add to cart
+              </button>
+            )}
           </div>
         </div>
       </article>
@@ -217,7 +230,7 @@ export default function ProductGrid({
       <div className="container">
         <SectionHeader title={title} subtitle={`${filtered.length} items available`} />
 
-        {/* Search Input */}
+        {/* Search Input - Hidden on mobile via CSS */}
         <div className={styles.searchInputContainer}>
           <svg className={styles.searchIcon} viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" strokeWidth="2" fill="none" strokeLinecap="round" strokeLinejoin="round">
             <circle cx="11" cy="11" r="8"></circle>

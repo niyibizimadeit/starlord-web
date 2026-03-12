@@ -1,10 +1,13 @@
-# ProductGrid Conversion TODO - COMPLETE ✅
+# Mobile Cart & Search Updates - Approved Plan Implementation
 
-## Completed
-- [x] Create components/ProductGrid.js from TypeScript conversion (all functionality preserved: filtering, search, infinite scroll, modal, cart integration)
-- [x] Verified import in app/page.js uses '@/components/ProductGrid' (Next.js resolves .js automatically, no change needed)
-- [x] Deleted components/ProductGrid.tsx
-- [x] Updated TODO.md
+## Steps (6/8 completed)
 
-## Status
-ProductGrid is now JavaScript-only. App should work without TS errors. Test by running `npm run dev`, visit homepage, and interact with grid features.
+### 1. ✅ Create this TODO.md to track progress
+### 2. ✅ Update ProductGrid.js: Add mobile text button in ProductCard priceRow
+### 3. ✅ Update ProductGrid.module.css: Hide search on mobile
+### 4. ✅ Update ProductGrid.module.css: Stack priceRow vertical on mobile
+### 5. ✅ Update ProductGrid.module.css: Hide desktop icon button on mobile
+### 6. ✅ Update ProductGrid.module.css: Style new mobileAddToCartBtn
+
+### 7. Test changes: npm run dev, check mobile view (DevTools)
+### 8. attempt_completion: Mark task done
