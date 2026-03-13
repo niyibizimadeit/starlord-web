@@ -80,6 +80,104 @@ async function apiMutate(method, body) {
   return res.json();
 }
 
+// ─── Image Uploader ───────────────────────────────────────────────────────────
+function ImageUploader({ productId, images, onImagesChange }) {
+  const [uploading, setUploading] = useState(false);
+  const [error,     setError]     = useState('');
+  const fileRef = useRef(null);
+
+  const handleFiles = async (files) => {
+    if (!productId) { setError('Save the product first before uploading images'); return; }
+    setError('');
+    setUploading(true);
+    const results = [];
+    for (const file of Array.from(files)) {
+      const form = new FormData();
+      form.append('file',      file);
+      form.append('productId', productId);
+      const res  = await fetch('/api/admin/upload', {
+        method:  'POST',
+        headers: { 'x-admin-secret': ADMIN_SECRET },
+        body:    form,
+      });
+      const data = await res.json();
+      if (data.error) { setError(data.error); break; }
+      else results.push(data.data);
+    }
+    setUploading(false);
+    if (results.length > 0) onImagesChange([...images, ...results]);
+  };
+
+  const handleDelete = async (img) => {
+    if (!confirm('Remove this image?')) return;
+    const res  = await fetch('/api/admin/upload', {
+      method:  'DELETE',
+      headers: { 'Content-Type': 'application/json', 'x-admin-secret': ADMIN_SECRET },
+      body:    JSON.stringify({ imageId: img.id, url: img.url }),
+    });
+    const data = await res.json();
+    if (data.error) { setError(data.error); return; }
+    onImagesChange(images.filter(i => i.id !== img.id));
+  };
+
+  const handleMoveLeft = async (index) => {
+    if (index === 0) return;
+    const updated = [...images];
+    [updated[index - 1], updated[index]] = [updated[index], updated[index - 1]];
+    const reordered = updated.map((img, i) => ({ ...img, sort_order: i }));
+    onImagesChange(reordered);
+    await fetch('/api/admin/upload', {
+      method:  'PATCH',
+      headers: { 'Content-Type': 'application/json', 'x-admin-secret': ADMIN_SECRET },
+      body:    JSON.stringify({ images: reordered.map(img => ({ id: img.id, sort_order: img.sort_order })) }),
+    });
+  };
+
+  return (
+    <div>
+      <label style={S.label}>Product Images</label>
+
+      {error && (
+        <div style={{ background: '#2e1a1a', border: '1px solid #e05555', borderRadius: 8, padding: '8px 12px', marginBottom: 10, fontSize: 12, color: '#e05555' }}>
+          {error}
+        </div>
+      )}
+
+      {/* Image grid */}
+      {images.length > 0 && (
+        <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', marginBottom: 12 }}>
+          {images.map((img, i) => (
+            <div key={img.id} style={{ position: 'relative', width: 90, height: 90 }}>
+              <img src={img.url} alt="" style={{ width: 90, height: 90, objectFit: 'cover', borderRadius: 8, border: i === 0 ? '2px solid #C9A84C' : '2px solid #2a2a2a' }} />
+              {i === 0 && (
+                <div style={{ position: 'absolute', top: 3, left: 3, background: '#C9A84C', borderRadius: 3, fontSize: 8, fontWeight: 800, color: '#000', padding: '1px 4px' }}>MAIN</div>
+              )}
+              <div style={{ position: 'absolute', top: 3, right: 3, display: 'flex', gap: 3 }}>
+                {i > 0 && (
+                  <button onClick={() => handleMoveLeft(i)} title="Move left" style={{ background: 'rgba(0,0,0,0.7)', border: 'none', borderRadius: 3, color: '#fff', fontSize: 10, cursor: 'pointer', padding: '2px 5px' }}>←</button>
+                )}
+                <button onClick={() => handleDelete(img)} title="Remove" style={{ background: 'rgba(200,0,0,0.8)', border: 'none', borderRadius: 3, color: '#fff', fontSize: 10, cursor: 'pointer', padding: '2px 5px' }}>✕</button>
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
+
+      {/* Upload button */}
+      <input ref={fileRef} type="file" accept="image/*" multiple style={{ display: 'none' }}
+        onChange={e => handleFiles(e.target.files)} />
+      <button type="button" onClick={() => fileRef.current?.click()}
+        disabled={uploading}
+        style={{ ...S.btn, background: '#1c1c1c', color: uploading ? '#555' : '#888', border: '1px solid #2a2a2a', opacity: uploading ? 0.6 : 1 }}>
+        {uploading ? 'Uploading...' : '+ Upload Images'}
+      </button>
+      <div style={{ fontSize: 11, color: '#444', marginTop: 6 }}>
+        JPG, PNG or WEBP · Max 2MB each · First image is the main thumbnail · Use ← to reorder
+      </div>
+    </div>
+  );
+}
+
 // ─── StatCard ─────────────────────────────────────────────────────────────────
 function StatCard({ label, value, sub, gold, alert }) {
   return (
@@ -149,7 +247,6 @@ function OrderModal({ orderId, onClose, onStatusChange }) {
                 <button onClick={onClose} style={{ ...S.btn, background: '#1c1c1c', color: '#888', border: '1px solid #2a2a2a', fontSize: 16, padding: '6px 12px' }}>✕</button>
               </div>
             </div>
-
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12, marginBottom: 20 }}>
               <div style={{ background: '#0a0a0a', borderRadius: 10, padding: 14 }}>
                 <div style={S.label}>Customer</div>
@@ -161,7 +258,6 @@ function OrderModal({ orderId, onClose, onStatusChange }) {
                 <div style={{ fontSize: 13, color: '#ccc', lineHeight: 1.5 }}>{order.delivery_address}</div>
               </div>
             </div>
-
             <div style={{ marginBottom: 20 }}>
               <div style={S.label}>Order Items</div>
               {order.order_items?.map((item, i) => (
@@ -189,7 +285,6 @@ function OrderModal({ orderId, onClose, onStatusChange }) {
                 <span style={{ fontSize: 14, fontWeight: 800, color: '#C9A84C' }}>{formatRWF(order.total)}</span>
               </div>
             </div>
-
             <div style={{ background: '#0a0a0a', borderRadius: 10, padding: 14, marginBottom: 20, display: 'flex', gap: 24 }}>
               <div>
                 <div style={S.label}>Payment Method</div>
@@ -202,7 +297,6 @@ function OrderModal({ orderId, onClose, onStatusChange }) {
                 </span>
               </div>
             </div>
-
             {NEXT_STATUS[order.status] && (
               <div style={{ display: 'flex', gap: 8, marginBottom: 20, flexWrap: 'wrap' }}>
                 <button disabled={updating} onClick={() => handleStatus(NEXT_STATUS[order.status])} style={{ ...S.btn, background: '#C9A84C', color: '#000' }}>
@@ -211,15 +305,10 @@ function OrderModal({ orderId, onClose, onStatusChange }) {
                 <button disabled={updating} onClick={() => handleStatus('cancelled')} style={{ ...S.btn, background: '#2e1a1a', color: '#e05555', border: '1px solid #e05555' }}>
                   Cancel Order
                 </button>
-                <a href={`tel:${order.customer_phone}`} style={{ ...S.btn, background: '#1c1c1c', color: '#888', border: '1px solid #2a2a2a', textDecoration: 'none' }}>
-                  Call
-                </a>
-                <a href={`https://wa.me/${order.customer_phone?.replace(/\D/g, '')}`} target="_blank" rel="noreferrer" style={{ ...S.btn, background: '#1c1c1c', color: '#888', border: '1px solid #2a2a2a', textDecoration: 'none' }}>
-                  WhatsApp
-                </a>
+                <a href={`tel:${order.customer_phone}`} style={{ ...S.btn, background: '#1c1c1c', color: '#888', border: '1px solid #2a2a2a', textDecoration: 'none' }}>Call</a>
+                <a href={`https://wa.me/${order.customer_phone?.replace(/\D/g, '')}`} target="_blank" rel="noreferrer" style={{ ...S.btn, background: '#1c1c1c', color: '#888', border: '1px solid #2a2a2a', textDecoration: 'none' }}>WhatsApp</a>
               </div>
             )}
-
             {order.logs?.length > 0 && (
               <div>
                 <div style={S.label}>Activity Timeline</div>
@@ -228,9 +317,7 @@ function OrderModal({ orderId, onClose, onStatusChange }) {
                     <div style={{ fontSize: 14, color: '#C9A84C', fontWeight: 800, marginTop: 1, width: 16, textAlign: 'center' }}>{LOG_ICONS[log.action] || '·'}</div>
                     <div style={{ flex: 1 }}>
                       <div style={{ fontSize: 12, color: '#ccc', fontWeight: 600 }}>
-                        {log.action === 'ORDER_STATUS_CHANGED'
-                          ? `Status: ${log.details?.from} → ${log.details?.to}`
-                          : log.action.replace(/_/g, ' ')}
+                        {log.action === 'ORDER_STATUS_CHANGED' ? `Status: ${log.details?.from} → ${log.details?.to}` : log.action.replace(/_/g, ' ')}
                       </div>
                       <div style={{ fontSize: 11, color: '#555' }}>{formatDate(log.created_at)}</div>
                     </div>
@@ -248,39 +335,41 @@ function OrderModal({ orderId, onClose, onStatusChange }) {
 // ─── ProductModal ─────────────────────────────────────────────────────────────
 function ProductModal({ product, categories, onClose, onSave }) {
   const isNew = !product;
-  const [saving, setSaving] = useState(false);
-  const [error,  setError]  = useState('');
-  const [form,   setForm]   = useState({
+  const [saving,    setSaving]    = useState(false);
+  const [error,     setError]     = useState('');
+  const [savedId,   setSavedId]   = useState(product?.id || null);
+  const [images,    setImages]    = useState(product?.product_images || []);
+  const [form, setForm] = useState({
     name:        product?.name        || '',
     description: product?.description || '',
     category:    product?.category    || (categories?.[0]?.slug || 'accessories'),
     price:       product?.price       ? String(product.price)     : '',
     old_price:   product?.old_price   ? String(product.old_price) : '',
     stock:       product?.stock       ? String(product.stock)     : '',
-    image_url:   product?.image_url   || '',
     badge:       product?.badge       || '',
     is_active:   product?.is_active   ?? true,
   });
   const f = (k, v) => setForm(p => ({ ...p, [k]: v }));
 
   const handleSave = async () => {
-    if (!form.name.trim() || !form.price || !form.stock) {
-      setError('Name, price and stock are required');
-      return;
-    }
+    if (!form.name.trim() || !form.price || !form.stock) { setError('Name, price and stock are required'); return; }
     setError('');
     setSaving(true);
     let result;
-    if (isNew) {
+    if (isNew && !savedId) {
       result = await apiMutate('POST', form);
+      if (result.error) { setError(result.error); setSaving(false); return; }
+      setSavedId(result.data.id);
     } else {
-      result = await apiMutate('PATCH', { type: 'product', id: product.id, ...form });
+      result = await apiMutate('PATCH', { type: 'product', id: savedId || product.id, ...form });
+      if (result.error) { setError(result.error); setSaving(false); return; }
     }
     setSaving(false);
-    if (result.error) {
-      setError(result.error);
-      return;
-    }
+    await onSave();
+    if (!isNew) onClose();
+  };
+
+  const handleDone = async () => {
     await onSave();
     onClose();
   };
@@ -289,7 +378,9 @@ function ProductModal({ product, categories, onClose, onSave }) {
     <div style={S.modal} onClick={e => e.target === e.currentTarget && onClose()}>
       <div style={S.modalBox}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 20 }}>
-          <div style={{ fontSize: 14, fontWeight: 800, color: '#C9A84C', letterSpacing: 1 }}>{isNew ? 'NEW PRODUCT' : 'EDIT PRODUCT'}</div>
+          <div style={{ fontSize: 14, fontWeight: 800, color: '#C9A84C', letterSpacing: 1 }}>
+            {isNew ? (savedId ? 'ADD IMAGES' : 'NEW PRODUCT') : 'EDIT PRODUCT'}
+          </div>
           <button onClick={onClose} style={{ ...S.btn, background: '#1c1c1c', color: '#888', border: '1px solid #2a2a2a', fontSize: 16, padding: '6px 12px' }}>✕</button>
         </div>
 
@@ -299,52 +390,71 @@ function ProductModal({ product, categories, onClose, onSave }) {
           </div>
         )}
 
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 14 }}>
-          <div style={{ gridColumn: '1 / -1' }}>
-            <label style={S.label}>Name *</label>
-            <input style={S.input} value={form.name} onChange={e => f('name', e.target.value)} placeholder="e.g. iPhone 15 Pro Case" />
+        {/* Step 1: product details — show until saved */}
+        {(!isNew || !savedId) && (
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 14, marginBottom: 20 }}>
+            <div style={{ gridColumn: '1 / -1' }}>
+              <label style={S.label}>Name *</label>
+              <input style={S.input} value={form.name} onChange={e => f('name', e.target.value)} placeholder="e.g. iPhone 15 Pro Case" />
+            </div>
+            <div style={{ gridColumn: '1 / -1' }}>
+              <label style={S.label}>Description</label>
+              <input style={S.input} value={form.description} onChange={e => f('description', e.target.value)} placeholder="Short product description" />
+            </div>
+            <div>
+              <label style={S.label}>Category</label>
+              <select style={{ ...S.input, cursor: 'pointer' }} value={form.category} onChange={e => f('category', e.target.value)}>
+                {categories?.map(c => <option key={c.id} value={c.slug}>{c.name}</option>)}
+              </select>
+            </div>
+            <div>
+              <label style={S.label}>Badge (optional)</label>
+              <input style={S.input} value={form.badge} onChange={e => f('badge', e.target.value)} placeholder="e.g. New, Sale, Hot" />
+            </div>
+            <div>
+              <label style={S.label}>Price (RWF) *</label>
+              <input style={S.input} type="number" value={form.price} onChange={e => f('price', e.target.value)} placeholder="e.g. 15000" />
+            </div>
+            <div>
+              <label style={S.label}>Old Price (RWF)</label>
+              <input style={S.input} type="number" value={form.old_price} onChange={e => f('old_price', e.target.value)} placeholder="Strike-through price" />
+            </div>
+            <div>
+              <label style={S.label}>Stock *</label>
+              <input style={S.input} type="number" value={form.stock} onChange={e => f('stock', e.target.value)} placeholder="e.g. 20" />
+            </div>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 10, paddingTop: 20 }}>
+              <input type="checkbox" id="is_active_p" checked={form.is_active} onChange={e => f('is_active', e.target.checked)} />
+              <label htmlFor="is_active_p" style={{ fontSize: 13, color: '#888', cursor: 'pointer' }}>Visible on site</label>
+            </div>
           </div>
-          <div style={{ gridColumn: '1 / -1' }}>
-            <label style={S.label}>Description</label>
-            <input style={S.input} value={form.description} onChange={e => f('description', e.target.value)} placeholder="Short product description" />
-          </div>
-          <div>
-            <label style={S.label}>Category</label>
-            <select style={{ ...S.input, cursor: 'pointer' }} value={form.category} onChange={e => f('category', e.target.value)}>
-              {categories?.map(c => <option key={c.id} value={c.slug}>{c.name}</option>)}
-            </select>
-          </div>
-          <div>
-            <label style={S.label}>Badge (optional)</label>
-            <input style={S.input} value={form.badge} onChange={e => f('badge', e.target.value)} placeholder="e.g. New, Sale, Hot" />
-          </div>
-          <div>
-            <label style={S.label}>Price (RWF) *</label>
-            <input style={S.input} type="number" value={form.price} onChange={e => f('price', e.target.value)} placeholder="e.g. 15000" />
-          </div>
-          <div>
-            <label style={S.label}>Old Price (RWF)</label>
-            <input style={S.input} type="number" value={form.old_price} onChange={e => f('old_price', e.target.value)} placeholder="Strike-through price" />
-          </div>
-          <div>
-            <label style={S.label}>Stock *</label>
-            <input style={S.input} type="number" value={form.stock} onChange={e => f('stock', e.target.value)} placeholder="e.g. 20" />
-          </div>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 10, paddingTop: 20 }}>
-            <input type="checkbox" id="is_active_product" checked={form.is_active} onChange={e => f('is_active', e.target.checked)} />
-            <label htmlFor="is_active_product" style={{ fontSize: 13, color: '#888', cursor: 'pointer' }}>Visible on site</label>
-          </div>
-          <div style={{ gridColumn: '1 / -1' }}>
-            <label style={S.label}>Image URL</label>
-            <input style={S.input} value={form.image_url} onChange={e => f('image_url', e.target.value)} placeholder="https://..." />
-          </div>
-        </div>
+        )}
 
-        <div style={{ display: 'flex', gap: 8, marginTop: 20 }}>
-          <button onClick={handleSave} disabled={saving} style={{ ...S.btn, background: saving ? '#555' : '#C9A84C', color: '#000', opacity: saving ? 0.6 : 1 }}>
-            {saving ? 'Saving...' : isNew ? 'Create Product' : 'Save Changes'}
+        {/* Step 2: image uploader — always shown for existing, shown after save for new */}
+        {(!isNew || savedId) && (
+          <div style={{ marginBottom: 20 }}>
+            <ImageUploader
+              productId={savedId || product?.id}
+              images={images}
+              onImagesChange={setImages}
+            />
+          </div>
+        )}
+
+        <div style={{ display: 'flex', gap: 8 }}>
+          {(!isNew || !savedId) && (
+            <button onClick={handleSave} disabled={saving} style={{ ...S.btn, background: saving ? '#555' : '#C9A84C', color: '#000', opacity: saving ? 0.6 : 1 }}>
+              {saving ? 'Saving...' : isNew ? 'Save & Add Images' : 'Save Changes'}
+            </button>
+          )}
+          {(isNew && savedId) && (
+            <button onClick={handleDone} style={{ ...S.btn, background: '#C9A84C', color: '#000' }}>
+              Done
+            </button>
+          )}
+          <button onClick={onClose} style={{ ...S.btn, background: '#1c1c1c', color: '#888', border: '1px solid #2a2a2a' }}>
+            {isNew && savedId ? 'Close without more images' : 'Cancel'}
           </button>
-          <button onClick={onClose} style={{ ...S.btn, background: '#1c1c1c', color: '#888', border: '1px solid #2a2a2a' }}>Cancel</button>
         </div>
       </div>
     </div>
@@ -362,9 +472,7 @@ function StockModal({ product, onClose, onSave }) {
     if (!adjustment || parseInt(adjustment) === 0) { alert('Enter a non-zero adjustment'); return; }
     setSaving(true);
     await apiMutate('PATCH', { type: 'stock_adjust', id: product.id, adjustment: parseInt(adjustment), reason });
-    setSaving(false);
-    await onSave();
-    onClose();
+    setSaving(false); await onSave(); onClose();
   };
 
   return (
@@ -376,9 +484,7 @@ function StockModal({ product, onClose, onSave }) {
         </div>
         <div style={{ background: '#0a0a0a', borderRadius: 10, padding: 14, marginBottom: 16 }}>
           <div style={{ fontSize: 13, fontWeight: 700, color: '#fff' }}>{product.name}</div>
-          <div style={{ fontSize: 12, color: '#555', marginTop: 2 }}>
-            Current stock: <span style={{ color: '#C9A84C', fontWeight: 700 }}>{product.stock}</span>
-          </div>
+          <div style={{ fontSize: 12, color: '#555', marginTop: 2 }}>Current stock: <span style={{ color: '#C9A84C', fontWeight: 700 }}>{product.stock}</span></div>
         </div>
         <div style={{ marginBottom: 14 }}>
           <label style={S.label}>Adjustment (+ to add, − to remove)</label>
@@ -418,45 +524,28 @@ function CategoryModal({ category, onClose, onSave }) {
     is_active:   category?.is_active   ?? true,
   });
   const f = (k, v) => setForm(p => ({ ...p, [k]: v }));
-
-  const handleNameChange = (val) => {
-    f('name', val);
-    if (isNew) f('slug', toSlug(val));
-  };
+  const handleNameChange = (val) => { f('name', val); if (isNew) f('slug', toSlug(val)); };
 
   const handleSave = async () => {
     if (!form.name.trim()) { setError('Name is required'); return; }
     if (!form.slug.trim()) { setError('Slug is required'); return; }
-    setError('');
-    setSaving(true);
-    let result;
-    if (isNew) {
-      result = await apiMutate('POST', { type: 'category', ...form });
-    } else {
-      result = await apiMutate('PATCH', { type: 'category', id: category.id, ...form });
-    }
+    setError(''); setSaving(true);
+    const result = isNew
+      ? await apiMutate('POST',  { type: 'category', ...form })
+      : await apiMutate('PATCH', { type: 'category', id: category.id, ...form });
     setSaving(false);
     if (result.error) { setError(result.error); return; }
-    await onSave();
-    onClose();
+    await onSave(); onClose();
   };
 
   return (
     <div style={S.modal} onClick={e => e.target === e.currentTarget && onClose()}>
       <div style={{ ...S.modalBox, maxWidth: 500 }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 20 }}>
-          <div style={{ fontSize: 14, fontWeight: 800, color: '#C9A84C', letterSpacing: 1 }}>
-            {isNew ? 'NEW CATEGORY' : 'EDIT CATEGORY'}
-          </div>
+          <div style={{ fontSize: 14, fontWeight: 800, color: '#C9A84C', letterSpacing: 1 }}>{isNew ? 'NEW CATEGORY' : 'EDIT CATEGORY'}</div>
           <button onClick={onClose} style={{ ...S.btn, background: '#1c1c1c', color: '#888', border: '1px solid #2a2a2a', fontSize: 16, padding: '6px 12px' }}>✕</button>
         </div>
-
-        {error && (
-          <div style={{ background: '#2e1a1a', border: '1px solid #e05555', borderRadius: 8, padding: '10px 14px', marginBottom: 16, fontSize: 13, color: '#e05555' }}>
-            {error}
-          </div>
-        )}
-
+        {error && <div style={{ background: '#2e1a1a', border: '1px solid #e05555', borderRadius: 8, padding: '10px 14px', marginBottom: 16, fontSize: 13, color: '#e05555' }}>{error}</div>}
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 14 }}>
           <div style={{ gridColumn: '1 / -1' }}>
             <label style={S.label}>Name *</label>
@@ -465,15 +554,15 @@ function CategoryModal({ category, onClose, onSave }) {
           <div style={{ gridColumn: '1 / -1' }}>
             <label style={S.label}>Slug * (used in URLs)</label>
             <input style={S.input} value={form.slug} onChange={e => f('slug', toSlug(e.target.value))} placeholder="e.g. phone-cases" />
-            <div style={{ fontSize: 11, color: '#555', marginTop: 4 }}>Auto-generated from name. Only lowercase letters, numbers and hyphens.</div>
+            <div style={{ fontSize: 11, color: '#555', marginTop: 4 }}>Auto-generated. Lowercase letters, numbers and hyphens only.</div>
           </div>
           <div style={{ gridColumn: '1 / -1' }}>
             <label style={S.label}>Description</label>
-            <input style={S.input} value={form.description} onChange={e => f('description', e.target.value)} placeholder="Short description of this category" />
+            <input style={S.input} value={form.description} onChange={e => f('description', e.target.value)} placeholder="Short description" />
           </div>
           <div>
             <label style={S.label}>Sort Order</label>
-            <input style={S.input} type="number" value={form.sort_order} onChange={e => f('sort_order', e.target.value)} placeholder="0" />
+            <input style={S.input} type="number" value={form.sort_order} onChange={e => f('sort_order', e.target.value)} />
             <div style={{ fontSize: 11, color: '#555', marginTop: 4 }}>Lower number appears first.</div>
           </div>
           <div style={{ display: 'flex', alignItems: 'center', gap: 10, paddingTop: 20 }}>
@@ -485,7 +574,6 @@ function CategoryModal({ category, onClose, onSave }) {
             <input style={S.input} value={form.image_url} onChange={e => f('image_url', e.target.value)} placeholder="https://..." />
           </div>
         </div>
-
         <div style={{ display: 'flex', gap: 8, marginTop: 20 }}>
           <button onClick={handleSave} disabled={saving} style={{ ...S.btn, background: saving ? '#555' : '#C9A84C', color: '#000', opacity: saving ? 0.6 : 1 }}>
             {saving ? 'Saving...' : isNew ? 'Create Category' : 'Save Changes'}
@@ -516,19 +604,18 @@ export default function AdminPage() {
   const [period,      setPeriod]      = useState('month');
 
   const [selectedOrderId, setSelectedOrderId] = useState(null);
-  const [editProduct,     setEditProduct]     = useState(undefined); // undefined=closed, null=new, obj=edit
+  const [editProduct,     setEditProduct]     = useState(undefined);
   const [stockProduct,    setStockProduct]    = useState(null);
-  const [editCategory,    setEditCategory]    = useState(undefined); // undefined=closed, null=new, obj=edit
+  const [editCategory,    setEditCategory]    = useState(undefined);
 
   const searchTimeout = useRef(null);
 
-  const fetchOrders = useCallback(async (search = orderSearch, status = orderFilter) => {
+  const fetchOrders     = useCallback(async (search = orderSearch, status = orderFilter) => {
     const params = { status };
     if (search) params.search = search;
     const { data } = await apiFetch('orders', params);
     setOrders(data || []);
   }, [orderSearch, orderFilter]);
-
   const fetchProducts   = useCallback(async () => { const { data } = await apiFetch('products');             setProducts(data || []); }, []);
   const fetchCategories = useCallback(async () => { const { data } = await apiFetch('categories');           setCategories(data || []); }, []);
   const fetchAnalytics  = useCallback(async () => { const { data } = await apiFetch('analytics', { period }); setAnalytics(data); }, [period]);
@@ -569,7 +656,7 @@ export default function AdminPage() {
   });
 
   const handleDeleteCategory = async (cat) => {
-    if (!confirm(`Delete category "${cat.name}"?\n\nThis will fail if any products are still using this category.`)) return;
+    if (!confirm(`Delete category "${cat.name}"?\nThis will fail if products are still using it.`)) return;
     const result = await apiMutate('DELETE', { type: 'category', id: cat.id });
     if (result.error) { alert(result.error); return; }
     await fetchCategories();
@@ -605,7 +692,6 @@ export default function AdminPage() {
     <div style={{ minHeight: '100vh', background: '#0a0a0a', color: '#f0ede6' }}>
       <div style={S.page}>
 
-        {/* Header */}
         <div style={S.header}>
           <div>
             <div style={{ fontSize: 20, fontWeight: 800, color: '#C9A84C', letterSpacing: 3 }}>STARLORD</div>
@@ -621,15 +707,14 @@ export default function AdminPage() {
           </div>
         </div>
 
-        {/* Tabs */}
         <div style={S.tabs}>
           {[
-            { id: 'dashboard',  label: 'Dashboard'     },
-            { id: 'orders',     label: 'Orders'        },
-            { id: 'products',   label: 'Products'      },
-            { id: 'categories', label: 'Categories'    },
-            { id: 'analytics',  label: 'Analytics'     },
-            { id: 'logs',       label: 'Activity Log'  },
+            { id: 'dashboard',  label: 'Dashboard'    },
+            { id: 'orders',     label: 'Orders'       },
+            { id: 'products',   label: 'Products'     },
+            { id: 'categories', label: 'Categories'   },
+            { id: 'analytics',  label: 'Analytics'    },
+            { id: 'logs',       label: 'Activity Log' },
           ].map(t => (
             <button key={t.id} onClick={() => setTab(t.id)} style={{ ...S.tab, ...(tab === t.id ? S.tabActive : {}) }}>
               {t.label}
@@ -642,7 +727,7 @@ export default function AdminPage() {
 
         {loading && <div style={{ color: '#555', textAlign: 'center', padding: 60 }}>Loading...</div>}
 
-        {/* ── DASHBOARD ── */}
+        {/* DASHBOARD */}
         {!loading && tab === 'dashboard' && (
           <div>
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 12, marginBottom: 24 }}>
@@ -660,45 +745,43 @@ export default function AdminPage() {
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
               <div>
                 <div style={S.label}>Pending Orders</div>
-                {pendingOrders.length === 0 ? (
-                  <div style={{ color: '#555', fontSize: 13, padding: '20px 0' }}>No pending orders</div>
-                ) : pendingOrders.slice(0, 5).map(o => (
-                  <div key={o.id} onClick={() => setSelectedOrderId(o.id)}
-                    style={{ ...S.card, padding: '12px 14px', cursor: 'pointer', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                    <div>
-                      <div style={{ fontFamily: 'monospace', fontSize: 13, fontWeight: 800, color: '#C9A84C' }}>{o.reference}</div>
-                      <div style={{ fontSize: 11, color: '#666', marginTop: 2 }}>{o.customer_name} · {timeAgo(o.created_at)}</div>
+                {pendingOrders.length === 0
+                  ? <div style={{ color: '#555', fontSize: 13, padding: '20px 0' }}>No pending orders</div>
+                  : pendingOrders.slice(0, 5).map(o => (
+                    <div key={o.id} onClick={() => setSelectedOrderId(o.id)}
+                      style={{ ...S.card, padding: '12px 14px', cursor: 'pointer', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                      <div>
+                        <div style={{ fontFamily: 'monospace', fontSize: 13, fontWeight: 800, color: '#C9A84C' }}>{o.reference}</div>
+                        <div style={{ fontSize: 11, color: '#666', marginTop: 2 }}>{o.customer_name} · {timeAgo(o.created_at)}</div>
+                      </div>
+                      <div style={{ fontSize: 13, fontWeight: 800, color: '#fff' }}>{formatRWF(o.total)}</div>
                     </div>
-                    <div style={{ fontSize: 13, fontWeight: 800, color: '#fff' }}>{formatRWF(o.total)}</div>
-                  </div>
-                ))}
+                  ))}
               </div>
               <div>
                 <div style={S.label}>Low Stock Alerts</div>
-                {alerts.length === 0 ? (
-                  <div style={{ color: '#555', fontSize: 13, padding: '20px 0' }}>All products well stocked</div>
-                ) : alerts.map(p => (
-                  <div key={p.id} style={{ ...S.card, padding: '12px 14px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                    <div>
-                      <div style={{ fontSize: 13, fontWeight: 700, color: '#fff' }}>{p.name}</div>
-                      <div style={{ fontSize: 11, color: '#555', marginTop: 2 }}>{p.category}</div>
+                {alerts.length === 0
+                  ? <div style={{ color: '#555', fontSize: 13, padding: '20px 0' }}>All products well stocked</div>
+                  : alerts.map(p => (
+                    <div key={p.id} style={{ ...S.card, padding: '12px 14px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                      <div>
+                        <div style={{ fontSize: 13, fontWeight: 700, color: '#fff' }}>{p.name}</div>
+                        <div style={{ fontSize: 11, color: '#555', marginTop: 2 }}>{p.category}</div>
+                      </div>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                        <span style={{ fontSize: 13, fontWeight: 800, color: p.stock === 0 ? '#e05555' : '#C9A84C' }}>
+                          {p.stock === 0 ? 'OUT' : `${p.stock} left`}
+                        </span>
+                        <button onClick={() => setStockProduct(p)} style={{ ...S.btn, background: '#1c1c1c', color: '#888', border: '1px solid #2a2a2a', fontSize: 11 }}>Restock</button>
+                      </div>
                     </div>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                      <span style={{ fontSize: 13, fontWeight: 800, color: p.stock === 0 ? '#e05555' : '#C9A84C' }}>
-                        {p.stock === 0 ? 'OUT' : `${p.stock} left`}
-                      </span>
-                      <button onClick={() => setStockProduct(p)} style={{ ...S.btn, background: '#1c1c1c', color: '#888', border: '1px solid #2a2a2a', fontSize: 11 }}>
-                        Restock
-                      </button>
-                    </div>
-                  </div>
-                ))}
+                  ))}
               </div>
             </div>
           </div>
         )}
 
-        {/* ── ORDERS ── */}
+        {/* ORDERS */}
         {!loading && tab === 'orders' && (
           <div>
             <div style={{ display: 'flex', gap: 10, marginBottom: 16, flexWrap: 'wrap', alignItems: 'center' }}>
@@ -738,7 +821,7 @@ export default function AdminPage() {
           </div>
         )}
 
-        {/* ── PRODUCTS ── */}
+        {/* PRODUCTS */}
         {!loading && tab === 'products' && (
           <div>
             <div style={{ display: 'flex', gap: 8, marginBottom: 20, alignItems: 'center' }}>
@@ -749,30 +832,47 @@ export default function AdminPage() {
             </div>
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(340px, 1fr))', gap: 12 }}>
               {products.map(p => {
-                const low = p.stock <= 5 && p.stock > 0;
-                const out = p.stock === 0;
+                const low    = p.stock <= 5 && p.stock > 0;
+                const out    = p.stock === 0;
+                const thumb  = p.product_images?.[0]?.url;
+                const imgCnt = p.product_images?.length || 0;
                 return (
                   <div key={p.id} style={S.card}>
                     <div style={{ padding: '14px 16px' }}>
-                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 8 }}>
+                      <div style={{ display: 'flex', gap: 12, marginBottom: 10 }}>
+                        {thumb ? (
+                          <div style={{ position: 'relative', flexShrink: 0 }}>
+                            <img src={thumb} alt={p.name} style={{ width: 64, height: 64, objectFit: 'cover', borderRadius: 8, border: '1px solid #2a2a2a' }} />
+                            {imgCnt > 1 && (
+                              <div style={{ position: 'absolute', bottom: 2, right: 2, background: 'rgba(0,0,0,0.7)', borderRadius: 3, fontSize: 9, color: '#fff', padding: '1px 4px', fontWeight: 700 }}>
+                                +{imgCnt - 1}
+                              </div>
+                            )}
+                          </div>
+                        ) : (
+                          <div style={{ width: 64, height: 64, background: '#1c1c1c', borderRadius: 8, border: '1px solid #2a2a2a', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                            <span style={{ fontSize: 10, color: '#444' }}>No image</span>
+                          </div>
+                        )}
                         <div style={{ flex: 1 }}>
                           <div style={{ fontSize: 14, fontWeight: 700, color: '#fff', marginBottom: 2 }}>{p.name}</div>
-                          <div style={{ fontSize: 11, color: '#555', textTransform: 'uppercase', letterSpacing: 1 }}>{p.category}</div>
+                          <div style={{ fontSize: 11, color: '#555', textTransform: 'uppercase', letterSpacing: 1, marginBottom: 4 }}>{p.category}</div>
+                          <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                            <span style={{ fontSize: 14, fontWeight: 800, color: '#C9A84C' }}>{formatRWF(p.price)}</span>
+                            {p.badge && <span style={{ ...S.badge, background: '#C9A84C22', color: '#C9A84C' }}>{p.badge}</span>}
+                          </div>
                         </div>
-                        {p.badge && <span style={{ ...S.badge, background: '#C9A84C22', color: '#C9A84C', marginLeft: 8 }}>{p.badge}</span>}
                       </div>
-                      <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 10 }}>
-                        <span style={{ fontSize: 15, fontWeight: 800, color: '#C9A84C' }}>{formatRWF(p.price)}</span>
-                        {p.old_price && <span style={{ fontSize: 12, color: '#555', textDecoration: 'line-through' }}>{formatRWF(p.old_price)}</span>}
-                        <span style={{ fontSize: 12, fontWeight: 700, marginLeft: 'auto', color: out ? '#e05555' : low ? '#C9A84C' : '#4caf7d' }}>
+                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 10 }}>
+                        <span style={{ fontSize: 12, fontWeight: 700, color: out ? '#e05555' : low ? '#C9A84C' : '#4caf7d' }}>
                           {out ? 'Out of stock' : low ? `${p.stock} left` : `${p.stock} in stock`}
                         </span>
+                        {!p.is_active && (
+                          <span style={{ fontSize: 11, color: '#555', background: '#1c1c1c', padding: '3px 8px', borderRadius: 4 }}>HIDDEN</span>
+                        )}
                       </div>
-                      {!p.is_active && (
-                        <div style={{ fontSize: 11, color: '#555', background: '#1c1c1c', padding: '3px 8px', borderRadius: 4, marginBottom: 10, display: 'inline-block' }}>HIDDEN</div>
-                      )}
                       <div style={{ display: 'flex', gap: 6 }}>
-                        <button onClick={() => setEditProduct(p)} style={{ ...S.btn, background: '#1c1c1c', color: '#888', border: '1px solid #2a2a2a', flex: 1, justifyContent: 'center' }}>Edit</button>
+                        <button onClick={() => setEditProduct(p)}  style={{ ...S.btn, background: '#1c1c1c', color: '#888', border: '1px solid #2a2a2a', flex: 1, justifyContent: 'center' }}>Edit</button>
                         <button onClick={() => setStockProduct(p)} style={{ ...S.btn, background: '#1c1c1c', color: '#888', border: '1px solid #2a2a2a', flex: 1, justifyContent: 'center' }}>Stock</button>
                         <button onClick={() => handleDeleteProduct(p)} style={{ ...S.btn, background: '#2e1a1a', color: '#e05555', border: '1px solid #e0555533' }}>Delete</button>
                       </div>
@@ -784,7 +884,7 @@ export default function AdminPage() {
           </div>
         )}
 
-        {/* ── CATEGORIES ── */}
+        {/* CATEGORIES */}
         {!loading && tab === 'categories' && (
           <div>
             <div style={{ display: 'flex', gap: 8, marginBottom: 20, alignItems: 'center' }}>
@@ -793,29 +893,19 @@ export default function AdminPage() {
               </button>
               <span style={{ color: '#555', fontSize: 12, marginLeft: 'auto' }}>{categories.length} categories</span>
             </div>
-
-            {categories.length === 0 && (
-              <div style={{ color: '#555', textAlign: 'center', padding: 60 }}>No categories yet</div>
-            )}
-
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(320px, 1fr))', gap: 12 }}>
+            {categories.length === 0 && <div style={{ color: '#555', textAlign: 'center', padding: 60 }}>No categories yet</div>}
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))', gap: 12 }}>
               {categories.map(cat => (
                 <div key={cat.id} style={S.card}>
                   <div style={{ padding: '14px 16px' }}>
-                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 8 }}>
-                      <div style={{ flex: 1 }}>
-                        <div style={{ fontSize: 14, fontWeight: 700, color: '#fff', marginBottom: 2 }}>{cat.name}</div>
-                        <div style={{ fontSize: 11, color: '#555', fontFamily: 'monospace', marginBottom: 4 }}>/{cat.slug}</div>
-                        {cat.description && (
-                          <div style={{ fontSize: 12, color: '#666', marginBottom: 4 }}>{cat.description}</div>
-                        )}
-                        <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
-                          <span style={{ fontSize: 11, color: '#555' }}>Order: {cat.sort_order}</span>
-                          <span style={{ ...S.badge, background: cat.is_active ? '#4caf7d22' : '#1c1c1c', color: cat.is_active ? '#4caf7d' : '#555' }}>
-                            {cat.is_active ? 'Active' : 'Hidden'}
-                          </span>
-                        </div>
-                      </div>
+                    <div style={{ fontSize: 14, fontWeight: 700, color: '#fff', marginBottom: 2 }}>{cat.name}</div>
+                    <div style={{ fontSize: 11, color: '#555', fontFamily: 'monospace', marginBottom: 4 }}>/{cat.slug}</div>
+                    {cat.description && <div style={{ fontSize: 12, color: '#666', marginBottom: 8 }}>{cat.description}</div>}
+                    <div style={{ display: 'flex', gap: 8, alignItems: 'center', marginBottom: 12 }}>
+                      <span style={{ fontSize: 11, color: '#555' }}>Order: {cat.sort_order}</span>
+                      <span style={{ ...S.badge, background: cat.is_active ? '#4caf7d22' : '#1c1c1c', color: cat.is_active ? '#4caf7d' : '#555' }}>
+                        {cat.is_active ? 'Active' : 'Hidden'}
+                      </span>
                     </div>
                     <div style={{ display: 'flex', gap: 6 }}>
                       <button onClick={() => setEditCategory(cat)} style={{ ...S.btn, background: '#1c1c1c', color: '#888', border: '1px solid #2a2a2a', flex: 1, justifyContent: 'center' }}>Edit</button>
@@ -828,7 +918,7 @@ export default function AdminPage() {
           </div>
         )}
 
-        {/* ── ANALYTICS ── */}
+        {/* ANALYTICS */}
         {!loading && tab === 'analytics' && (
           <div>
             <div style={{ display: 'flex', gap: 8, marginBottom: 20 }}>
@@ -880,7 +970,7 @@ export default function AdminPage() {
           </div>
         )}
 
-        {/* ── ACTIVITY LOG ── */}
+        {/* ACTIVITY LOG */}
         {!loading && tab === 'logs' && (
           <div>
             <div style={{ fontSize: 11, color: '#555', marginBottom: 16, letterSpacing: 1 }}>{logs.length} entries — most recent first</div>
@@ -920,7 +1010,6 @@ export default function AdminPage() {
 
       </div>
 
-      {/* Modals */}
       {selectedOrderId && (
         <OrderModal orderId={selectedOrderId} onClose={() => setSelectedOrderId(null)} onStatusChange={() => fetchOrders()} />
       )}

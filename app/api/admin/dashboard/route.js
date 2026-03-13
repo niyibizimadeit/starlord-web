@@ -52,8 +52,24 @@ export async function GET(request) {
   if (type === 'products') {
     const { data, error } = await supabase
       .from('products')
-      .select('*')
+      .select(`*, product_images(id, url, sort_order)`)
       .order('created_at', { ascending: false });
+    if (error) return Response.json({ error: error.message }, { status: 500 });
+    // Sort images by sort_order for each product
+    const sorted = data?.map(p => ({
+      ...p,
+      product_images: (p.product_images || []).sort((a, b) => a.sort_order - b.sort_order),
+    }));
+    return Response.json({ data: sorted });
+  }
+
+  if (type === 'product_images') {
+    const productId = searchParams.get('productId');
+    const { data, error } = await supabase
+      .from('product_images')
+      .select('*')
+      .eq('product_id', productId)
+      .order('sort_order', { ascending: true });
     if (error) return Response.json({ error: error.message }, { status: 500 });
     return Response.json({ data });
   }
@@ -122,8 +138,8 @@ export async function GET(request) {
     return Response.json({
       data: {
         revenue, totalOrders: active.length, paidOrders: paid.length, avg,
-        delivered:  statusCounts.delivered || 0,
-        pending:    statusCounts.pending   || 0,
+        delivered:  statusCounts.delivered  || 0,
+        pending:    statusCounts.pending    || 0,
         dispatched: statusCounts.dispatched || 0,
         cancelled:  orders?.filter(o => o.status === 'cancelled').length || 0,
         statusCounts, topProducts, dailyRevenue,
@@ -163,14 +179,12 @@ export async function POST(request) {
   const body     = await request.json();
   const supabase = createServiceClient();
 
-  // ── create category ──
   if (body.type === 'category') {
     const slug = body.slug || body.name.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '');
     const { data, error } = await supabase
       .from('categories')
       .insert([{
-        name:        body.name,
-        slug,
+        name: body.name, slug,
         description: body.description || '',
         image_url:   body.image_url   || null,
         is_active:   body.is_active   ?? true,
@@ -183,7 +197,7 @@ export async function POST(request) {
     return Response.json({ data });
   }
 
-  // ── create product ──
+  // create product
   const { data, error } = await supabase
     .from('products')
     .insert([{
@@ -193,8 +207,8 @@ export async function POST(request) {
       price:       parseInt(body.price),
       old_price:   body.old_price ? parseInt(body.old_price) : null,
       stock:       parseInt(body.stock),
-      image_url:   body.image_url || null,
-      badge:       body.badge     || null,
+      image_url:   null, // deprecated — images now in product_images table
+      badge:       body.badge || null,
       is_active:   true,
     }])
     .select()
@@ -227,12 +241,11 @@ export async function PATCH(request) {
   if (body.type === 'product') {
     const { data: existing } = await supabase.from('products').select('name, price, stock, is_active').eq('id', body.id).single();
     const updates = { price: parseInt(body.price), stock: parseInt(body.stock), is_active: body.is_active };
-    if (body.name)                      updates.name        = body.name;
-    if (body.description !== undefined) updates.description = body.description;
-    if (body.category)                  updates.category    = body.category;
-    if (body.image_url   !== undefined) updates.image_url   = body.image_url;
-    if (body.badge       !== undefined) updates.badge       = body.badge;
-    if (body.old_price   !== undefined) updates.old_price   = body.old_price ? parseInt(body.old_price) : null;
+    if (body.name                      !== undefined) updates.name        = body.name;
+    if (body.description               !== undefined) updates.description = body.description;
+    if (body.category                  !== undefined) updates.category    = body.category;
+    if (body.badge                     !== undefined) updates.badge       = body.badge;
+    if (body.old_price                 !== undefined) updates.old_price   = body.old_price ? parseInt(body.old_price) : null;
     const { error } = await supabase.from('products').update(updates).eq('id', body.id);
     if (error) return Response.json({ error: error.message }, { status: 500 });
     const changes = {};
@@ -281,7 +294,6 @@ export async function DELETE(request) {
   const supabase = createServiceClient();
 
   if (body.type === 'category') {
-    // Safety check — don't delete if products are using this category
     const { data: existing } = await supabase.from('categories').select('name, slug').eq('id', body.id).single();
     const { count } = await supabase.from('products').select('id', { count: 'exact', head: true }).eq('category', existing?.slug);
     if (count > 0) {
@@ -293,8 +305,15 @@ export async function DELETE(request) {
     return Response.json({ success: true });
   }
 
-  // Default: delete product
+  // delete product — also removes images from storage
   const { data: existing } = await supabase.from('products').select('name').eq('id', body.id).single();
+  const { data: images }   = await supabase.from('product_images').select('url').eq('product_id', body.id);
+  if (images?.length > 0) {
+    const paths = images
+      .map(img => img.url.split('/storage/v1/object/public/products/')[1])
+      .filter(Boolean);
+    if (paths.length > 0) await supabase.storage.from('products').remove(paths);
+  }
   const { error } = await supabase.from('products').delete().eq('id', body.id);
   if (error) return Response.json({ error: error.message }, { status: 500 });
   await log(supabase, 'PRODUCT_DELETED', 'product', body.id, existing?.name, {});
