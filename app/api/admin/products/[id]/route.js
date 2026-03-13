@@ -53,16 +53,9 @@ export async function PATCH(request, { params }) {
     if (description !== undefined) updates.description = description.slice(0, 2000);
     if (price !== undefined) updates.price = Math.max(0, Math.floor(price));
     if (stock !== undefined) updates.stock = Math.max(0, Math.floor(stock));
-    if (category !== undefined) {
-      const validCategories = ['Tech', 'Fashion'];
-      if (!validCategories.includes(category)) {
-        return Response.json(
-          { error: `Invalid category. Valid values: ${validCategories.join(', ')}` },
-          { status: 400 }
-        );
+      if (category !== undefined) {
+        updates.category = category;
       }
-      updates.category = category;
-    }
     if (imageUrl !== undefined) updates.image_url = imageUrl;
     if (badge !== undefined) {
       if (badge && !['HOT', 'NEW', 'SALE'].includes(badge)) {

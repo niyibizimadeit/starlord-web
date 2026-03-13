@@ -51,14 +51,7 @@ export async function POST(request) {
       );
     }
 
-    // Validate category
-    const validCategories = ['Tech', 'Fashion'];
-    if (!validCategories.includes(category)) {
-      return Response.json(
-        { error: `Invalid category. Valid values: ${validCategories.join(', ')}` },
-        { status: 400 }
-      );
-    }
+    // Category validation removed - now uses DB categories
 
     // Validate badge if provided
     if (badge && !['HOT', 'NEW', 'SALE'].includes(badge)) {
