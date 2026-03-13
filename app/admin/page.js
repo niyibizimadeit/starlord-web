@@ -471,11 +471,11 @@ export default function AdminPage() {
 
         <div style={S.tabs}>
           {[
-            { id: 'dashboard', label: '📊 Dashboard' },
-            { id: 'orders',    label: '📦 Orders' },
-            { id: 'products',  label: '🛍️ Products' },
-            { id: 'analytics', label: '📈 Analytics' },
-            { id: 'logs',      label: '📋 Activity Log' },
+{ id: 'dashboard', label: 'Dashboard' },
+{ id: 'orders',    label: 'Orders' },
+{ id: 'products',  label: 'Products' },
+{ id: 'analytics', label: 'Analytics' },
+{ id: 'logs',      label: 'Activity Log' },
           ].map(t => (
             <button key={t.id} onClick={() => setTab(t.id)} style={{ ...S.tab, ...(tab === t.id ? S.tabActive : {}) }}>
               {t.label}
