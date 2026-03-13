@@ -79,3 +79,50 @@ export async function PATCH(request) {
 
   return Response.json({ error: 'Invalid type' }, { status: 400 });
 }
+export async function POST(request) {
+    const { searchParams } = new URL(request.url);
+    const secret = searchParams.get('secret');
+    if (secret !== process.env.ADMIN_SECRET) {
+      return Response.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+  
+    const body = await request.json();
+    const supabase = createServiceClient();
+  
+    const { data, error } = await supabase
+      .from('products')
+      .insert([{
+        name:        body.name,
+        description: body.description,
+        category:    body.category,
+        price:       parseInt(body.price),
+        stock:       parseInt(body.stock),
+        image_url:   body.image_url || null,
+        badge:       body.badge || null,
+        is_active:   true,
+      }])
+      .select()
+      .single();
+  
+    if (error) return Response.json({ error: error.message }, { status: 500 });
+    return Response.json({ data });
+  }
+  
+  export async function DELETE(request) {
+    const { searchParams } = new URL(request.url);
+    const secret = searchParams.get('secret');
+    if (secret !== process.env.ADMIN_SECRET) {
+      return Response.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+  
+    const { id } = await request.json();
+    const supabase = createServiceClient();
+  
+    const { error } = await supabase
+      .from('products')
+      .delete()
+      .eq('id', id);
+  
+    if (error) return Response.json({ error: error.message }, { status: 500 });
+    return Response.json({ success: true });
+  }
