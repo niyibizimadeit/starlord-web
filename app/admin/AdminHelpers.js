@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useRef } from 'react';
+import { useState, useRef } from 'react';
 
 export const ADMIN_SECRET = 'starlord2024admin';
 const SITE_URL = 'https://starlordweb2-y9jldvw8c-niyibizimadeits-projects.vercel.app';
@@ -27,7 +27,7 @@ export const STATUS_COLOR = {
   dispatched: '#9B59B6', delivered: '#4caf7d', cancelled: '#e05555', stock_conflict: '#e05555',
 };
 export const NEXT_STATUS = { pending: 'confirmed', confirmed: 'preparing', preparing: 'dispatched', dispatched: 'delivered' };
-export const LOG_ICONS = { ORDER_STATUS_CHANGED: '↺', PRODUCT_CREATED: '+', PRODUCT_UPDATED: '✎', PRODUCT_DELETED: '✕', STOCK_ADJUSTED: '▲', CATEGORY_CREATED: '+', CATEGORY_UPDATED: '✎', CATEGORY_DELETED: '✕' };
+export const LOG_ICONS = { ORDER_STATUS_CHANGED: '↺', PRODUCT_CREATED: '+', PRODUCT_UPDATED: '✎', PRODUCT_DELETED: '✕', STOCK_ADJUSTED: '▲', CATEGORY_CREATED: '+', CATEGORY_UPDATED: '✎', CATEGORY_DELETED: '✕', SETTINGS_UPDATED: '⚙' };
 
 export const S = {
   page:      { maxWidth: 1200, margin: '0 auto', padding: '24px 20px', fontFamily: "'Georgia', serif" },
@@ -67,8 +67,7 @@ export function downloadCSV(rows, filename) {
 export function printRevenueReport(data, period) {
   const w = window.open('', '_blank');
   w.document.write(`<!DOCTYPE html><html><head><title>STARLORD Revenue Report</title>
-  <style>body{font-family:Arial,sans-serif;padding:40px;max-width:800px;margin:0 auto;}h1{font-size:28px;color:#C9A84C;letter-spacing:4px;margin:0 0 4px;}.sub{font-size:12px;color:#888;margin:0 0 30px;letter-spacing:2px;}.grid{display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:16px;margin:24px 0;}.stat{border:1px solid #ddd;border-radius:8px;padding:16px;}.stat-val{font-size:20px;font-weight:800;color:#C9A84C;}.stat-lbl{font-size:11px;color:#666;text-transform:uppercase;letter-spacing:1px;margin-top:4px;}table{width:100%;border-collapse:collapse;margin-top:24px;font-size:13px;}th{background:#f5f5f5;padding:10px 12px;text-align:left;font-size:11px;letter-spacing:1px;text-transform:uppercase;border-bottom:2px solid #ddd;}td{padding:10px 12px;border-bottom:1px solid #eee;}.footer{margin-top:40px;padding-top:20px;border-top:1px solid #ddd;font-size:11px;color:#aaa;}@media print{button{display:none;}}</style>
-  </head><body>
+  <style>body{font-family:Arial,sans-serif;padding:40px;max-width:800px;margin:0 auto;}h1{font-size:28px;color:#C9A84C;letter-spacing:4px;margin:0 0 4px;}.sub{font-size:12px;color:#888;margin:0 0 30px;letter-spacing:2px;}.grid{display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:16px;margin:24px 0;}.stat{border:1px solid #ddd;border-radius:8px;padding:16px;}.stat-val{font-size:20px;font-weight:800;color:#C9A84C;}.stat-lbl{font-size:11px;color:#666;text-transform:uppercase;letter-spacing:1px;margin-top:4px;}table{width:100%;border-collapse:collapse;margin-top:24px;font-size:13px;}th{background:#f5f5f5;padding:10px 12px;text-align:left;font-size:11px;letter-spacing:1px;text-transform:uppercase;border-bottom:2px solid #ddd;}td{padding:10px 12px;border-bottom:1px solid #eee;}.footer{margin-top:40px;padding-top:20px;border-top:1px solid #ddd;font-size:11px;color:#aaa;}@media print{button{display:none;}}</style></head><body>
   <h1>STARLORD GROUP</h1><p class="sub">CHIC Building Ground Floor, Nyarugenge, Kigali · +250 788 678 590</p>
   <div style="font-size:16px;font-weight:bold;margin-bottom:20px;">Revenue Report — ${period.toUpperCase()}</div>
   <div class="grid">
@@ -77,12 +76,10 @@ export function printRevenueReport(data, period) {
     <div class="stat"><div class="stat-val">RWF ${Number(data.avg||0).toLocaleString()}</div><div class="stat-lbl">Avg Order</div></div>
     <div class="stat"><div class="stat-val">${data.delivered||0}</div><div class="stat-lbl">Delivered</div></div>
   </div>
-  <h3>Top Products</h3>
-  <table><thead><tr><th>#</th><th>Product</th><th>Units Sold</th><th>Revenue</th></tr></thead><tbody>
+  <h3>Top Products</h3><table><thead><tr><th>#</th><th>Product</th><th>Units</th><th>Revenue</th></tr></thead><tbody>
   ${(data.topProducts||[]).map((p,i)=>`<tr><td>${i+1}</td><td>${p.name}</td><td>${p.qty}</td><td>RWF ${Number(p.revenue).toLocaleString()}</td></tr>`).join('')}
   </tbody></table>
-  <h3>Daily Revenue (Last 14 Days)</h3>
-  <table><thead><tr><th>Date</th><th>Revenue (RWF)</th></tr></thead><tbody>
+  <h3>Daily Revenue (Last 14 Days)</h3><table><thead><tr><th>Date</th><th>Revenue (RWF)</th></tr></thead><tbody>
   ${(data.dailyRevenue||[]).map(d=>`<tr><td>${d.date}</td><td>${Number(d.total).toLocaleString()}</td></tr>`).join('')}
   </tbody></table>
   <div class="footer">Generated ${new Date().toLocaleString('en-RW')} · STARLORD GROUP Admin Panel</div>
@@ -107,7 +104,6 @@ export function printShippingLabel(order) {
   w.document.close();
 }
 
-// ─── Shared UI ────────────────────────────────────────────────────────────────
 export function StatCard({ label, value, sub, gold, alert }) {
   return (
     <div style={{ background: '#141414', border: `1px solid ${alert ? '#e05555' : gold ? '#C9A84C44' : '#2a2a2a'}`, borderRadius: 14, padding: '18px 20px' }}>
@@ -207,14 +203,12 @@ export function StockModal({ product, onClose, onSave }) {
   const [reason,     setReason]     = useState('');
   const [saving,     setSaving]     = useState(false);
   const preview = Math.max(0, (product?.stock || 0) + parseInt(adjustment || 0));
-
   const handleSave = async () => {
     if (!adjustment || parseInt(adjustment) === 0) { alert('Enter a non-zero adjustment'); return; }
     setSaving(true);
     await apiMutate('PATCH', { type: 'stock_adjust', id: product.id, adjustment: parseInt(adjustment), reason });
     setSaving(false); await onSave(); onClose();
   };
-
   return (
     <div style={S.modal} onClick={e => e.target === e.currentTarget && onClose()}>
       <div style={{ ...S.modalBox, maxWidth: 420 }}>
@@ -255,7 +249,6 @@ export function CategoryModal({ category, onClose, onSave }) {
   });
   const f = (k, v) => setForm(p => ({ ...p, [k]: v }));
   const handleNameChange = (val) => { f('name', val); if (isNew) f('slug', toSlug(val)); };
-
   const handleSave = async () => {
     if (!form.name.trim() || !form.slug.trim()) { setError('Name and slug are required'); return; }
     setError(''); setSaving(true);
@@ -264,7 +257,6 @@ export function CategoryModal({ category, onClose, onSave }) {
     if (result.error) { setError(result.error); return; }
     await onSave(); onClose();
   };
-
   return (
     <div style={S.modal} onClick={e => e.target === e.currentTarget && onClose()}>
       <div style={{ ...S.modalBox, maxWidth: 500 }}>

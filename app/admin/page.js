@@ -11,21 +11,16 @@ import {
 
 // ─── Order Modal ──────────────────────────────────────────────────────────────
 function OrderModal({ orderId, onClose, onStatusChange }) {
-  const [order,    setOrder]    = useState(null);
-  const [loading,  setLoading]  = useState(true);
+  const [order, setOrder]       = useState(null);
+  const [loading, setLoading]   = useState(true);
   const [updating, setUpdating] = useState(false);
-
-  useEffect(() => {
-    apiFetch('order_detail', { id: orderId }).then(({ data }) => { setOrder(data); setLoading(false); });
-  }, [orderId]);
-
+  useEffect(() => { apiFetch('order_detail', { id: orderId }).then(({ data }) => { setOrder(data); setLoading(false); }); }, [orderId]);
   const handleStatus = async (status) => {
     setUpdating(true);
     await apiMutate('PATCH', { type: 'order_status', id: orderId, status });
     const { data } = await apiFetch('order_detail', { id: orderId });
     setOrder(data); setUpdating(false); onStatusChange();
   };
-
   return (
     <div style={S.modal} onClick={e => e.target === e.currentTarget && onClose()}>
       <div style={S.modalBox}>
@@ -42,11 +37,7 @@ function OrderModal({ orderId, onClose, onStatusChange }) {
               <button onClick={onClose} style={{ ...S.btn, background: '#1c1c1c', color: '#888', border: '1px solid #2a2a2a', fontSize: 16, padding: '6px 12px' }}>✕</button>
             </div>
           </div>
-
-          <button onClick={() => printShippingLabel(order)} style={{ ...S.btn, background: '#1c2a1a', color: '#4caf7d', border: '1px solid #4caf7d33', marginBottom: 16 }}>
-            Print Shipping Label
-          </button>
-
+          <button onClick={() => printShippingLabel(order)} style={{ ...S.btn, background: '#1c2a1a', color: '#4caf7d', border: '1px solid #4caf7d33', marginBottom: 16 }}>Print Shipping Label</button>
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12, marginBottom: 16 }}>
             <div style={{ background: '#0a0a0a', borderRadius: 10, padding: 14 }}>
               <div style={S.label}>Customer</div>
@@ -58,7 +49,6 @@ function OrderModal({ orderId, onClose, onStatusChange }) {
               <div style={{ fontSize: 13, color: '#ccc', lineHeight: 1.5 }}>{order.delivery_address}</div>
             </div>
           </div>
-
           <div style={{ marginBottom: 16 }}>
             <div style={S.label}>Items</div>
             {order.order_items?.map((item, i) => (
@@ -73,39 +63,22 @@ function OrderModal({ orderId, onClose, onStatusChange }) {
                 </div>
               </div>
             ))}
-            <div style={{ display: 'flex', justifyContent: 'space-between', padding: '8px 0', borderBottom: '1px solid #1c1c1c' }}>
-              <span style={{ fontSize: 12, color: '#666' }}>Subtotal</span><span style={{ fontSize: 12, color: '#ccc' }}>{formatRWF(order.subtotal)}</span>
-            </div>
-            <div style={{ display: 'flex', justifyContent: 'space-between', padding: '8px 0', borderBottom: '1px solid #1c1c1c' }}>
-              <span style={{ fontSize: 12, color: '#666' }}>Delivery</span><span style={{ fontSize: 12, color: '#ccc' }}>{formatRWF(order.delivery_fee)}</span>
-            </div>
-            <div style={{ display: 'flex', justifyContent: 'space-between', padding: '10px 0' }}>
-              <span style={{ fontSize: 14, fontWeight: 800, color: '#fff' }}>Total</span>
-              <span style={{ fontSize: 14, fontWeight: 800, color: '#C9A84C' }}>{formatRWF(order.total)}</span>
-            </div>
+            <div style={{ display: 'flex', justifyContent: 'space-between', padding: '8px 0', borderBottom: '1px solid #1c1c1c' }}><span style={{ fontSize: 12, color: '#666' }}>Subtotal</span><span style={{ fontSize: 12, color: '#ccc' }}>{formatRWF(order.subtotal)}</span></div>
+            <div style={{ display: 'flex', justifyContent: 'space-between', padding: '8px 0', borderBottom: '1px solid #1c1c1c' }}><span style={{ fontSize: 12, color: '#666' }}>Delivery</span><span style={{ fontSize: 12, color: '#ccc' }}>{formatRWF(order.delivery_fee)}</span></div>
+            <div style={{ display: 'flex', justifyContent: 'space-between', padding: '10px 0' }}><span style={{ fontSize: 14, fontWeight: 800, color: '#fff' }}>Total</span><span style={{ fontSize: 14, fontWeight: 800, color: '#C9A84C' }}>{formatRWF(order.total)}</span></div>
           </div>
-
           <div style={{ background: '#0a0a0a', borderRadius: 10, padding: 14, marginBottom: 16, display: 'flex', gap: 24 }}>
             <div><div style={S.label}>Payment</div><div style={{ fontSize: 13, color: '#fff', fontWeight: 600, textTransform: 'capitalize' }}>{order.payment_method || '—'}</div></div>
-            <div>
-              <div style={S.label}>Status</div>
-              <span style={{ ...S.badge, background: order.payment_status === 'paid' ? '#4caf7d22' : '#C9A84C22', color: order.payment_status === 'paid' ? '#4caf7d' : '#C9A84C' }}>
-                {(order.payment_status || 'pending').toUpperCase()}
-              </span>
-            </div>
+            <div><div style={S.label}>Status</div><span style={{ ...S.badge, background: order.payment_status === 'paid' ? '#4caf7d22' : '#C9A84C22', color: order.payment_status === 'paid' ? '#4caf7d' : '#C9A84C' }}>{(order.payment_status || 'pending').toUpperCase()}</span></div>
           </div>
-
           {NEXT_STATUS[order.status] && (
             <div style={{ display: 'flex', gap: 8, marginBottom: 16, flexWrap: 'wrap' }}>
-              <button disabled={updating} onClick={() => handleStatus(NEXT_STATUS[order.status])} style={{ ...S.btn, background: '#C9A84C', color: '#000' }}>
-                {updating ? '...' : `Mark as ${NEXT_STATUS[order.status]}`}
-              </button>
+              <button disabled={updating} onClick={() => handleStatus(NEXT_STATUS[order.status])} style={{ ...S.btn, background: '#C9A84C', color: '#000' }}>{updating ? '...' : `Mark as ${NEXT_STATUS[order.status]}`}</button>
               <button disabled={updating} onClick={() => handleStatus('cancelled')} style={{ ...S.btn, background: '#2e1a1a', color: '#e05555', border: '1px solid #e05555' }}>Cancel</button>
               <a href={`tel:${order.customer_phone}`} style={{ ...S.btn, background: '#1c1c1c', color: '#888', border: '1px solid #2a2a2a', textDecoration: 'none' }}>Call</a>
               <a href={`https://wa.me/${order.customer_phone?.replace(/\D/g, '')}`} target="_blank" rel="noreferrer" style={{ ...S.btn, background: '#1c1c1c', color: '#888', border: '1px solid #2a2a2a', textDecoration: 'none' }}>WhatsApp</a>
             </div>
           )}
-
           {order.logs?.length > 0 && (
             <div>
               <div style={S.label}>Activity Timeline</div>
@@ -142,7 +115,6 @@ function ProductModal({ product, categories, onClose, onSave }) {
     badge: product?.badge || '', is_active: product?.is_active ?? true,
   });
   const f = (k, v) => setForm(p => ({ ...p, [k]: v }));
-
   const handleSave = async () => {
     if (!form.name.trim() || !form.price || !form.stock) { setError('Name, price and stock are required'); return; }
     setError(''); setSaving(true);
@@ -155,11 +127,8 @@ function ProductModal({ product, categories, onClose, onSave }) {
       result = await apiMutate('PATCH', { type: 'product', id: savedId || product.id, ...form });
       if (result.error) { setError(result.error); setSaving(false); return; }
     }
-    setSaving(false);
-    await onSave();
-    if (!isNew) onClose();
+    setSaving(false); await onSave(); if (!isNew) onClose();
   };
-
   return (
     <div style={S.modal} onClick={e => e.target === e.currentTarget && onClose()}>
       <div style={S.modalBox}>
@@ -168,17 +137,11 @@ function ProductModal({ product, categories, onClose, onSave }) {
           <button onClick={onClose} style={{ ...S.btn, background: '#1c1c1c', color: '#888', border: '1px solid #2a2a2a', fontSize: 16, padding: '6px 12px' }}>✕</button>
         </div>
         {error && <div style={{ background: '#2e1a1a', border: '1px solid #e05555', borderRadius: 8, padding: '10px 14px', marginBottom: 16, fontSize: 13, color: '#e05555' }}>{error}</div>}
-
         {(!isNew || !savedId) && (
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 14, marginBottom: 20 }}>
             <div style={{ gridColumn: '1 / -1' }}><label style={S.label}>Name *</label><input style={S.input} value={form.name} onChange={e => f('name', e.target.value)} placeholder="e.g. iPhone 15 Pro Case" /></div>
-            <div style={{ gridColumn: '1 / -1' }}><label style={S.label}>Description</label><input style={S.input} value={form.description} onChange={e => f('description', e.target.value)} placeholder="Short description" /></div>
-            <div>
-              <label style={S.label}>Category</label>
-              <select style={{ ...S.input, cursor: 'pointer' }} value={form.category} onChange={e => f('category', e.target.value)}>
-                {categories?.map(c => <option key={c.id} value={c.slug}>{c.name}</option>)}
-              </select>
-            </div>
+            <div style={{ gridColumn: '1 / -1' }}><label style={S.label}>Description</label><input style={S.input} value={form.description} onChange={e => f('description', e.target.value)} /></div>
+            <div><label style={S.label}>Category</label><select style={{ ...S.input, cursor: 'pointer' }} value={form.category} onChange={e => f('category', e.target.value)}>{categories?.map(c => <option key={c.id} value={c.slug}>{c.name}</option>)}</select></div>
             <div><label style={S.label}>Badge</label><input style={S.input} value={form.badge} onChange={e => f('badge', e.target.value)} placeholder="e.g. New, Sale" /></div>
             <div><label style={S.label}>Price (RWF) *</label><input style={S.input} type="number" value={form.price} onChange={e => f('price', e.target.value)} /></div>
             <div><label style={S.label}>Old Price (RWF)</label><input style={S.input} type="number" value={form.old_price} onChange={e => f('old_price', e.target.value)} /></div>
@@ -189,19 +152,9 @@ function ProductModal({ product, categories, onClose, onSave }) {
             </div>
           </div>
         )}
-
-        {(!isNew || savedId) && (
-          <div style={{ marginBottom: 20 }}>
-            <ImageUploader productId={savedId || product?.id} images={images} onImagesChange={setImages} />
-          </div>
-        )}
-
+        {(!isNew || savedId) && <div style={{ marginBottom: 20 }}><ImageUploader productId={savedId || product?.id} images={images} onImagesChange={setImages} /></div>}
         <div style={{ display: 'flex', gap: 8 }}>
-          {(!isNew || !savedId) && (
-            <button onClick={handleSave} disabled={saving} style={{ ...S.btn, background: saving ? '#555' : '#C9A84C', color: '#000', opacity: saving ? 0.6 : 1 }}>
-              {saving ? 'Saving...' : isNew ? 'Save & Add Images' : 'Save Changes'}
-            </button>
-          )}
+          {(!isNew || !savedId) && <button onClick={handleSave} disabled={saving} style={{ ...S.btn, background: saving ? '#555' : '#C9A84C', color: '#000', opacity: saving ? 0.6 : 1 }}>{saving ? 'Saving...' : isNew ? 'Save & Add Images' : 'Save Changes'}</button>}
           {isNew && savedId && <button onClick={async () => { await onSave(); onClose(); }} style={{ ...S.btn, background: '#C9A84C', color: '#000' }}>Done</button>}
           <button onClick={onClose} style={{ ...S.btn, background: '#1c1c1c', color: '#888', border: '1px solid #2a2a2a' }}>{isNew && savedId ? 'Close' : 'Cancel'}</button>
         </div>
@@ -214,11 +167,7 @@ function ProductModal({ product, categories, onClose, onSave }) {
 function UserModal({ userId, onClose }) {
   const [user,    setUser]    = useState(null);
   const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    apiFetch('user_detail', { id: userId }).then(({ data }) => { setUser(data); setLoading(false); });
-  }, [userId]);
-
+  useEffect(() => { apiFetch('user_detail', { id: userId }).then(({ data }) => { setUser(data); setLoading(false); }); }, [userId]);
   return (
     <div style={S.modal} onClick={e => e.target === e.currentTarget && onClose()}>
       <div style={S.modalBox}>
@@ -234,9 +183,9 @@ function UserModal({ userId, onClose }) {
             <button onClick={onClose} style={{ ...S.btn, background: '#1c1c1c', color: '#888', border: '1px solid #2a2a2a', fontSize: 16, padding: '6px 12px' }}>✕</button>
           </div>
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 12, marginBottom: 20 }}>
-            <StatCard label="Orders"    value={user.order_count || 0} />
-            <StatCard label="Spent"     value={formatRWF(user.total_spent)} gold />
-            <StatCard label="Since"     value={new Date(user.created_at).toLocaleDateString('en-RW', { month: 'short', year: 'numeric' })} />
+            <StatCard label="Orders" value={user.order_count || 0} />
+            <StatCard label="Spent"  value={formatRWF(user.total_spent)} gold />
+            <StatCard label="Since"  value={new Date(user.created_at).toLocaleDateString('en-RW', { month: 'short', year: 'numeric' })} />
           </div>
           <div style={S.label}>Order History</div>
           {user.orders?.length === 0 && <div style={{ color: '#555', fontSize: 13, padding: '16px 0' }}>No orders yet</div>}
@@ -273,13 +222,20 @@ export default function AdminPage() {
   const [alerts,     setAlerts]     = useState([]);
   const [users,      setUsers]      = useState([]);
   const [segments,   setSegments]   = useState(null);
+  const [settings,   setSettings]   = useState({});
 
-  const [orderSearch,   setOrderSearch]   = useState('');
-  const [orderFilter,   setOrderFilter]   = useState('all');
-  const [period,        setPeriod]        = useState('month');
-  const [reportPeriod,  setReportPeriod]  = useState('month');
-  const [userSearch,    setUserSearch]    = useState('');
-  const [segmentTab,    setSegmentTab]    = useState('high_value');
+  const [orderSearch,  setOrderSearch]  = useState('');
+  const [orderFilter,  setOrderFilter]  = useState('all');
+  const [period,       setPeriod]       = useState('month');
+  const [reportPeriod, setReportPeriod] = useState('month');
+  const [userSearch,   setUserSearch]   = useState('');
+  const [segmentTab,   setSegmentTab]   = useState('high_value');
+
+  // Settings form state
+  const [settingsForm,  setSettingsForm]  = useState({});
+  const [settingsSaved, setSettingsSaved] = useState(false);
+  const [syncMsg,       setSyncMsg]       = useState('');
+  const [syncing,       setSyncing]       = useState(false);
 
   const [selectedOrderId, setSelectedOrderId] = useState(null);
   const [editProduct,     setEditProduct]     = useState(undefined);
@@ -303,7 +259,11 @@ export default function AdminPage() {
     const p = {}; if (search) p.search = search;
     const { data } = await apiFetch('users', p); setUsers(data || []);
   }, [userSearch]);
-  const fetchSegments   = useCallback(async () => { const { data } = await apiFetch('segments'); setSegments(data); }, []);
+  const fetchSegments = useCallback(async () => { const { data } = await apiFetch('segments'); setSegments(data); }, []);
+  const fetchSettings = useCallback(async () => {
+    const { data } = await apiFetch('settings');
+    setSettings(data || {}); setSettingsForm(data || {});
+  }, []);
 
   const loadTab = async () => {
     setLoading(true);
@@ -316,6 +276,7 @@ export default function AdminPage() {
     else if (tab === 'users')      await fetchUsers();
     else if (tab === 'segments')   await fetchSegments();
     else if (tab === 'logs')       await fetchLogs();
+    else if (tab === 'settings')   await fetchSettings();
     setLoading(false);
   };
 
@@ -341,30 +302,43 @@ export default function AdminPage() {
     ...S.btn, background: active ? '#C9A84C' : '#141414', color: active ? '#000' : '#666', border: '1px solid #2a2a2a', fontSize: 11, padding: '5px 12px',
   });
 
+  const saveSettings = async () => {
+    await apiMutate('PATCH', { type: 'settings', values: settingsForm });
+    setSettings({ ...settingsForm }); setSettingsSaved(true);
+    setTimeout(() => setSettingsSaved(false), 2000);
+  };
+
+  const syncImages = async () => {
+    setSyncing(true); setSyncMsg('');
+    const { data, error } = await apiFetch('sync_images');
+    setSyncing(false);
+    setSyncMsg(error || data?.message || 'Done');
+  };
+
   const exportOrdersCSV = async () => {
     const { data } = await apiFetch('export_orders');
     if (!data?.length) { alert('No orders to export'); return; }
-    const rows = [['Reference', 'Date', 'Customer', 'Phone', 'Address', 'Subtotal', 'Delivery', 'Total', 'Status', 'Payment Status', 'Payment Method']];
-    data.forEach(o => rows.push([o.reference, o.created_at, o.customer_name, o.customer_phone, o.delivery_address, o.subtotal, o.delivery_fee, o.total, o.status, o.payment_status, o.payment_method]));
+    const rows = [['Reference','Date','Customer','Phone','Address','Subtotal','Delivery','Total','Status','Payment Status','Method']];
+    data.forEach(o => rows.push([o.reference,o.created_at,o.customer_name,o.customer_phone,o.delivery_address,o.subtotal,o.delivery_fee,o.total,o.status,o.payment_status,o.payment_method]));
     downloadCSV(rows, `starlord_orders_${new Date().toISOString().slice(0,10)}.csv`);
   };
   const exportProductsCSV = async () => {
     const { data } = await apiFetch('export_products');
     if (!data?.length) { alert('No products to export'); return; }
-    const rows = [['ID', 'Name', 'Category', 'Price (RWF)', 'Old Price', 'Stock', 'Badge', 'Active', 'Created']];
-    data.forEach(p => rows.push([p.id, p.name, p.category, p.price, p.old_price || '', p.stock, p.badge || '', p.is_active, p.created_at]));
+    const rows = [['ID','Name','Category','Price (RWF)','Old Price','Stock','Badge','Active','Created']];
+    data.forEach(p => rows.push([p.id,p.name,p.category,p.price,p.old_price||'',p.stock,p.badge||'',p.is_active,p.created_at]));
     downloadCSV(rows, `starlord_products_${new Date().toISOString().slice(0,10)}.csv`);
   };
   const exportUsersCSV = async () => {
     const { data } = await apiFetch('export_users');
     if (!data?.length) { alert('No customers to export'); return; }
-    const rows = [['Phone', 'Name', 'Email', 'Orders', 'Total Spent (RWF)', 'Registered']];
-    data.forEach(u => rows.push([u.phone, u.full_name || '', u.email || '', u.order_count || 0, u.total_spent || 0, u.created_at]));
+    const rows = [['Phone','Name','Email','Orders','Total Spent (RWF)','Registered']];
+    data.forEach(u => rows.push([u.phone,u.full_name||'',u.email||'',u.order_count||0,u.total_spent||0,u.created_at]));
     downloadCSV(rows, `starlord_customers_${new Date().toISOString().slice(0,10)}.csv`);
   };
 
   const handleDeleteCategory = async (cat) => {
-    if (!confirm(`Delete "${cat.name}"?\nThis will fail if products still use it.`)) return;
+    if (!confirm(`Delete "${cat.name}"?`)) return;
     const result = await apiMutate('DELETE', { type: 'category', id: cat.id });
     if (result.error) { alert(result.error); return; }
     await fetchCategories();
@@ -414,6 +388,7 @@ export default function AdminPage() {
             { id: 'reports',    label: 'Reports'      },
             { id: 'users',      label: 'Customers'    },
             { id: 'segments',   label: 'Segments'     },
+            { id: 'settings',   label: 'Settings'     },
             { id: 'logs',       label: 'Activity Log' },
           ].map(t => (
             <button key={t.id} onClick={() => setTab(t.id)} style={{ ...S.tab, ...(tab === t.id ? S.tabActive : {}) }}>{t.label}</button>
@@ -441,34 +416,32 @@ export default function AdminPage() {
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
               <div>
                 <div style={S.label}>Pending Orders</div>
-                {pendingOrders.length === 0
-                  ? <div style={{ color: '#555', fontSize: 13, padding: '20px 0' }}>No pending orders</div>
-                  : pendingOrders.slice(0, 5).map(o => (
-                    <div key={o.id} onClick={() => setSelectedOrderId(o.id)} style={{ ...S.card, padding: '12px 14px', cursor: 'pointer', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                      <div>
-                        <div style={{ fontFamily: 'monospace', fontSize: 13, fontWeight: 800, color: '#C9A84C' }}>{o.reference}</div>
-                        <div style={{ fontSize: 11, color: '#666', marginTop: 2 }}>{o.customer_name} · {timeAgo(o.created_at)}</div>
-                      </div>
-                      <div style={{ fontSize: 13, fontWeight: 800, color: '#fff' }}>{formatRWF(o.total)}</div>
+                {pendingOrders.length === 0 ? <div style={{ color: '#555', fontSize: 13, padding: '20px 0' }}>No pending orders</div>
+                : pendingOrders.slice(0, 5).map(o => (
+                  <div key={o.id} onClick={() => setSelectedOrderId(o.id)} style={{ ...S.card, padding: '12px 14px', cursor: 'pointer', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                    <div>
+                      <div style={{ fontFamily: 'monospace', fontSize: 13, fontWeight: 800, color: '#C9A84C' }}>{o.reference}</div>
+                      <div style={{ fontSize: 11, color: '#666', marginTop: 2 }}>{o.customer_name} · {timeAgo(o.created_at)}</div>
                     </div>
-                  ))}
+                    <div style={{ fontSize: 13, fontWeight: 800, color: '#fff' }}>{formatRWF(o.total)}</div>
+                  </div>
+                ))}
               </div>
               <div>
                 <div style={S.label}>Low Stock Alerts</div>
-                {alerts.length === 0
-                  ? <div style={{ color: '#555', fontSize: 13, padding: '20px 0' }}>All products well stocked</div>
-                  : alerts.map(p => (
-                    <div key={p.id} style={{ ...S.card, padding: '12px 14px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                      <div>
-                        <div style={{ fontSize: 13, fontWeight: 700, color: '#fff' }}>{p.name}</div>
-                        <div style={{ fontSize: 11, color: '#555', marginTop: 2 }}>{p.category}</div>
-                      </div>
-                      <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                        <span style={{ fontSize: 13, fontWeight: 800, color: p.stock === 0 ? '#e05555' : '#C9A84C' }}>{p.stock === 0 ? 'OUT' : `${p.stock} left`}</span>
-                        <button onClick={() => setStockProduct(p)} style={{ ...S.btn, background: '#1c1c1c', color: '#888', border: '1px solid #2a2a2a', fontSize: 11 }}>Restock</button>
-                      </div>
+                {alerts.length === 0 ? <div style={{ color: '#555', fontSize: 13, padding: '20px 0' }}>All products well stocked</div>
+                : alerts.map(p => (
+                  <div key={p.id} style={{ ...S.card, padding: '12px 14px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                    <div>
+                      <div style={{ fontSize: 13, fontWeight: 700, color: '#fff' }}>{p.name}</div>
+                      <div style={{ fontSize: 11, color: '#555', marginTop: 2 }}>{p.category}</div>
                     </div>
-                  ))}
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                      <span style={{ fontSize: 13, fontWeight: 800, color: p.stock === 0 ? '#e05555' : '#C9A84C' }}>{p.stock === 0 ? 'OUT' : `${p.stock} left`}</span>
+                      <button onClick={() => setStockProduct(p)} style={{ ...S.btn, background: '#1c1c1c', color: '#888', border: '1px solid #2a2a2a', fontSize: 11 }}>Restock</button>
+                    </div>
+                  </div>
+                ))}
               </div>
             </div>
           </div>
@@ -517,10 +490,8 @@ export default function AdminPage() {
             </div>
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(320px, 1fr))', gap: 12 }}>
               {products.map(p => {
-                const low = p.stock <= 5 && p.stock > 0;
-                const out = p.stock === 0;
-                const thumb = p.product_images?.[0]?.url;
-                const imgCnt = p.product_images?.length || 0;
+                const low = p.stock <= 5 && p.stock > 0, out = p.stock === 0;
+                const thumb = p.product_images?.[0]?.url, imgCnt = p.product_images?.length || 0;
                 return (
                   <div key={p.id} style={S.card}>
                     <div style={{ padding: '14px 16px' }}>
@@ -530,9 +501,7 @@ export default function AdminPage() {
                               <img src={thumb} alt={p.name} style={{ width: 60, height: 60, objectFit: 'cover', borderRadius: 8, border: '1px solid #2a2a2a' }} />
                               {imgCnt > 1 && <div style={{ position: 'absolute', bottom: 2, right: 2, background: 'rgba(0,0,0,0.7)', borderRadius: 3, fontSize: 9, color: '#fff', padding: '1px 4px', fontWeight: 700 }}>+{imgCnt - 1}</div>}
                             </div>
-                          : <div style={{ width: 60, height: 60, background: '#1c1c1c', borderRadius: 8, border: '1px solid #2a2a2a', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-                              <span style={{ fontSize: 9, color: '#444' }}>No img</span>
-                            </div>
+                          : <div style={{ width: 60, height: 60, background: '#1c1c1c', borderRadius: 8, border: '1px solid #2a2a2a', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}><span style={{ fontSize: 9, color: '#444' }}>No img</span></div>
                         }
                         <div style={{ flex: 1 }}>
                           <div style={{ fontSize: 14, fontWeight: 700, color: '#fff', marginBottom: 2 }}>{p.name}</div>
@@ -544,9 +513,7 @@ export default function AdminPage() {
                         </div>
                       </div>
                       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 10 }}>
-                        <span style={{ fontSize: 12, fontWeight: 700, color: out ? '#e05555' : low ? '#C9A84C' : '#4caf7d' }}>
-                          {out ? 'Out of stock' : low ? `${p.stock} left` : `${p.stock} in stock`}
-                        </span>
+                        <span style={{ fontSize: 12, fontWeight: 700, color: out ? '#e05555' : low ? '#C9A84C' : '#4caf7d' }}>{out ? 'Out of stock' : low ? `${p.stock} left` : `${p.stock} in stock`}</span>
                         {!p.is_active && <span style={{ fontSize: 11, color: '#555', background: '#1c1c1c', padding: '3px 8px', borderRadius: 4 }}>HIDDEN</span>}
                       </div>
                       <div style={{ display: 'flex', gap: 6 }}>
@@ -614,7 +581,7 @@ export default function AdminPage() {
                 {analytics.topProducts?.length === 0 && <div style={{ color: '#555', fontSize: 13 }}>No data yet</div>}
                 {analytics.topProducts?.map((p, i) => (
                   <div key={i} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '8px 0', borderBottom: '1px solid #1c1c1c' }}>
-                    <div><div style={{ fontSize: 12, fontWeight: 700, color: '#fff' }}>{i + 1}. {p.name}</div><div style={{ fontSize: 11, color: '#555' }}>{p.qty} units</div></div>
+                    <div><div style={{ fontSize: 12, fontWeight: 700, color: '#fff' }}>{i+1}. {p.name}</div><div style={{ fontSize: 11, color: '#555' }}>{p.qty} units</div></div>
                     <span style={{ fontSize: 13, fontWeight: 800, color: '#C9A84C' }}>{formatRWF(p.revenue)}</span>
                   </div>
                 ))}
@@ -625,7 +592,7 @@ export default function AdminPage() {
                   <div key={status} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '8px 0', borderBottom: '1px solid #1c1c1c' }}>
                     <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
                       <div style={{ width: 8, height: 8, borderRadius: '50%', background: STATUS_COLOR[status] || '#555' }} />
-                      <span style={{ fontSize: 12, color: '#888', fontWeight: 600 }}>{status.replace('_', ' ').toUpperCase()}</span>
+                      <span style={{ fontSize: 12, color: '#888', fontWeight: 600 }}>{status.replace('_',' ').toUpperCase()}</span>
                     </div>
                     <span style={{ fontSize: 14, fontWeight: 800, color: '#fff' }}>{count}</span>
                   </div>
@@ -641,7 +608,7 @@ export default function AdminPage() {
                     <span style={{ fontSize: 11, color: '#555' }}>{p.qty} sold</span>
                   </div>
                   <div style={{ background: '#0a0a0a', borderRadius: 4, height: 6, overflow: 'hidden' }}>
-                    <div style={{ background: '#C9A84C', height: '100%', width: `${Math.min((p.qty / (analytics.topProducts[0]?.qty || 1)) * 100, 100)}%`, borderRadius: 4, transition: 'width 0.4s' }} />
+                    <div style={{ background: '#C9A84C', height: '100%', width: `${Math.min((p.qty / (analytics.topProducts[0]?.qty || 1)) * 100, 100)}%`, borderRadius: 4 }} />
                   </div>
                 </div>
               ))}
@@ -675,15 +642,6 @@ export default function AdminPage() {
                 <div style={S.label}>Daily Revenue</div>
                 <BarChart data={analytics.dailyRevenue} height={140} />
               </div>
-              <div style={{ background: '#141414', border: '1px solid #2a2a2a', borderRadius: 14, padding: 18 }}>
-                <div style={S.label}>Top Products by Revenue</div>
-                {analytics.topProducts?.map((p, i) => (
-                  <div key={i} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '10px 0', borderBottom: '1px solid #1c1c1c' }}>
-                    <div><div style={{ fontSize: 13, fontWeight: 700, color: '#fff' }}>{i + 1}. {p.name}</div><div style={{ fontSize: 11, color: '#555' }}>{p.qty} units · {p.category}</div></div>
-                    <span style={{ fontSize: 14, fontWeight: 800, color: '#C9A84C' }}>{formatRWF(p.revenue)}</span>
-                  </div>
-                ))}
-              </div>
             </>}
           </div>
         )}
@@ -703,7 +661,6 @@ export default function AdminPage() {
                   <div style={{ fontSize: 14, fontWeight: 700, color: '#fff', marginBottom: 2 }}>{u.full_name || 'No name'}</div>
                   <div style={{ fontSize: 13, color: '#C9A84C' }}>{u.phone}</div>
                   {u.email && <div style={{ fontSize: 11, color: '#555', marginTop: 2 }}>{u.email}</div>}
-                  <div style={{ fontSize: 11, color: '#555', marginTop: 2 }}>Since {new Date(u.created_at).toLocaleDateString('en-RW', { month: 'short', year: 'numeric' })}</div>
                 </div>
                 <div style={{ textAlign: 'right' }}>
                   <div style={{ fontSize: 15, fontWeight: 800, color: '#C9A84C' }}>{formatRWF(u.total_spent)}</div>
@@ -717,15 +674,9 @@ export default function AdminPage() {
         {/* SEGMENTS */}
         {!loading && tab === 'segments' && segments && (
           <div>
-            <div style={{ fontSize: 13, color: '#666', marginBottom: 16, lineHeight: 1.6 }}>
-              High-Value: spent over RWF 50,000 · Frequent: 3+ orders · Inactive: no order in 30+ days
-            </div>
+            <div style={{ fontSize: 13, color: '#666', marginBottom: 16, lineHeight: 1.6 }}>High-Value: spent over RWF 50,000 · Frequent: 3+ orders · Inactive: no order in 30+ days</div>
             <div style={{ display: 'flex', gap: 8, marginBottom: 20 }}>
-              {[
-                { id: 'high_value', label: `High-Value (${segments.high_value?.length || 0})` },
-                { id: 'frequent',   label: `Frequent (${segments.frequent?.length || 0})` },
-                { id: 'inactive',   label: `Inactive (${segments.inactive?.length || 0})` },
-              ].map(s => <button key={s.id} onClick={() => setSegmentTab(s.id)} style={btnFilter(segmentTab === s.id)}>{s.label}</button>)}
+              {[{id:'high_value',label:`High-Value (${segments.high_value?.length||0})`},{id:'frequent',label:`Frequent (${segments.frequent?.length||0})`},{id:'inactive',label:`Inactive (${segments.inactive?.length||0})`}].map(s => <button key={s.id} onClick={() => setSegmentTab(s.id)} style={btnFilter(segmentTab === s.id)}>{s.label}</button>)}
             </div>
             {(segments[segmentTab] || []).length === 0 && <div style={{ color: '#555', textAlign: 'center', padding: 40 }}>No customers in this segment</div>}
             {(segments[segmentTab] || []).map(u => (
@@ -733,9 +684,7 @@ export default function AdminPage() {
                 <div style={{ flex: 1 }}>
                   <div style={{ fontSize: 14, fontWeight: 700, color: '#fff', marginBottom: 2 }}>{u.full_name || 'No name'}</div>
                   <div style={{ fontSize: 13, color: '#C9A84C' }}>{u.phone}</div>
-                  <div style={{ fontSize: 11, color: '#555', marginTop: 2 }}>
-                    {segmentTab === 'inactive' && u.last_order_date ? `Last order: ${timeAgo(u.last_order_date)}` : `${u.order_count || 0} orders`}
-                  </div>
+                  <div style={{ fontSize: 11, color: '#555', marginTop: 2 }}>{segmentTab === 'inactive' && u.last_order_date ? `Last order: ${timeAgo(u.last_order_date)}` : `${u.order_count || 0} orders`}</div>
                 </div>
                 <div style={{ textAlign: 'right' }}>
                   <div style={{ fontSize: 15, fontWeight: 800, color: '#C9A84C' }}>{formatRWF(u.total_spent)}</div>
@@ -743,6 +692,46 @@ export default function AdminPage() {
                 </div>
               </div>
             ))}
+          </div>
+        )}
+
+        {/* SETTINGS */}
+        {!loading && tab === 'settings' && (
+          <div>
+            {/* Delivery Fee */}
+            <div style={{ background: '#141414', border: '1px solid #2a2a2a', borderRadius: 14, padding: 24, marginBottom: 16 }}>
+              <div style={{ fontSize: 14, fontWeight: 800, color: '#C9A84C', letterSpacing: 1, marginBottom: 4 }}>DELIVERY FEE</div>
+              <div style={{ fontSize: 12, color: '#555', marginBottom: 16 }}>Flat delivery fee charged on every order. Change takes effect immediately for new orders.</div>
+              <div style={{ display: 'flex', gap: 12, alignItems: 'flex-end', maxWidth: 340 }}>
+                <div style={{ flex: 1 }}>
+                  <label style={S.label}>Fee (RWF)</label>
+                  <input style={S.input} type="number" value={settingsForm.delivery_fee || ''} onChange={e => setSettingsForm(p => ({ ...p, delivery_fee: e.target.value }))} placeholder="2000" />
+                </div>
+                <button onClick={saveSettings} style={{ ...S.btn, background: settingsSaved ? '#4caf7d' : '#C9A84C', color: '#000', flexShrink: 0, marginBottom: 0 }}>
+                  {settingsSaved ? 'Saved!' : 'Save'}
+                </button>
+              </div>
+              <div style={{ fontSize: 12, color: '#555', marginTop: 10 }}>
+                Current fee: <span style={{ color: '#C9A84C', fontWeight: 700 }}>RWF {Number(settings.delivery_fee || 2000).toLocaleString()}</span>
+              </div>
+            </div>
+
+            {/* Sync Images from Bucket */}
+            <div style={{ background: '#141414', border: '1px solid #2a2a2a', borderRadius: 14, padding: 24 }}>
+              <div style={{ fontSize: 14, fontWeight: 800, color: '#C9A84C', letterSpacing: 1, marginBottom: 4 }}>SYNC PRODUCT IMAGES</div>
+              <div style={{ fontSize: 12, color: '#555', marginBottom: 16, lineHeight: 1.7 }}>
+                Scans every product folder in the Supabase storage bucket and creates any missing image records in the database. Run this once to fix thumbnails for products that already have images uploaded in the bucket but are not showing on the storefront.
+              </div>
+              <div style={{ display: 'flex', gap: 12, alignItems: 'center', flexWrap: 'wrap' }}>
+                <button onClick={syncImages} disabled={syncing} style={{ ...S.btn, background: syncing ? '#555' : '#C9A84C', color: '#000', opacity: syncing ? 0.6 : 1 }}>
+                  {syncing ? 'Scanning bucket...' : 'Sync Images from Bucket'}
+                </button>
+                {syncMsg && (
+                  <div style={{ fontSize: 13, color: '#4caf7d', fontWeight: 600 }}>{syncMsg}</div>
+                )}
+              </div>
+              <div style={{ fontSize: 11, color: '#444', marginTop: 10 }}>Safe to run multiple times — will not create duplicate records.</div>
+            </div>
           </div>
         )}
 
