@@ -2,6 +2,7 @@ import './globals.css';
 import { ThemeProvider } from '@/components/ThemeProvider';
 import { CartProvider } from '@/components/CartContext';
 import Header from '@/components/Header';
+import WhatsAppWidget from '@/components/WhatsAppWidget';
 
 export const metadata = {
   title: 'STARLORD GROUP — Premium Accessories, Kigali',
@@ -203,6 +204,7 @@ export default function RootLayout({ children }) {
             <Header />
             <main>{children}</main>
             <Footer />
+            <WhatsAppWidget />
           </CartProvider>
         </ThemeProvider>
       </body>

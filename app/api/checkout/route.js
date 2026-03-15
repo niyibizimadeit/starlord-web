@@ -1,4 +1,5 @@
 import { createServiceClient } from '@/lib/supabase/server';
+import { createServerSupabaseClient } from '@/lib/supabase/server';
 
 function generateReference() {
   const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
@@ -14,13 +15,11 @@ export async function POST(request) {
     const body = await request.json();
     const { items, customer, paymentMethod, idempotencyKey, createAccount } = body;
 
-    // ── 1. Validate required fields ──────────────────────────────────
     if (!items?.length || !customer?.name || !customer?.phone ||
         !customer?.address || !paymentMethod || !idempotencyKey) {
       return Response.json({ error: 'Missing required fields' }, { status: 400 });
     }
 
-    // ── 2. Validate Rwandan phone number ─────────────────────────────
     const phoneRegex = /^(078|079|072|073)\d{7}$/;
     const cleanPhone = customer.phone.replace(/\s/g, '');
     if (!phoneRegex.test(cleanPhone)) {
@@ -29,7 +28,27 @@ export async function POST(request) {
 
     const supabase = createServiceClient();
 
-    // ── 3. Check idempotency — prevent duplicate orders ───────────────
+    // ── Get logged-in user from session ──────────────────────────────
+    let sessionUserId = null;
+    try {
+      const { cookies } = await import('next/headers');
+      const { createServerClient } = await import('@supabase/ssr');
+      const cookieStore = await cookies();
+      const authClient = createServerClient(
+        process.env.NEXT_PUBLIC_SUPABASE_URL,
+        process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY,
+        {
+          cookies: {
+            getAll() { return cookieStore.getAll(); },
+            setAll() {},
+          },
+        }
+      );
+      const { data: { user } } = await authClient.auth.getUser();
+      if (user) sessionUserId = user.id;
+    } catch {}
+
+    // ── Check idempotency ─────────────────────────────────────────────
     const { data: existingOrder } = await supabase
       .from('orders')
       .select('id, reference, status')
@@ -44,7 +63,15 @@ export async function POST(request) {
       });
     }
 
-    // ── 4. Recalculate prices from DB — never trust client ────────────
+    // ── Fetch delivery fee from settings ──────────────────────────────
+    const { data: feeData } = await supabase
+      .from('settings')
+      .select('value')
+      .eq('key', 'delivery_fee')
+      .single();
+    const DELIVERY_FEE = feeData?.value ? Number(feeData.value) : 0;
+
+    // ── Verify products + stock ───────────────────────────────────────
     const productIds = items.map(i => i.productId);
     const { data: products, error: productError } = await supabase
       .from('products')
@@ -56,12 +83,9 @@ export async function POST(request) {
       return Response.json({ error: 'Could not verify products' }, { status: 400 });
     }
 
-    // ── 5. Check stock for every item ─────────────────────────────────
     for (const item of items) {
       const product = products.find(p => p.id === item.productId);
-      if (!product) {
-        return Response.json({ error: 'Product not found' }, { status: 400 });
-      }
+      if (!product) return Response.json({ error: 'Product not found' }, { status: 400 });
       if (product.stock < item.quantity) {
         return Response.json({
           error: `${product.name} only has ${product.stock} units left`,
@@ -69,24 +93,23 @@ export async function POST(request) {
       }
     }
 
-    // ── 6. Calculate totals server-side ───────────────────────────────
-    const DELIVERY_FEE = 2000;
+    // ── Calculate totals ──────────────────────────────────────────────
     const subtotal = products.reduce((sum, product) => {
       const item = items.find(i => i.productId === product.id);
       return sum + product.price * item.quantity;
     }, 0);
     const total = subtotal + DELIVERY_FEE;
 
-    // ── 7. Sanitise free-text inputs ──────────────────────────────────
+    // ── Sanitise inputs ───────────────────────────────────────────────
     const stripHtml = (str) => str.replace(/<[^>]*>/g, '').replace(/[<>'"]/g, '').trim();
     const safeName    = stripHtml(customer.name).slice(0, 100);
     const safeAddress = stripHtml(customer.address).slice(0, 300);
 
-    // ── 8. Handle account creation BEFORE order so we have user_id ───
-    let userId = null;
+    // ── Resolve user_id ───────────────────────────────────────────────
+    // Priority: 1) logged-in session, 2) createAccount flow, 3) null (guest)
+    let userId = sessionUserId;
 
-    if (createAccount) {
-      // Check if an account already exists for this phone number
+    if (!userId && createAccount) {
       const { data: existingUser } = await supabase
         .from('users')
         .select('id')
@@ -94,21 +117,16 @@ export async function POST(request) {
         .maybeSingle();
 
       if (existingUser) {
-        // Account already exists — link this order to it
         userId = existingUser.id;
       } else {
-        // Format phone for Supabase Auth: 0788123456 → +250788123456
         const intlPhone = '+250' + cleanPhone.slice(1);
-
-        // Create Supabase Auth user (no OTP sent — account created silently)
         const { data: authData, error: authError } = await supabase.auth.admin.createUser({
           phone: intlPhone,
-          phone_confirm: true, // mark phone as verified since they just checked out
+          phone_confirm: true,
           user_metadata: { full_name: safeName },
         });
 
         if (!authError && authData.user) {
-          // Create the users profile record
           const { error: profileError } = await supabase.from('users').insert({
             id:           authData.user.id,
             phone:        cleanPhone,
@@ -116,23 +134,18 @@ export async function POST(request) {
             role:         'customer',
             password_set: false,
           });
-
-          if (!profileError) {
-            userId = authData.user.id;
-          }
+          if (!profileError) userId = authData.user.id;
         }
-        // If account creation fails for any reason, we do NOT block the order
-        // The customer still gets their order — account creation is best-effort
       }
     }
 
-    // ── 9. Create ORDER record ────────────────────────────────────────
+    // ── Create order ──────────────────────────────────────────────────
     const reference = generateReference();
     const { data: order, error: orderError } = await supabase
       .from('orders')
       .insert({
         reference,
-        user_id:          userId,       // null for guests, set for account holders
+        user_id:          userId,
         customer_name:    safeName,
         customer_phone:   cleanPhone,
         delivery_address: safeAddress,
@@ -148,11 +161,11 @@ export async function POST(request) {
       .single();
 
     if (orderError) {
+      console.error('Order insert error:', JSON.stringify(orderError));
       return Response.json({ error: 'Could not create order' }, { status: 500 });
     }
 
-
-    // ── 10. Create ORDER_ITEMS records ────────────────────────────────
+    // ── Create order items ────────────────────────────────────────────
     const orderItems = items.map(item => {
       const product = products.find(p => p.id === item.productId);
       return {
@@ -162,10 +175,9 @@ export async function POST(request) {
         price_at_time: product.price,
       };
     });
-
     await supabase.from('order_items').insert(orderItems);
 
-    // ── 11. Deduct stock atomically for every item ────────────────────
+    // ── Deduct stock ──────────────────────────────────────────────────
     const stockResults = await Promise.all(
       items.map(async item => {
         const { data, error } = await supabase.rpc('deduct_stock', {
@@ -176,24 +188,14 @@ export async function POST(request) {
       })
     );
 
-    // Check if any item failed stock deduction (race condition — someone else bought last unit)
     const stockFailed = stockResults.find(r => !r.success || r.error);
-
     if (stockFailed) {
-      // Mark order as stock_conflict so admin is alerted
-      await supabase
-        .from('orders')
-        .update({ status: 'stock_conflict' })
-        .eq('id', order.id);
-
+      await supabase.from('orders').update({ status: 'stock_conflict' }).eq('id', order.id);
       return Response.json({
         error: 'One or more items just sold out. Please review your cart and try again.',
         code:  'STOCK_CONFLICT',
       }, { status: 409 });
     }
-
-    // ── 12. IremboPay call placeholder ────────────────────────────────
-    // const paymentResponse = await callIremboPay({ amount: total, ... });
 
     return Response.json({
       orderId:        order.id,
