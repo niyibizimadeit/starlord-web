@@ -1,283 +1,252 @@
 'use client';
 
-import { useState } from 'react';
-import { useRouter, useSearchParams } from 'next/navigation';
+import { useState, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 import Link from 'next/link';
+import { createBrowserClient } from '@supabase/ssr';
 
 export default function RegisterPage() {
   const router = useRouter();
-  const searchParams = useSearchParams();
-
+  const [step, setStep]     = useState(1); // 1=form, 2=verify OTP
+  const [checking, setChecking] = useState(true);
   const [formData, setFormData] = useState({
-    full_name: '',
-    email: '',
-    password: '',
-    confirmPassword: '',
+    full_name: '', email: '', password: '', confirmPassword: '',
   });
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState('');
-  const [message, setMessage] = useState('');
-  const [showSuccess, setShowSuccess] = useState(false);
+  const [otpCode, setOtpCode]   = useState('');
+  const [loading, setLoading]   = useState(false);
+  const [error, setError]       = useState('');
+  const [message, setMessage]   = useState('');
 
-  // Handle verification success redirect
-  if (typeof window !== 'undefined') {
-    const confirmed = searchParams.get('confirmed');
-    if (confirmed === 'true') {
-      setShowSuccess(true);
-      setMessage('Email verified! You can now log in.');
-    }
+  // Redirect logged-in users
+  useEffect(() => {
+    const supabase = createBrowserClient(
+      process.env.NEXT_PUBLIC_SUPABASE_URL,
+      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
+    );
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      if (session) router.replace('/account');
+      else setChecking(false);
+    });
+  }, [router]);
+
+  if (checking) {
+    return (
+      <div style={{ minHeight: '80vh', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+        <div style={{ color: 'var(--text-muted)', fontSize: 13 }}>Loading...</div>
+      </div>
+    );
   }
 
-  const updateForm = (key, value) => {
-    setFormData(prev => ({ ...prev, [key]: value }));
-    setError('');
-  };
-
-  const inputStyle = (hasValue, errorState = false) => ({
+  const inputStyle = (hasValue) => ({
     width: '100%',
     background: 'var(--surface)',
-    border: `1px solid ${errorState ? 'var(--red)' : hasValue ? 'var(--gold)' : 'var(--border)'}`,
-    borderRadius: 10,
-    padding: '14px 16px',
-    color: 'var(--text)',
-    fontSize: 16,
-    outline: 'none',
-    boxSizing: 'border-box',
-    transition: 'border-color 0.2s',
+    border: `1px solid ${hasValue ? 'var(--gold)' : 'var(--border)'}`,
+    borderRadius: 10, padding: '14px 16px',
+    color: 'var(--text)', fontSize: 16,
+    outline: 'none', boxSizing: 'border-box',
   });
 
+  const labelStyle = {
+    display: 'block', fontSize: 12,
+    color: 'var(--text-muted)', marginBottom: 8,
+    fontWeight: 700, letterSpacing: 0.5,
+  };
+
   const handleRegister = async () => {
-    if (!formData.email || !formData.password || !formData.full_name) {
-      setError('All fields required');
-      return;
+    setError('');
+    if (!formData.full_name || !formData.email || !formData.password) {
+      setError('All fields are required'); return;
     }
     if (formData.password !== formData.confirmPassword) {
-      setError('Passwords do not match');
-      return;
+      setError('Passwords do not match'); return;
     }
     if (formData.password.length < 6) {
-      setError('Password must be 6+ characters');
-      return;
+      setError('Password must be at least 6 characters'); return;
     }
 
     setLoading(true);
-    setError('');
-
     try {
       const res = await fetch('/api/auth/register', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(formData),
       });
-
       const data = await res.json();
-
       if (res.ok) {
-        setMessage(data.message || 'Check your email for verification link (valid 30 min)');
+        setStep(2);
+        setMessage(`A 6-digit code was sent to ${formData.email}`);
       } else {
         setError(data.error || 'Registration failed');
       }
-    } catch (err) {
-      setError('Connection error. Try again.');
-    }
-
+    } catch { setError('Connection error. Try again.'); }
     setLoading(false);
   };
 
-  if (showSuccess) {
+  const handleVerifyEmail = async () => {
+    setError('');
+    if (otpCode.length < 6) { setError('Enter the full 6-digit code'); return; }
+    setLoading(true);
+    try {
+      const res = await fetch('/api/auth/verify-email', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email: formData.email, token: otpCode }),
+      });
+      const data = await res.json();
+      if (res.ok) {
+        router.push('/account');
+      } else {
+        setError(data.error || 'Invalid or expired code. Try again.');
+      }
+    } catch { setError('Connection error. Try again.'); }
+    setLoading(false);
+  };
+
+  const ErrorBox = ({ msg }) => msg ? (
+    <div style={{
+      background: '#2e1a1a', border: '1px solid var(--red)',
+      borderRadius: 10, padding: '12px 14px',
+      color: 'var(--red)', fontSize: 13, marginBottom: 16,
+    }}>{msg}</div>
+  ) : null;
+
+  // ── Step 2: Email OTP verification ────────────────────────────────
+  if (step === 2) {
     return (
       <div style={{
-        maxWidth: 480,
-        margin: '0 auto',
+        maxWidth: 480, margin: '0 auto',
         padding: '60px 24px 100px',
-        textAlign: 'center',
+        minHeight: '80vh', display: 'flex',
+        flexDirection: 'column', justifyContent: 'center',
       }}>
-        <div style={{ fontSize: 28, marginBottom: 24 }}>✅ Welcome!</div>
-        <h2 style={{ fontSize: 24, fontWeight: 800, marginBottom: 16 }}>
-          Email Verified
-        </h2>
-        <p style={{ color: 'var(--text-muted)', fontSize: 14, marginBottom: 32 }}>
-          Your account is ready. Log in with your email & password.
-        </p>
-        <Link
-          href="/login"
-          style={{
-            display: 'inline-block',
-            background: 'var(--gold)',
-            color: '#000',
-            padding: '16px 32px',
-            borderRadius: 12,
-            fontWeight: 800,
-            fontSize: 15,
-            textDecoration: 'none',
-          }}
-        >
-          Go to Login
-        </Link>
-      </div>
-    );
-  }
-
-  return (
-    <div style={{
-      maxWidth: 480,
-      margin: '0 auto',
-      padding: '60px 24px 100px',
-    }}>
-      <div style={{ textAlign: 'center', marginBottom: 40 }}>
-        <div style={{ fontSize: 28, fontWeight: 800, color: 'var(--gold)', letterSpacing: 2 }}>
-          STARLORD
+        <div style={{ textAlign: 'center', marginBottom: 40 }}>
+          <div style={{ fontSize: 22, fontWeight: 800, color: 'var(--gold)', letterSpacing: 3 }}>STARLORD</div>
+          <div style={{ fontSize: 10, color: 'var(--text-muted)', letterSpacing: 5 }}>GROUP</div>
         </div>
-        <div style={{ fontSize: 12, color: 'var(--text-muted)', letterSpacing: 4 }}>
-          GROUP
-        </div>
-      </div>
 
-      <h1 style={{ fontSize: 24, fontWeight: 800, marginBottom: 8 }}>
-        Create Account
-      </h1>
-      <p style={{ color: 'var(--text-muted)', marginBottom: 32 }}>
-        Sign up and get email verification. We'll help you verify your account.
-      </p>
+        <h1 style={{ fontSize: 24, fontWeight: 800, color: 'var(--text)', marginBottom: 8 }}>
+          Verify your email
+        </h1>
 
-      {message && (
-        <div style={{
-          background: '#1a2e1a',
-          border: '1px solid #4caf7d',
-          borderRadius: 10,
-          padding: '12px 14px',
-          color: '#4caf7d',
-          fontSize: 13,
-          marginBottom: 16,
-        }}>
-          {message}
-        </div>
-      )}
-
-      {error && (
-        <div style={{
-          background: '#2e1a1a',
-          border: '1px solid var(--red)',
-          borderRadius: 10,
-          padding: '12px 14px',
-          color: 'var(--red)',
-          fontSize: 13,
-          marginBottom: 16,
-        }}>
-          {error}
-        </div>
-      )}
-
-      <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
-        <div>
-          <label style={{ 
-            display: 'block', 
-            fontSize: 12, 
-            color: 'var(--text-muted)', 
-            marginBottom: 8, 
-            fontWeight: 700 
+        {message && (
+          <div style={{
+            background: '#1a2e1a', border: '1px solid #4caf7d',
+            borderRadius: 10, padding: '12px 14px',
+            color: '#4caf7d', fontSize: 13, marginBottom: 24,
           }}>
-            Full Name
-          </label>
+            {message}
+          </div>
+        )}
+
+        <div style={{ marginBottom: 16 }}>
+          <label style={{ ...labelStyle, textAlign: 'center' }}>6-Digit Verification Code</label>
           <input
-            type="text"
-            value={formData.full_name}
-            onChange={(e) => updateForm('full_name', e.target.value)}
-            placeholder="John Doe"
-            style={inputStyle(formData.full_name)}
+            type="number" placeholder="------"
+            value={otpCode}
+            onChange={e => setOtpCode(e.target.value.slice(0, 6))}
+            onKeyDown={e => e.key === 'Enter' && handleVerifyEmail()}
+            style={{
+              ...inputStyle(otpCode),
+              letterSpacing: 8, textAlign: 'center', fontSize: 24, fontWeight: 800,
+            }}
             autoFocus
           />
         </div>
 
+        <ErrorBox msg={error} />
+
+        <button onClick={handleVerifyEmail} disabled={loading || otpCode.length < 6} style={{
+          width: '100%',
+          background: loading || otpCode.length < 6 ? 'var(--gold-dark)' : 'var(--gold)',
+          color: '#000', border: 'none', borderRadius: 12, padding: '16px',
+          fontWeight: 800, fontSize: 15,
+          opacity: loading || otpCode.length < 6 ? 0.7 : 1,
+        }}>
+          {loading ? 'Verifying...' : 'Verify & Continue'}
+        </button>
+
+        <button onClick={() => { setStep(1); setOtpCode(''); setError(''); }} style={{
+          width: '100%', background: 'none', border: 'none',
+          color: 'var(--text-muted)', fontSize: 13, marginTop: 12, padding: '8px', cursor: 'pointer',
+        }}>
+          Go back
+        </button>
+      </div>
+    );
+  }
+
+  // ── Step 1: Registration form ─────────────────────────────────────
+  return (
+    <div style={{ maxWidth: 480, margin: '0 auto', padding: '60px 24px 100px' }}>
+      <div style={{ textAlign: 'center', marginBottom: 40 }}>
+        <div style={{ fontSize: 22, fontWeight: 800, color: 'var(--gold)', letterSpacing: 3 }}>STARLORD</div>
+        <div style={{ fontSize: 10, color: 'var(--text-muted)', letterSpacing: 5 }}>GROUP</div>
+      </div>
+
+      <h1 style={{ fontSize: 24, fontWeight: 800, color: 'var(--text)', marginBottom: 8 }}>
+        Create Account
+      </h1>
+      <p style={{ color: 'var(--text-muted)', fontSize: 14, marginBottom: 32 }}>
+        We'll send a 6-digit code to your email to verify your account.
+      </p>
+
+      <ErrorBox msg={error} />
+
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
         <div>
-          <label style={{ 
-            display: 'block', 
-            fontSize: 12, 
-            color: 'var(--text-muted)', 
-            marginBottom: 8, 
-            fontWeight: 700 
-          }}>
-            Email
-          </label>
+          <label style={labelStyle}>Full Name</label>
           <input
-            type="email"
+            type="text" placeholder="Jean Paul Habimana"
+            value={formData.full_name}
+            onChange={e => setFormData(p => ({ ...p, full_name: e.target.value }))}
+            style={inputStyle(formData.full_name)} autoFocus
+          />
+        </div>
+        <div>
+          <label style={labelStyle}>Email</label>
+          <input
+            type="email" placeholder="you@example.com"
             value={formData.email}
-            onChange={(e) => updateForm('email', e.target.value)}
-            placeholder="you@example.com"
+            onChange={e => setFormData(p => ({ ...p, email: e.target.value }))}
             style={inputStyle(formData.email)}
           />
         </div>
-
         <div>
-          <label style={{ 
-            display: 'block', 
-            fontSize: 12, 
-            color: 'var(--text-muted)', 
-            marginBottom: 8, 
-            fontWeight: 700 
-          }}>
-            Password
-          </label>
+          <label style={labelStyle}>Password</label>
           <input
-            type="password"
+            type="password" placeholder="At least 6 characters"
             value={formData.password}
-            onChange={(e) => updateForm('password', e.target.value)}
-            placeholder="At least 6 characters"
+            onChange={e => setFormData(p => ({ ...p, password: e.target.value }))}
             style={inputStyle(formData.password)}
           />
         </div>
-
         <div>
-          <label style={{ 
-            display: 'block', 
-            fontSize: 12, 
-            color: 'var(--text-muted)', 
-            marginBottom: 8, 
-            fontWeight: 700 
-          }}>
-            Confirm Password
-          </label>
+          <label style={labelStyle}>Confirm Password</label>
           <input
-            type="password"
+            type="password" placeholder="Repeat password"
             value={formData.confirmPassword}
-            onChange={(e) => updateForm('confirmPassword', e.target.value)}
-            placeholder="Repeat password"
+            onChange={e => setFormData(p => ({ ...p, confirmPassword: e.target.value }))}
+            onKeyDown={e => e.key === 'Enter' && handleRegister()}
             style={inputStyle(formData.confirmPassword)}
           />
         </div>
 
-        <button
-          onClick={handleRegister}
-          disabled={loading}
-          style={{
-            width: '100%',
-            background: loading ? 'var(--gold-dark)' : 'var(--gold)',
-            color: '#000',
-            border: 'none',
-            borderRadius: 12,
-            padding: '16px',
-            fontWeight: 800,
-            fontSize: 15,
-          }}
-        >
+        <button onClick={handleRegister} disabled={loading} style={{
+          width: '100%',
+          background: loading ? 'var(--gold-dark)' : 'var(--gold)',
+          color: '#000', border: 'none', borderRadius: 12, padding: '16px',
+          fontWeight: 800, fontSize: 15,
+        }}>
           {loading ? 'Creating Account...' : 'Create Account'}
         </button>
       </div>
 
       <div style={{ marginTop: 32, textAlign: 'center' }}>
-        <Link
-          href="/login"
-          style={{
-            color: 'var(--text-muted)',
-            fontSize: 13,
-            textDecoration: 'none',
-            fontWeight: 500,
-          }}
-        >
-          Already have an account? Log in
+        <Link href="/login" style={{ color: 'var(--text-muted)', fontSize: 13 }}>
+          Already have an account?{' '}
+          <span style={{ color: 'var(--gold)', fontWeight: 700 }}>Sign in</span>
         </Link>
       </div>
     </div>
   );
 }
-
