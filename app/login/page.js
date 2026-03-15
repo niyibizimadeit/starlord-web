@@ -1,16 +1,46 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
+import { createBrowserClient } from '@supabase/ssr';
 
 export default function LoginPage() {
   const router = useRouter();
-  const [step, setStep]           = useState(1); // 1 = enter phone, 2 = enter OTP
-  const [phone, setPhone]         = useState('');
-  const [otp, setOtp]             = useState('');
-  const [loading, setLoading]     = useState(false);
-  const [error, setError]         = useState('');
+  const [step, setStep]       = useState(1);
+  const [phone, setPhone]     = useState('');
+  const [otp, setOtp]         = useState('');
+  const [loading, setLoading] = useState(false);
+  const [error, setError]     = useState('');
+  const [checking, setChecking] = useState(true); // auth check in progress
+
+  // ── Redirect already-logged-in users ──────────────────────────────
+  useEffect(() => {
+    const supabase = createBrowserClient(
+      process.env.NEXT_PUBLIC_SUPABASE_URL,
+      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
+    );
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      if (session) {
+        router.replace('/account');
+      } else {
+        setChecking(false);
+      }
+    });
+  }, [router]);
+
+  // Show nothing while checking auth (prevents flash of login form)
+  if (checking) {
+    return (
+      <div style={{
+        minHeight: '80vh', display: 'flex',
+        alignItems: 'center', justifyContent: 'center',
+      }}>
+        <div style={{ color: 'var(--text-muted)', fontSize: 13 }}>Loading...</div>
+      </div>
+    );
+  }
+  // ──────────────────────────────────────────────────────────────────
 
   const inputStyle = (hasValue) => ({
     width: '100%',
@@ -34,7 +64,6 @@ export default function LoginPage() {
       setError('Enter a valid Rwandan phone number (078, 079, 072, or 073)');
       return;
     }
-
     setLoading(true);
     try {
       const res = await fetch('/api/auth/request-otp', {
@@ -60,7 +89,6 @@ export default function LoginPage() {
       setError('Enter the full code from your SMS');
       return;
     }
-
     setLoading(true);
     try {
       const res = await fetch('/api/auth/verify-otp', {
@@ -159,11 +187,14 @@ export default function LoginPage() {
             textAlign: 'center', marginTop: 24,
             color: 'var(--text-muted)', fontSize: 13,
           }}>
-            New here? No need to sign up.{' '}
+            New here?{' '}
+            <Link href="/register" style={{ color: 'var(--gold)', fontWeight: 700 }}>
+              Create an account
+            </Link>
+            {' '}or{' '}
             <Link href="/" style={{ color: 'var(--gold)', fontWeight: 700 }}>
-              Just shop
-            </Link>{' '}
-            and create an account at checkout.
+              just shop
+            </Link>.
           </p>
         </>
       ) : (

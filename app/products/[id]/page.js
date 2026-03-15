@@ -26,7 +26,6 @@ export default async function ProductPage({ params }) {
   const resolvedParams = await params;
   const supabase = createServiceClient();
 
-  // Fetch product
   const { data: product, error } = await supabase
     .from('products')
     .select('*')
@@ -36,28 +35,12 @@ export default async function ProductPage({ params }) {
 
   if (error || !product) notFound();
 
-  // Fetch all images from product_images table, ordered by sort_order
   const { data: productImages } = await supabase
     .from('product_images')
     .select('id, url, sort_order')
     .eq('product_id', resolvedParams.id)
     .order('sort_order', { ascending: true });
 
-    
-    const { data: productImages } = await supabase
-    .from('product_images')
-    .select('id, url, sort_order')
-    .eq('product_id', resolvedParams.id)
-    .order('sort_order', { ascending: true });   // ← line 44
-
-  // TEMP DEBUG - add right here ↓
-  console.log('productImages result:', JSON.stringify(productImages));
-  console.log('product.image_url:', product.image_url);
-
-  // Build images array: use product_images if available, fall back to image_url
-  const images =
-    productImages && productImages.length > 0
-  // Build images array: use product_images if available, fall back to image_url
   const images =
     productImages && productImages.length > 0
       ? productImages
@@ -72,11 +55,9 @@ export default async function ProductPage({ params }) {
   return (
     <div style={{ maxWidth: 500, margin: '0 auto', paddingBottom: 120 }}>
 
-      {/* Badge overlay wrapper */}
       <div style={{ position: 'relative', padding: '16px 16px 0' }}>
         <ImageGallery images={images} productName={product.name} />
 
-        {/* Badge pinned over the gallery */}
         {product.badge && (
           <span style={{
             position: 'absolute', top: 28, left: 28,
@@ -93,7 +74,6 @@ export default async function ProductPage({ params }) {
         )}
       </div>
 
-      {/* Product Info */}
       <div style={{ padding: '24px 20px' }}>
         <div style={{
           fontSize: 11, color: 'var(--text-muted)',
@@ -106,7 +86,6 @@ export default async function ProductPage({ params }) {
           {product.name}
         </h1>
 
-        {/* Price */}
         <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 16 }}>
           <span style={{ fontSize: 26, fontWeight: 800, color: 'var(--gold)' }}>
             {formatRWF(product.price)}
@@ -131,7 +110,6 @@ export default async function ProductPage({ params }) {
           )}
         </div>
 
-        {/* Stock status */}
         <div style={{
           display: 'inline-block',
           background: product.stock <= 5 ? '#2e1a1a' : '#1a2e1a',
@@ -149,7 +127,6 @@ export default async function ProductPage({ params }) {
           </span>
         </div>
 
-        {/* Description */}
         {product.description && (
           <p style={{
             color: 'var(--text-muted)',
@@ -159,7 +136,6 @@ export default async function ProductPage({ params }) {
           </p>
         )}
 
-        {/* Action Buttons */}
         <AddToCartButton product={product} />
       </div>
     </div>

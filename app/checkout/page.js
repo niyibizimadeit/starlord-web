@@ -4,23 +4,23 @@ import { useState, useEffect } from 'react';
 import { useCart } from '@/components/CartContext';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
+import { createBrowserClient } from '@supabase/ssr';
 
 function formatRWF(n) {
   return `RWF ${Number(n).toLocaleString()}`;
 }
 
-const DELIVERY_FEE = 2000;
-
 export default function CheckoutPage() {
   const { cart, cartTotal, clearCart } = useCart();
   const router = useRouter();
 
-  const [step, setStep] = useState(1);
-  const [processing, setProcessing] = useState(false);
-  const [error, setError] = useState('');
-  const [order, setOrder] = useState(null);
+  const [step, setStep]               = useState(1);
+  const [processing, setProcessing]   = useState(false);
+  const [error, setError]             = useState('');
+  const [order, setOrder]             = useState(null);
   const [createAccount, setCreateAccount] = useState(false);
-
+  const [isLoggedIn, setIsLoggedIn]   = useState(false);
+  const [deliveryFee, setDeliveryFee] = useState(null); // null = loading
   const [form, setForm] = useState({
     name: '',
     phone: '',
@@ -32,9 +32,35 @@ export default function CheckoutPage() {
     if (cart.length === 0 && !order) router.push('/');
   }, [cart, order, router]);
 
+  // ── Fetch session + delivery fee in parallel ───────────────────
+  useEffect(() => {
+    const supabase = createBrowserClient(
+      process.env.NEXT_PUBLIC_SUPABASE_URL,
+      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
+    );
+
+    // Check if user is logged in
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      setIsLoggedIn(!!session);
+    });
+
+    // Fetch shipping fee from settings table
+    supabase
+      .from('settings')
+      .select('value')
+      .eq('key', 'delivery_fee')
+      .single()
+      .then(({ data, error }) => {
+        if (data?.value) {
+          setDeliveryFee(Number(data.value));
+        } else {
+          setDeliveryFee(2000); // fallback if not set by admin
+        }
+      });
+  }, []);
+
   const updateForm = (key, value) => {
     setForm(prev => ({ ...prev, [key]: value }));
-    // Smart payment pre-selection based on phone prefix
     if (key === 'phone') {
       const clean = value.replace(/\s/g, '');
       if (clean.startsWith('078') || clean.startsWith('079')) {
@@ -60,9 +86,7 @@ export default function CheckoutPage() {
   const handleSubmit = async () => {
     setError('');
     setProcessing(true);
-
     const idempotencyKey = crypto.randomUUID();
-
     try {
       const res = await fetch('/api/checkout', {
         method: 'POST',
@@ -75,18 +99,16 @@ export default function CheckoutPage() {
             address: form.address,
           },
           paymentMethod:   form.paymentMethod,
+          deliveryFee,
           createAccount,
           idempotencyKey,
         }),
       });
-
       const data = await res.json();
-
       if (!res.ok) {
         if (data.code === 'STOCK_CONFLICT') {
           setError(data.error);
           setProcessing(false);
-          // Send them back to cart so they can review
           setTimeout(() => router.push('/cart'), 3000);
           return;
         }
@@ -94,17 +116,26 @@ export default function CheckoutPage() {
         setProcessing(false);
         return;
       }
-
-      // Order created — move to confirmation
       setOrder(data);
       clearCart();
       setStep(3);
-
     } catch {
       setError('Connection error. Please check your internet and try again.');
       setProcessing(false);
     }
   };
+
+  // Show loading state while fetching delivery fee
+  if (deliveryFee === null) {
+    return (
+      <div style={{
+        minHeight: '60vh', display: 'flex',
+        alignItems: 'center', justifyContent: 'center',
+      }}>
+        <div style={{ color: 'var(--text-muted)', fontSize: 13 }}>Loading checkout...</div>
+      </div>
+    );
+  }
 
   // ── STEP 1 — Order Summary ────────────────────────────────────────
   if (step === 1) {
@@ -136,12 +167,15 @@ export default function CheckoutPage() {
           </div>
           <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 16 }}>
             <span style={{ color: 'var(--text-muted)', fontSize: 13 }}>Delivery</span>
-            <span style={{ color: 'var(--text)', fontSize: 13 }}>{formatRWF(DELIVERY_FEE)}</span>
+            <span style={{ color: 'var(--text)', fontSize: 13 }}>{formatRWF(deliveryFee)}</span>
           </div>
-          <div style={{ display: 'flex', justifyContent: 'space-between', paddingTop: 12, borderTop: '1px solid var(--border)' }}>
+          <div style={{
+            display: 'flex', justifyContent: 'space-between',
+            paddingTop: 12, borderTop: '1px solid var(--border)',
+          }}>
             <span style={{ fontWeight: 800, fontSize: 16, color: 'var(--text)' }}>Total</span>
             <span style={{ fontWeight: 800, fontSize: 16, color: 'var(--gold)' }}>
-              {formatRWF(cartTotal + DELIVERY_FEE)}
+              {formatRWF(cartTotal + deliveryFee)}
             </span>
           </div>
         </div>
@@ -186,12 +220,9 @@ export default function CheckoutPage() {
     });
 
     const labelStyle = {
-      display: 'block',
-      fontSize: 12,
-      color: 'var(--text-muted)',
-      marginBottom: 6,
-      fontWeight: 700,
-      letterSpacing: 0.5,
+      display: 'block', fontSize: 12,
+      color: 'var(--text-muted)', marginBottom: 6,
+      fontWeight: 700, letterSpacing: 0.5,
     };
 
     return (
@@ -242,8 +273,8 @@ export default function CheckoutPage() {
             <label style={labelStyle}>Pay With</label>
             <div style={{ display: 'flex', gap: 10 }}>
               {[
-                { key: 'mtn',    label: 'MTN MoMo',     sub: '078 / 079' },
-                { key: 'airtel', label: 'Airtel Money',  sub: '072 / 073' },
+                { key: 'mtn',    label: 'MTN MoMo',    sub: '078 / 079' },
+                { key: 'airtel', label: 'Airtel Money', sub: '072 / 073' },
               ].map(p => (
                 <button
                   key={p.key}
@@ -252,18 +283,14 @@ export default function CheckoutPage() {
                     flex: 1,
                     background: form.paymentMethod === p.key ? 'var(--surface-2)' : 'var(--surface)',
                     border: `2px solid ${form.paymentMethod === p.key ? 'var(--gold)' : 'var(--border)'}`,
-                    borderRadius: 12,
-                    padding: '14px 10px',
-                    display: 'flex',
-                    flexDirection: 'column',
-                    alignItems: 'center',
-                    gap: 4,
+                    borderRadius: 12, padding: '14px 10px',
+                    display: 'flex', flexDirection: 'column',
+                    alignItems: 'center', gap: 4,
                     transition: 'all 0.2s',
                   }}
                 >
                   <span style={{
-                    fontSize: 13,
-                    fontWeight: 700,
+                    fontSize: 13, fontWeight: 700,
                     color: form.paymentMethod === p.key ? 'var(--gold)' : 'var(--text-muted)',
                   }}>
                     {p.label}
@@ -274,54 +301,48 @@ export default function CheckoutPage() {
             </div>
           </div>
 
-          {/* Save account checkbox */}
-          <div
-            onClick={() => setCreateAccount(!createAccount)}
-            style={{
-              display: 'flex',
-              alignItems: 'flex-start',
-              gap: 12,
-              cursor: 'pointer',
-              padding: '12px 14px',
-              background: 'var(--surface)',
-              border: `1px solid ${createAccount ? 'var(--gold)' : 'var(--border)'}`,
-              borderRadius: 10,
-            }}
-          >
-            <div style={{
-              width: 18, height: 18,
-              border: `2px solid ${createAccount ? 'var(--gold)' : 'var(--text-faint)'}`,
-              borderRadius: 4,
-              background: createAccount ? 'var(--gold)' : 'transparent',
-              flexShrink: 0,
-              marginTop: 2,
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-            }}>
-              {createAccount && (
-                <span style={{ color: '#000', fontSize: 11, fontWeight: 800 }}>✓</span>
-              )}
-            </div>
-            <div>
-              <div style={{ fontSize: 13, fontWeight: 700, color: 'var(--text)', marginBottom: 2 }}>
-                Save my info for next time
+          {/* Save account checkbox — hidden for logged-in users */}
+          {!isLoggedIn && (
+            <div
+              onClick={() => setCreateAccount(!createAccount)}
+              style={{
+                display: 'flex', alignItems: 'flex-start',
+                gap: 12, cursor: 'pointer',
+                padding: '12px 14px',
+                background: 'var(--surface)',
+                border: `1px solid ${createAccount ? 'var(--gold)' : 'var(--border)'}`,
+                borderRadius: 10,
+              }}
+            >
+              <div style={{
+                width: 18, height: 18,
+                border: `2px solid ${createAccount ? 'var(--gold)' : 'var(--text-faint)'}`,
+                borderRadius: 4,
+                background: createAccount ? 'var(--gold)' : 'transparent',
+                flexShrink: 0, marginTop: 2,
+                display: 'flex', alignItems: 'center', justifyContent: 'center',
+              }}>
+                {createAccount && (
+                  <span style={{ color: '#000', fontSize: 11, fontWeight: 800 }}>✓</span>
+                )}
               </div>
-              <div style={{ fontSize: 12, color: 'var(--text-muted)', lineHeight: 1.4 }}>
-                We will create a free account so you can track orders and reorder faster.
+              <div>
+                <div style={{ fontSize: 13, fontWeight: 700, color: 'var(--text)', marginBottom: 2 }}>
+                  Save my info for next time
+                </div>
+                <div style={{ fontSize: 12, color: 'var(--text-muted)', lineHeight: 1.4 }}>
+                  We will create a free account so you can track orders and reorder faster.
+                </div>
               </div>
             </div>
-          </div>
+          )}
 
           {/* Error */}
           {error && (
             <div style={{
-              background: '#2e1a1a',
-              border: '1px solid var(--red)',
-              borderRadius: 10,
-              padding: '12px 14px',
-              color: 'var(--red)',
-              fontSize: 13,
+              background: '#2e1a1a', border: '1px solid var(--red)',
+              borderRadius: 10, padding: '12px 14px',
+              color: 'var(--red)', fontSize: 13,
             }}>
               {error}
             </div>
@@ -329,16 +350,14 @@ export default function CheckoutPage() {
 
           {/* Total reminder */}
           <div style={{
-            display: 'flex',
-            justifyContent: 'space-between',
+            display: 'flex', justifyContent: 'space-between',
             padding: '12px 14px',
-            background: 'var(--surface)',
-            border: '1px solid var(--border)',
+            background: 'var(--surface)', border: '1px solid var(--border)',
             borderRadius: 10,
           }}>
             <span style={{ color: 'var(--text-muted)', fontSize: 13 }}>Total to pay</span>
             <span style={{ color: 'var(--gold)', fontWeight: 800, fontSize: 15 }}>
-              {formatRWF(cartTotal + DELIVERY_FEE)}
+              {formatRWF(cartTotal + deliveryFee)}
             </span>
           </div>
 
@@ -346,14 +365,9 @@ export default function CheckoutPage() {
             <button
               onClick={() => setStep(1)}
               style={{
-                flex: 1,
-                background: 'var(--surface)',
-                color: 'var(--text)',
-                border: '1px solid var(--border)',
-                borderRadius: 12,
-                padding: '15px',
-                fontWeight: 700,
-                fontSize: 14,
+                flex: 1, background: 'var(--surface)', color: 'var(--text)',
+                border: '1px solid var(--border)', borderRadius: 12,
+                padding: '15px', fontWeight: 700, fontSize: 14,
               }}
             >
               Back
@@ -364,16 +378,12 @@ export default function CheckoutPage() {
               style={{
                 flex: 2,
                 background: processing ? 'var(--gold-dark)' : 'var(--gold)',
-                color: '#000',
-                border: 'none',
-                borderRadius: 12,
-                padding: '15px',
-                fontWeight: 800,
-                fontSize: 15,
+                color: '#000', border: 'none', borderRadius: 12,
+                padding: '15px', fontWeight: 800, fontSize: 15,
                 opacity: processing ? 0.8 : 1,
               }}
             >
-              {processing ? 'Placing order...' : `Pay ${formatRWF(cartTotal + DELIVERY_FEE)}`}
+              {processing ? 'Placing order...' : `Pay ${formatRWF(cartTotal + deliveryFee)}`}
             </button>
           </div>
         </div>
@@ -385,10 +395,8 @@ export default function CheckoutPage() {
   if (step === 3 && order) {
     return (
       <div style={{
-        maxWidth: 500,
-        margin: '0 auto',
-        padding: '60px 24px',
-        textAlign: 'center',
+        maxWidth: 500, margin: '0 auto',
+        padding: '60px 24px', textAlign: 'center',
       }}>
         <div style={{ fontSize: 14, color: 'var(--green)', fontWeight: 800, marginBottom: 16 }}>
           Order Confirmed
@@ -401,21 +409,15 @@ export default function CheckoutPage() {
         </p>
 
         <div style={{
-          background: 'var(--surface)',
-          border: '1px solid var(--border)',
-          borderRadius: 16,
-          padding: 20,
-          marginBottom: 32,
+          background: 'var(--surface)', border: '1px solid var(--border)',
+          borderRadius: 16, padding: 20, marginBottom: 32,
         }}>
           <div style={{ color: 'var(--text-muted)', fontSize: 12, marginBottom: 8 }}>
             Order Reference
           </div>
           <div style={{
-            fontFamily: 'monospace',
-            fontSize: 22,
-            fontWeight: 800,
-            color: 'var(--gold)',
-            letterSpacing: 2,
+            fontFamily: 'monospace', fontSize: 22,
+            fontWeight: 800, color: 'var(--gold)', letterSpacing: 2,
           }}>
             {order.reference}
           </div>
@@ -428,14 +430,9 @@ export default function CheckoutPage() {
           <Link
             href={`/track?ref=${order.reference}&phone=${form.phone}`}
             style={{
-              display: 'block',
-              background: 'var(--surface)',
-              border: '1px solid var(--border)',
-              borderRadius: 12,
-              padding: '14px',
-              fontWeight: 700,
-              fontSize: 14,
-              color: 'var(--text)',
+              display: 'block', background: 'var(--surface)',
+              border: '1px solid var(--border)', borderRadius: 12,
+              padding: '14px', fontWeight: 700, fontSize: 14, color: 'var(--text)',
             }}
           >
             Track Order
@@ -443,13 +440,9 @@ export default function CheckoutPage() {
           <Link
             href="/"
             style={{
-              display: 'block',
-              background: 'var(--gold)',
-              borderRadius: 12,
-              padding: '14px',
-              fontWeight: 800,
-              fontSize: 14,
-              color: '#000',
+              display: 'block', background: 'var(--gold)',
+              borderRadius: 12, padding: '14px',
+              fontWeight: 800, fontSize: 14, color: '#000',
             }}
           >
             Continue Shopping
@@ -461,4 +454,3 @@ export default function CheckoutPage() {
 
   return null;
 }
-
