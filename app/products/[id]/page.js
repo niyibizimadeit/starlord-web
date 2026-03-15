@@ -1,6 +1,7 @@
 import { createServiceClient } from '@/lib/supabase/server';
 import { notFound } from 'next/navigation';
 import AddToCartButton from '@/components/AddToCartButton';
+import ImageGallery from '@/components/ImageGallery';
 
 export async function generateMetadata({ params }) {
   const resolvedParams = await params;
@@ -25,6 +26,7 @@ export default async function ProductPage({ params }) {
   const resolvedParams = await params;
   const supabase = createServiceClient();
 
+  // Fetch product
   const { data: product, error } = await supabase
     .from('products')
     .select('*')
@@ -34,6 +36,35 @@ export default async function ProductPage({ params }) {
 
   if (error || !product) notFound();
 
+  // Fetch all images from product_images table, ordered by sort_order
+  const { data: productImages } = await supabase
+    .from('product_images')
+    .select('id, url, sort_order')
+    .eq('product_id', resolvedParams.id)
+    .order('sort_order', { ascending: true });
+
+    
+    const { data: productImages } = await supabase
+    .from('product_images')
+    .select('id, url, sort_order')
+    .eq('product_id', resolvedParams.id)
+    .order('sort_order', { ascending: true });   // ← line 44
+
+  // TEMP DEBUG - add right here ↓
+  console.log('productImages result:', JSON.stringify(productImages));
+  console.log('product.image_url:', product.image_url);
+
+  // Build images array: use product_images if available, fall back to image_url
+  const images =
+    productImages && productImages.length > 0
+  // Build images array: use product_images if available, fall back to image_url
+  const images =
+    productImages && productImages.length > 0
+      ? productImages
+      : product.image_url
+      ? [{ id: 'main', url: product.image_url }]
+      : [];
+
   const discount = product.old_price
     ? Math.round((1 - product.price / product.old_price) * 100)
     : null;
@@ -41,33 +72,21 @@ export default async function ProductPage({ params }) {
   return (
     <div style={{ maxWidth: 500, margin: '0 auto', paddingBottom: 120 }}>
 
-      {/* Product Image */}
-      <div style={{
-        background: '#1a1a2e',
-        height: 300,
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        position: 'relative',
-      }}>
-        {product.image_url ? (
-          <img
-            src={product.image_url}
-            alt={product.name}
-            style={{ width: '100%', height: '100%', objectFit: 'cover' }}
-          />
-        ) : (
-          <div style={{ color: 'var(--text-faint)', fontSize: 14 }}>No image yet</div>
-        )}
+      {/* Badge overlay wrapper */}
+      <div style={{ position: 'relative', padding: '16px 16px 0' }}>
+        <ImageGallery images={images} productName={product.name} />
+
+        {/* Badge pinned over the gallery */}
         {product.badge && (
           <span style={{
-            position: 'absolute', top: 16, left: 16,
+            position: 'absolute', top: 28, left: 28,
             background: product.badge === 'SALE' ? 'var(--gold)' :
                         product.badge === 'NEW'  ? 'var(--green)' : 'var(--red)',
             color: product.badge === 'SALE' ? '#000' : '#fff',
             fontSize: 10, fontWeight: 800,
             padding: '3px 10px', borderRadius: 4,
             letterSpacing: 1, fontFamily: 'monospace',
+            zIndex: 10,
           }}>
             {product.badge}
           </span>

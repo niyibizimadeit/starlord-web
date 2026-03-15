@@ -10,10 +10,18 @@ async function getProducts() {
   const supabase = createServiceClient();
   const { data } = await supabase
     .from('products')
-    .select('*')
+    .select('*, product_images(url, sort_order)')
     .eq('is_active', true)
     .order('created_at', { ascending: false });
-  return data || [];
+
+  return (data || []).map(product => {
+    // If no image_url, use the first image from product_images as thumbnail
+    if (!product.image_url && product.product_images?.length > 0) {
+      const sorted = [...product.product_images].sort((a, b) => a.sort_order - b.sort_order);
+      product.image_url = sorted[0].url;
+    }
+    return product;
+  });
 }
 
 export default async function HomePage({ searchParams }) {
