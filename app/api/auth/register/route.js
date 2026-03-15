@@ -1,25 +1,6 @@
 import { createServerSupabaseClient } from '@/lib/supabase/server';
 import { createServiceClient } from '@/lib/supabase/server';
 
-async function provisionUser(supabase, user) {
-  // Skip if already provisioned
-  const { data: existing } = await supabase
-    .from('users')
-    .select('id')
-    .eq('id', user.id)
-    .single();
-  
-  if (existing) return;
-
-  await supabase.from('users').insert({
-    id: user.id,
-    email: user.email,
-    full_name: user.user_metadata?.full_name || user.email.split('@')[0],
-    role: 'customer',
-    password_set: true,
-  });
-}
-
 export async function POST(request) {
   try {
     const { email, password, full_name } = await request.json();
@@ -33,10 +14,9 @@ export async function POST(request) {
 
     const { data, error } = await supabase.auth.signUp({
       email,
-      password, 
+      password,
       options: {
         data: { full_name },
-        emailRedirectTo: `${process.env.NEXT_PUBLIC_SITE_URL}/login?confirmed=true`,
       },
     });
 
@@ -45,17 +25,38 @@ export async function POST(request) {
     }
 
     if (data.user) {
-      await provisionUser(serviceSupabase, data.user);
+      // Check if already provisioned
+      const { data: existing } = await serviceSupabase
+        .from('users')
+        .select('id')
+        .eq('id', data.user.id)
+        .single();
+
+      if (!existing) {
+        const { error: insertError } = await serviceSupabase
+          .from('users')
+          .insert({
+            id:           data.user.id,
+            email:        data.user.email,
+            full_name:    full_name || email.split('@')[0],
+            phone:        null,   // ← explicitly null for email registrations
+            role:         'customer',
+            password_set: true,
+          });
+
+        if (insertError) {
+          console.error('User provision error:', JSON.stringify(insertError));
+          // Don't block registration — user can still verify and log in
+        }
+      }
     }
 
     return Response.json({
       success: true,
-      message: 'Check your email for verification link (valid 30 min)',
-      user: data.user,
+      message: 'Check your email for your verification code',
       needsEmailConfirmation: !data.session,
     });
   } catch {
     return Response.json({ error: 'Registration failed' }, { status: 500 });
   }
 }
-
