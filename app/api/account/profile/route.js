@@ -1,5 +1,6 @@
 import { createServerClient } from '@supabase/ssr';
 import { cookies } from 'next/headers';
+import { createServiceClient } from '@/lib/supabase/server';
 
 // Helper to check auth and get user
 async function getAuthenticatedUser(supabase) {
@@ -90,14 +91,23 @@ export async function PATCH(request) {
       return Response.json({ error: auth.error }, { status: auth.status });
     }
 
-    const { fullName, email } = await request.json();
+    const { fullName, email, phone } = await request.json();
 
     // Update profile
     const updates = {};
     if (fullName !== undefined) updates.full_name = fullName.slice(0, 100);
     if (email !== undefined) updates.email = email;
+    if (phone !== undefined && phone) {
+      const cleanPhone = phone.replace(/\s/g, '');
+      const phoneRegex = /^(078|079|072|073)\d{7}$/;
+      if (!phoneRegex.test(cleanPhone)) {
+        return Response.json({ error: 'Enter a valid Rwandan phone number' }, { status: 400 });
+      }
+      updates.phone = cleanPhone;
+    }
 
-    const { error } = await supabase
+    const serviceSupabase = createServiceClient();
+    const { error } = await serviceSupabase
       .from('users')
       .update(updates)
       .eq('id', auth.user.id);
