@@ -13,7 +13,7 @@ function generateReference() {
 export async function POST(request) {
   try {
     const body = await request.json();
-    const { items, customer, paymentMethod, idempotencyKey, createAccount } = body;
+    const { items, customer, paymentMethod, idempotencyKey, createAccount, deliverySlot } = body;
 
     if (!items?.length || !customer?.name || !customer?.phone ||
         !customer?.address || !paymentMethod || !idempotencyKey) {
@@ -151,6 +151,7 @@ export async function POST(request) {
         delivery_address: safeAddress,
         subtotal,
         delivery_fee:     DELIVERY_FEE,
+        delivery_slot:    deliverySlot || null, 
         total,
         payment_method:   paymentMethod,
         idempotency_key:  idempotencyKey,

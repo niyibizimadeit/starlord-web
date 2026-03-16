@@ -26,6 +26,8 @@ export default function CheckoutPage() {
   const [showAddressForm, setShowAddressForm] = useState(false);
   const [newAddress, setNewAddress] = useState({ label: '', address_line: '' });
   const [savingAddress, setSavingAddress] = useState(false);
+  const [deliverySlot, setDeliverySlot] = useState('');
+  const [slots, setSlots] = useState([]);
   const [form, setForm] = useState({
     name: '', phone: '', address: '', paymentMethod: 'mtn',
   });
@@ -49,6 +51,18 @@ export default function CheckoutPage() {
       .single()
       .then(({ data }) => setDeliveryFee(data?.value ? Number(data.value) : 0));
 
+    // Delivery slots
+    supabase
+      .from('settings')
+      .select('value')
+      .eq('key', 'delivery_slots')
+      .single()
+      .then(({ data }) => {
+        if (data?.value) {
+          try { setSlots(JSON.parse(data.value)); } catch {}
+        }
+      });
+
     // Session + prefill via API (bypasses RLS)
     supabase.auth.getSession().then(async ({ data: { session } }) => {
       if (!session) { setIsLoggedIn(false); return; }
@@ -60,7 +74,7 @@ export default function CheckoutPage() {
       const data = await res.json();
 
       const { profile, addresses: addrs } = data;
-      
+
       // TEMP DEBUG
       console.log('profile:', JSON.stringify(profile));
       console.log('addresses:', JSON.stringify(addrs));
@@ -144,6 +158,7 @@ export default function CheckoutPage() {
           customer: { name: form.name, phone: form.phone, address: form.address },
           paymentMethod: form.paymentMethod,
           deliveryFee,
+          deliverySlot: deliverySlot || null,
           createAccount,
           idempotencyKey,
         }),
@@ -440,6 +455,54 @@ export default function CheckoutPage() {
               </div>
             )}
           </div>
+             {/* Delivery Slot — optional */}
+             {slots.length > 0 && (
+            <div>
+              <label style={labelStyle}>
+                Delivery Time{' '}
+                <span style={{ color: 'var(--text-faint)', fontWeight: 400 }}>(optional)</span>
+              </label>
+              <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
+                {slots.map(slot => (
+                  <button
+                    key={slot}
+                    onClick={() => setDeliverySlot(deliverySlot === slot ? '' : slot)}
+                    style={{
+                      padding: '10px 16px',
+                      borderRadius: 10,
+                      border: `2px solid ${deliverySlot === slot ? 'var(--gold)' : 'var(--border)'}`,
+                      background: deliverySlot === slot ? 'var(--surface-2)' : 'var(--surface)',
+                      color: deliverySlot === slot ? 'var(--gold)' : 'var(--text-muted)',
+                      fontSize: 13, fontWeight: 700,
+                      cursor: 'pointer', transition: 'all 0.2s',
+                    }}
+                  >
+                    {slot}
+                  </button>
+                ))}
+                {/* Any time option */}
+                <button
+                  onClick={() => setDeliverySlot(deliverySlot === 'Any time' ? '' : 'Any time')}
+                  style={{
+                    padding: '10px 16px',
+                    borderRadius: 10,
+                    border: `2px solid ${deliverySlot === 'Any time' ? 'var(--gold)' : 'var(--border)'}`,
+                    background: deliverySlot === 'Any time' ? 'var(--surface-2)' : 'var(--surface)',
+                    color: deliverySlot === 'Any time' ? 'var(--gold)' : 'var(--text-muted)',
+                    fontSize: 13, fontWeight: 700,
+                    cursor: 'pointer', transition: 'all 0.2s',
+                  }}
+                >
+                  Any time
+                </button>
+              </div>
+              {deliverySlot && (
+                <div style={{ fontSize: 11, color: 'var(--text-faint)', marginTop: 6 }}>
+                  ✓ Preferred: {deliverySlot} — we will do our best to deliver in this window
+                </div>
+              )}
+            </div>
+          )}
           {/* Payment Method */}
           <div>
             <label style={labelStyle}>Pay With</label>
