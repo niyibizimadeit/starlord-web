@@ -27,7 +27,7 @@ export default function Header() {
   function handleSearchSubmit(e) {
     e.preventDefault();
     if (searchValue.trim()) {
-      window.location.href = `/?search=${encodeURIComponent(searchValue.trim())}`;
+      window.location.href = `/products?search=${encodeURIComponent(searchValue.trim())}`;
     }
   }
 
@@ -76,10 +76,10 @@ export default function Header() {
 
         {/* Desktop Nav */}
         <nav style={{ display: 'flex', gap: 32 }} className="desktop-nav">
-          {['New Arrivals', 'Tech', 'Fashion', 'Sale'].map(item => (
+           {['New Arrivals', 'Tech', 'Fashion', 'Sale'].map(item => (
             <Link
               key={item}
-              href={item === 'New Arrivals' ? '/' : `/?category=${item}`}
+              href={item === 'New Arrivals' ? '/products' : `/products?category=${item}`}
               style={{
                 fontSize: 13,
                 fontWeight: 700,

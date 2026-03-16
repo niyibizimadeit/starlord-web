@@ -24,10 +24,13 @@ export function toSlug(str) { return str.toLowerCase().replace(/\s+/g, '-').repl
 
 export const STATUS_COLOR = {
   pending: '#C9A84C', confirmed: '#4caf7d', preparing: '#3498DB',
-  dispatched: '#9B59B6', delivered: '#4caf7d', cancelled: '#e05555', stock_conflict: '#e05555',
+  dispatched: '#9B59B6', delivered: '#4caf7d', cancelled: '#e05555',
+  stock_conflict: '#e05555', return_requested: '#f5a623',
+  return_approved: '#4caf7d', return_rejected: '#e05555',
 };
+
 export const NEXT_STATUS = { pending: 'confirmed', confirmed: 'preparing', preparing: 'dispatched', dispatched: 'delivered' };
-export const LOG_ICONS = { ORDER_STATUS_CHANGED: '↺', PRODUCT_CREATED: '+', PRODUCT_UPDATED: '✎', PRODUCT_DELETED: '✕', STOCK_ADJUSTED: '▲', CATEGORY_CREATED: '+', CATEGORY_UPDATED: '✎', CATEGORY_DELETED: '✕', SETTINGS_UPDATED: '⚙' };
+export const LOG_ICONS = { ORDER_STATUS_CHANGED: '↺', return_request: '↩',PRODUCT_CREATED: '+', PRODUCT_UPDATED: '✎', PRODUCT_DELETED: '✕', STOCK_ADJUSTED: '▲', CATEGORY_CREATED: '+', CATEGORY_UPDATED: '✎', CATEGORY_DELETED: '✕', SETTINGS_UPDATED: '⚙' };
 
 export const S = {
   page:      { maxWidth: 1200, margin: '0 auto', padding: '24px 20px', fontFamily: "'Georgia', serif" },

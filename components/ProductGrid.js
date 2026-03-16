@@ -8,8 +8,6 @@ import styles from './ProductGrid.module.css';
 
 const PAGE_SIZE = 8;
 
-const CATEGORIES = ['All', 'Tech', 'Fashion'];
-
 function formatRWF(n) {
   return `RWF ${Number(n).toLocaleString()}`;
 }
@@ -145,7 +143,9 @@ export default function ProductGrid({
   initialProducts, 
   initialCategory = 'All', 
   initialSearch = '', 
-  initialBadge 
+  initialBadge,
+  categories = ['All', 'Tech', 'Fashion'],
+  basePath = '/',
 }) {
   const [category, setCategory] = useState(initialCategory);
   const [search, setSearch] = useState(initialSearch);
@@ -248,7 +248,7 @@ export default function ProductGrid({
         {/* Filters */}
         <div className={styles.filtersRow}>
           <div className={styles.categoryPills}>
-            {CATEGORIES.map(cat => (
+           {['All', ...categories].map(cat => (
               <button
                 key={cat}
                 onClick={() => handleCategoryChange(cat)}

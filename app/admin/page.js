@@ -67,6 +67,12 @@ function OrderModal({ orderId, onClose, onStatusChange }) {
             <div style={{ display: 'flex', justifyContent: 'space-between', padding: '8px 0', borderBottom: '1px solid #1c1c1c' }}><span style={{ fontSize: 12, color: '#666' }}>Delivery</span><span style={{ fontSize: 12, color: '#ccc' }}>{formatRWF(order.delivery_fee)}</span></div>
             <div style={{ display: 'flex', justifyContent: 'space-between', padding: '10px 0' }}><span style={{ fontSize: 14, fontWeight: 800, color: '#fff' }}>Total</span><span style={{ fontSize: 14, fontWeight: 800, color: '#C9A84C' }}>{formatRWF(order.total)}</span></div>
           </div>
+          {order.delivery_slot && (
+            <div style={{ background: '#0a0a0a', borderRadius: 10, padding: 14, marginBottom: 16 }}>
+            <div style={S.label}>Preferred Delivery Slot</div>
+            <div style={{ fontSize: 13, color: '#C9A84C', fontWeight: 700 }}>🕐 {order.delivery_slot}</div>
+             </div>
+          )}
           <div style={{ background: '#0a0a0a', borderRadius: 10, padding: 14, marginBottom: 16, display: 'flex', gap: 24 }}>
             <div><div style={S.label}>Payment</div><div style={{ fontSize: 13, color: '#fff', fontWeight: 600, textTransform: 'capitalize' }}>{order.payment_method || '—'}</div></div>
             <div><div style={S.label}>Status</div><span style={{ ...S.badge, background: order.payment_status === 'paid' ? '#4caf7d22' : '#C9A84C22', color: order.payment_status === 'paid' ? '#4caf7d' : '#C9A84C' }}>{(order.payment_status || 'pending').toUpperCase()}</span></div>
@@ -223,6 +229,7 @@ export default function AdminPage() {
   const [users,      setUsers]      = useState([]);
   const [segments,   setSegments]   = useState(null);
   const [settings,   setSettings]   = useState({});
+  const [returns, setReturns] = useState([]);
 
   const [orderSearch,  setOrderSearch]  = useState('');
   const [orderFilter,  setOrderFilter]  = useState('all');
@@ -260,9 +267,15 @@ export default function AdminPage() {
     const { data } = await apiFetch('users', p); setUsers(data || []);
   }, [userSearch]);
   const fetchSegments = useCallback(async () => { const { data } = await apiFetch('segments'); setSegments(data); }, []);
+  
   const fetchSettings = useCallback(async () => {
     const { data } = await apiFetch('settings');
     setSettings(data || {}); setSettingsForm(data || {});
+  }, []);
+
+  const fetchReturns = useCallback(async () => {
+    const { data } = await apiFetch('orders', { status: 'return_requested' });
+    setReturns(data || []);
   }, []);
 
   const loadTab = async () => {
@@ -277,6 +290,7 @@ export default function AdminPage() {
     else if (tab === 'segments')   await fetchSegments();
     else if (tab === 'logs')       await fetchLogs();
     else if (tab === 'settings')   await fetchSettings();
+    else if (tab === 'returns')    await fetchReturns();
     setLoading(false);
   };
 
@@ -389,6 +403,7 @@ export default function AdminPage() {
             { id: 'users',      label: 'Customers'    },
             { id: 'segments',   label: 'Segments'     },
             { id: 'settings',   label: 'Settings'     },
+            { id: 'returns',    label: 'Returns'      },
             { id: 'logs',       label: 'Activity Log' },
           ].map(t => (
             <button key={t.id} onClick={() => setTab(t.id)} style={{ ...S.tab, ...(tab === t.id ? S.tabActive : {}) }}>{t.label}</button>
@@ -766,6 +781,130 @@ export default function AdminPage() {
         )}
 
       </div>
+
+
+      {/* RETURNS */}
+{!loading && tab === 'returns' && (
+  <div>
+    <div style={{ fontSize: 11, color: '#555', marginBottom: 16, letterSpacing: 1 }}>
+      {returns.length} return {returns.length === 1 ? 'request' : 'requests'} pending
+    </div>
+
+    {returns.length === 0 && (
+      <div style={{ color: '#555', textAlign: 'center', padding: 60 }}>
+        No return requests
+      </div>
+    )}
+
+    {returns.map(order => (
+      <div key={order.id} style={{ ...S.card, padding: '18px 20px', marginBottom: 12 }}>
+
+        {/* Header */}
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 14 }}>
+          <div>
+            <div style={{ fontFamily: 'monospace', fontSize: 16, fontWeight: 800, color: '#C9A84C', marginBottom: 4 }}>
+              {order.reference}
+            </div>
+            <div style={{ fontSize: 12, color: '#888' }}>
+              {order.customer_name} · {order.customer_phone}
+            </div>
+            <div style={{ fontSize: 11, color: '#555', marginTop: 2 }}>
+              {formatDate(order.created_at)}
+            </div>
+          </div>
+          <div style={{ textAlign: 'right' }}>
+            <div style={{ fontSize: 15, fontWeight: 800, color: '#fff', marginBottom: 4 }}>
+              {formatRWF(order.total)}
+            </div>
+            <span style={{ ...S.badge, background: '#f5a62322', color: '#f5a623' }}>
+              RETURN REQUESTED
+            </span>
+          </div>
+        </div>
+
+        {/* Return details */}
+        {order.returnDetails && (
+          <div style={{ background: '#0a0a0a', borderRadius: 10, padding: 14, marginBottom: 14 }}>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+              {order.returnDetails.note && (
+                <div>
+                  <div style={S.label}>Return Reason</div>
+                  <div style={{ fontSize: 13, color: '#ccc', lineHeight: 1.5 }}>
+                    {order.returnDetails.note}
+                  </div>
+                </div>
+              )}
+              {order.returnDetails.return_slot && (
+                <div>
+                  <div style={S.label}>Preferred Pickup Slot</div>
+                  <div style={{ fontSize: 13, color: '#C9A84C', fontWeight: 700 }}>
+                    🕐 {order.returnDetails.return_slot}
+                  </div>
+                </div>
+              )}
+              <div>
+                <div style={S.label}>Terms Agreed</div>
+                <div style={{ fontSize: 12, color: '#4caf7d' }}>
+                  ✓ Customer accepted return terms
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Delivery info */}
+        <div style={{ background: '#0a0a0a', borderRadius: 10, padding: 14, marginBottom: 14 }}>
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
+            <div>
+              <div style={S.label}>Delivery Address</div>
+              <div style={{ fontSize: 12, color: '#ccc' }}>{order.delivery_address}</div>
+            </div>
+            <div>
+              <div style={S.label}>Contact</div>
+              <a href={'tel:' + order.customer_phone} style={{ fontSize: 13, color: '#C9A84C', textDecoration: 'none' }}>
+                {order.customer_phone}
+              </a>
+            </div>
+          </div>
+        </div>
+
+        {/* Actions */}
+        <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
+          <button
+            onClick={async () => {
+              if (!confirm('Approve this return request?')) return;
+              await apiMutate('PATCH', { type: 'order_status', id: order.id, status: 'return_approved' });
+              await fetchReturns();
+            }}
+            style={{ ...S.btn, background: '#1c2a1a', color: '#4caf7d', border: '1px solid #4caf7d33' }}
+          >
+            ✓ Approve Return
+          </button>
+          <button
+            onClick={async () => {
+              if (!confirm('Reject this return request?')) return;
+              await apiMutate('PATCH', { type: 'order_status', id: order.id, status: 'return_rejected' });
+              await fetchReturns();
+            }}
+            style={{ ...S.btn, background: '#2e1a1a', color: '#e05555', border: '1px solid #e0555533' }}
+          >
+            ✕ Reject Return
+          </button>
+          <button
+            onClick={() => setSelectedOrderId(order.id)}
+            style={{ ...S.btn, background: '#1c1c1c', color: '#888', border: '1px solid #2a2a2a' }}
+          >
+            View Full Order
+          </button>
+          
+          <a href={'https://wa.me/' + (order.customer_phone?.replace(/\D/g, ''))} target="_blank" rel="noreferrer" style={{ ...S.btn, background: '#1c1c1c', color: '#888', border: '1px solid #2a2a2a', textDecoration: 'none' }}>WhatsApp</a>
+          
+          <a href={'tel:' + order.customer_phone} style={{ ...S.btn, background: '#1c1c1c', color: '#888', border: '1px solid #2a2a2a', textDecoration: 'none' }}>Call</a>
+        </div>
+      </div>
+    ))}
+  </div>
+)}
 
       {selectedOrderId && <OrderModal orderId={selectedOrderId} onClose={() => setSelectedOrderId(null)} onStatusChange={fetchOrders} />}
       {editProduct !== undefined && <ProductModal product={editProduct} categories={categories} onClose={() => setEditProduct(undefined)} onSave={fetchProducts} />}

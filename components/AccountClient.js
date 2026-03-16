@@ -15,13 +15,14 @@ function formatDate(d) {
 }
 
 const STATUS_COLORS = {
-  pending:        'var(--text-muted)',
-  confirmed:      'var(--gold)',
-  preparing:      'var(--gold)',
-  dispatched:     '#6ab0f5',
-  delivered:      'var(--green)',
-  cancelled:      'var(--red)',
-  stock_conflict: 'var(--red)',
+  pending:          'var(--text-muted)',
+  confirmed:        'var(--gold)',
+  preparing:        'var(--gold)',
+  dispatched:       '#6ab0f5',
+  delivered:        'var(--green)',
+  cancelled:        'var(--red)',
+  stock_conflict:   'var(--red)',
+  return_requested: '#f5a623',
 };
 
 const inputStyle = (hasValue) => ({
@@ -101,6 +102,7 @@ function ProfileTab({ profile }) {
           style={inputStyle(form.full_name)}
         />
       </div>
+
       <div>
         <label style={labelStyle}>Email</label>
         <input
@@ -109,6 +111,7 @@ function ProfileTab({ profile }) {
           style={inputStyle(form.email)}
         />
       </div>
+
       <div>
         <label style={labelStyle}>Phone Number</label>
         <input
@@ -134,7 +137,7 @@ function ProfileTab({ profile }) {
         background: loading ? 'var(--gold-dark)' : 'var(--gold)',
         color: '#000', border: 'none', borderRadius: 12,
         padding: '14px', fontWeight: 800, fontSize: 14,
-        opacity: loading ? 0.7 : 1,
+        opacity: loading ? 0.7 : 1, cursor: 'pointer',
       }}>
         {loading ? 'Saving...' : 'Save Changes'}
       </button>
@@ -144,13 +147,13 @@ function ProfileTab({ profile }) {
 
 // ── Addresses Tab ─────────────────────────────────────────────────────────────
 function AddressesTab({ addresses: initialAddresses }) {
-  const [addresses, setAddresses]   = useState(initialAddresses);
-  const [showForm, setShowForm]     = useState(false);
-  const [editId, setEditId]         = useState(null);
-  const [form, setForm]             = useState({ label: '', address_line: '' });
-  const [loading, setLoading]       = useState(false);
-  const [error, setError]           = useState('');
-  const [success, setSuccess]       = useState('');
+  const [addresses, setAddresses] = useState(initialAddresses);
+  const [showForm, setShowForm]   = useState(false);
+  const [editId, setEditId]       = useState(null);
+  const [form, setForm]           = useState({ label: '', address_line: '' });
+  const [loading, setLoading]     = useState(false);
+  const [error, setError]         = useState('');
+  const [success, setSuccess]     = useState('');
 
   const resetForm = () => {
     setForm({ label: '', address_line: '' });
@@ -220,7 +223,8 @@ function AddressesTab({ addresses: initialAddresses }) {
 
       {addresses.map(addr => (
         <div key={addr.id} style={{
-          background: 'var(--surface)', border: `1px solid ${addr.is_default ? 'var(--gold)' : 'var(--border)'}`,
+          background: 'var(--surface)',
+          border: `1px solid ${addr.is_default ? 'var(--gold)' : 'var(--border)'}`,
           borderRadius: 12, padding: '14px 16px',
         }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
@@ -307,8 +311,7 @@ function AddressesTab({ addresses: initialAddresses }) {
           background: 'none', border: '2px dashed var(--border)',
           borderRadius: 12, padding: '14px',
           color: 'var(--text-muted)', fontSize: 13,
-          fontWeight: 700, cursor: 'pointer',
-          width: '100%',
+          fontWeight: 700, cursor: 'pointer', width: '100%',
         }}>
           + Add New Address
         </button>
@@ -317,35 +320,157 @@ function AddressesTab({ addresses: initialAddresses }) {
   );
 }
 
-// ── Orders Tab ────────────────────────────────────────────────────────────────
+// ── Return Form ───────────────────────────────────────────────────────────────
+function ReturnForm({ onSubmit, onCancel, error }) {
+  const [note, setNote]             = useState('');
+  const [slot, setSlot]             = useState('');
+  const [agreed, setAgreed]         = useState(false);
+  const [submitting, setSubmitting] = useState(false);
+
+  const RETURN_SLOTS = ['Morning 9:00–12:00', 'Afternoon 2:00–5:00', 'Evening 6:00–8:00'];
+
+  const handleSubmit = async () => {
+    if (!agreed || !note.trim()) return;
+    setSubmitting(true);
+    await onSubmit(note, slot);
+    setSubmitting(false);
+  };
+
+  return (
+    <div style={{ marginTop: 12, display: 'flex', flexDirection: 'column', gap: 10 }}>
+
+      {/* Reason */}
+      <div>
+        <label style={labelStyle}>Reason for return</label>
+        <textarea
+          placeholder="Please describe why you want to return this order..."
+          value={note}
+          onChange={e => setNote(e.target.value)}
+          rows={3}
+          style={{
+            width: '100%', background: 'var(--surface)',
+            border: '1px solid var(--border)', borderRadius: 10,
+            padding: '12px 14px', color: 'var(--text)',
+            fontSize: 13, resize: 'none', boxSizing: 'border-box',
+          }}
+        />
+      </div>
+
+      {/* Preferred pickup time */}
+      <div>
+        <label style={labelStyle}>
+          Preferred pickup time{' '}
+          <span style={{ color: 'var(--text-faint)', fontWeight: 400 }}>(optional)</span>
+        </label>
+        <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6 }}>
+          {RETURN_SLOTS.map(s => (
+            <button key={s} onClick={() => setSlot(slot === s ? '' : s)} style={{
+              padding: '8px 12px', borderRadius: 8,
+              border: `2px solid ${slot === s ? 'var(--gold)' : 'var(--border)'}`,
+              background: slot === s ? 'var(--surface-2)' : 'var(--surface)',
+              color: slot === s ? 'var(--gold)' : 'var(--text-muted)',
+              fontSize: 12, fontWeight: 700, cursor: 'pointer',
+            }}>{s}</button>
+          ))}
+        </div>
+      </div>
+
+      {/* Terms agreement */}
+      <div
+        onClick={() => setAgreed(!agreed)}
+        style={{
+          display: 'flex', alignItems: 'flex-start', gap: 10,
+          cursor: 'pointer', padding: '10px 12px',
+          background: 'var(--surface)',
+          border: `1px solid ${agreed ? 'var(--gold)' : 'var(--border)'}`,
+          borderRadius: 10,
+        }}
+      >
+        <div style={{
+          width: 16, height: 16, flexShrink: 0, marginTop: 1,
+          border: `2px solid ${agreed ? 'var(--gold)' : 'var(--text-faint)'}`,
+          borderRadius: 4,
+          background: agreed ? 'var(--gold)' : 'transparent',
+          display: 'flex', alignItems: 'center', justifyContent: 'center',
+        }}>
+          {agreed && <span style={{ color: '#000', fontSize: 10, fontWeight: 800 }}>✓</span>}
+        </div>
+        <div style={{ fontSize: 12, color: 'var(--text-muted)', lineHeight: 1.5 }}>
+          I have read and agree to the{' '}
+          <a href="/returns" target="_blank" rel="noopener noreferrer" onClick={e => e.stopPropagation()} style={{ color: 'var(--gold)', fontWeight: 700, textDecoration: 'underline' }}>return terms</a>
+          . I understand I am responsible for return delivery costs and will receive a{' '}
+          <strong style={{ color: 'var(--text)' }}>replacement product</strong>, not a refund.
+          Return window is 6 hours from delivery confirmation.
+        </div>
+      </div>
+
+      {error && <ErrorBox msg={error} />}
+
+      <div style={{ display: 'flex', gap: 8 }}>
+        <button onClick={onCancel} style={{
+          flex: 1, background: 'none', border: '1px solid var(--border)',
+          borderRadius: 10, padding: '10px', fontSize: 13,
+          color: 'var(--text-muted)', cursor: 'pointer',
+        }}>Cancel</button>
+        <button
+          onClick={handleSubmit}
+          disabled={submitting || !agreed || !note.trim()}
+          style={{
+            flex: 2,
+            background: agreed && note.trim() ? 'var(--red)' : 'var(--surface)',
+            color: agreed && note.trim() ? '#fff' : 'var(--text-faint)',
+            border: 'none', borderRadius: 10, padding: '10px',
+            fontWeight: 800, fontSize: 13,
+            cursor: agreed && note.trim() ? 'pointer' : 'not-allowed',
+          }}
+        >
+          {submitting ? 'Submitting...' : 'Submit Return Request'}
+        </button>
+      </div>
+    </div>
+  );
+}
+
+// ── Order Card ────────────────────────────────────────────────────────────────
 function OrderCard({ order }) {
-  const [expanded, setExpanded]   = useState(false);
-  const [returning, setReturning] = useState(false);
-  const [returnNote, setReturnNote] = useState('');
+  const [expanded, setExpanded]     = useState(false);
+  const [returning, setReturning]   = useState(false);
   const [returnSent, setReturnSent] = useState(false);
   const [returnError, setReturnError] = useState('');
 
-  const handleReturn = async () => {
+  const handleReturn = async (note, slot) => {
     setReturnError('');
-    setReturning(true);
     try {
       const res = await fetch('/api/account/returns', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ orderId: order.id, note: returnNote }),
+        body: JSON.stringify({ orderId: order.id, note, returnSlot: slot }),
       });
       const data = await res.json();
-      if (res.ok) setReturnSent(true);
-      else setReturnError(data.error || 'Failed to submit return request');
+      if (res.ok) {
+        setReturnSent(true);
+        setReturning(false);
+      } else {
+        setReturnError(data.error || 'Failed to submit return request');
+      }
     } catch { setReturnError('Connection error. Try again.'); }
-    setReturning(false);
   };
+
+  // Check 6-hour return window
+  const canReturn = (() => {
+    if (order.status !== 'delivered') return false;
+    const deliveredAt = new Date(order.updated_at || order.created_at);
+    const hoursElapsed = (Date.now() - deliveredAt.getTime()) / (1000 * 60 * 60);
+    return hoursElapsed <= 6;
+  })();
 
   return (
     <div style={{
       background: 'var(--surface)', border: '1px solid var(--border)',
       borderRadius: 14, overflow: 'hidden',
     }}>
+
+      {/* Order Header */}
       <div onClick={() => setExpanded(!expanded)} style={{
         padding: '14px 16px', display: 'flex',
         alignItems: 'center', justifyContent: 'space-between', cursor: 'pointer',
@@ -370,14 +495,16 @@ function OrderCard({ order }) {
             background: 'var(--surface-2)',
             padding: '3px 10px', borderRadius: 20,
           }}>
-            {order.status.replace('_', ' ')}
+            {order.status.replace(/_/g, ' ')}
           </span>
         </div>
       </div>
 
+      {/* Expanded Content */}
       {expanded && (
         <div style={{ borderTop: '1px solid var(--border)', padding: '12px 16px' }}>
-          {/* Items */}
+
+          {/* Order Items */}
           <div style={{ display: 'flex', flexDirection: 'column', gap: 8, marginBottom: 12 }}>
             {order.order_items?.map((item, i) => (
               <div key={i} style={{ display: 'flex', justifyContent: 'space-between' }}>
@@ -405,7 +532,17 @@ function OrderCard({ order }) {
             </div>
           )}
 
-          {/* Action buttons */}
+          {/* Delivery slot */}
+          {order.delivery_slot && (
+            <div style={{
+              fontSize: 12, color: 'var(--text-muted)',
+              marginBottom: 12,
+            }}>
+              🕐 Preferred delivery: {order.delivery_slot}
+            </div>
+          )}
+
+          {/* Action Buttons */}
           <div style={{ display: 'flex', gap: 8 }}>
             <Link href={'/track?ref=' + order.reference} style={{
               flex: 1, display: 'block', textAlign: 'center',
@@ -414,7 +551,7 @@ function OrderCard({ order }) {
               fontSize: 13, fontWeight: 700, color: 'var(--text)',
             }}>Track Order</Link>
 
-            {order.status === 'delivered' && !returnSent && (
+            {order.status === 'delivered' && canReturn && !returnSent && (
               <button onClick={() => setReturning(r => !r)} style={{
                 flex: 1, background: 'none',
                 border: '1px solid var(--red)',
@@ -424,38 +561,41 @@ function OrderCard({ order }) {
               }}>Request Return</button>
             )}
 
-            {returnSent && (
+            {order.status === 'delivered' && !canReturn && (
+              <div style={{
+                flex: 1, textAlign: 'center', padding: '10px',
+                fontSize: 11, color: 'var(--text-faint)',
+              }}>Return window expired</div>
+            )}
+
+            {(order.status === 'return_requested' || returnSent) && (
+              <div style={{
+                flex: 1, textAlign: 'center', padding: '10px',
+                fontSize: 12, color: '#f5a623', fontWeight: 700,
+              }}>⏳ Return pending review</div>
+            )}
+
+            {order.status === 'return_approved' && (
               <div style={{
                 flex: 1, textAlign: 'center', padding: '10px',
                 fontSize: 12, color: '#4caf7d', fontWeight: 700,
-              }}>✓ Return requested</div>
+              }}>✓ Return approved</div>
+            )}
+
+            {order.status === 'return_rejected' && (
+              <div style={{
+                flex: 1, textAlign: 'center', padding: '10px',
+                fontSize: 12, color: 'var(--red)', fontWeight: 700,
+              }}>✕ Return rejected</div>
             )}
           </div>
-
-          {/* Return form */}
+          {/* Return Form */}
           {returning && !returnSent && (
-            <div style={{ marginTop: 12, display: 'flex', flexDirection: 'column', gap: 8 }}>
-              <textarea
-                placeholder="Tell us why you want to return this order..."
-                value={returnNote}
-                onChange={e => setReturnNote(e.target.value)}
-                rows={3}
-                style={{
-                  width: '100%', background: 'var(--surface)',
-                  border: '1px solid var(--border)', borderRadius: 10,
-                  padding: '12px 14px', color: 'var(--text)',
-                  fontSize: 13, resize: 'none', boxSizing: 'border-box',
-                }}
-              />
-              {returnError && <ErrorBox msg={returnError} />}
-              <button onClick={handleReturn} style={{
-                background: 'var(--red)', color: '#fff',
-                border: 'none', borderRadius: 10, padding: '12px',
-                fontWeight: 800, fontSize: 13, cursor: 'pointer',
-              }}>
-                Submit Return Request
-              </button>
-            </div>
+            <ReturnForm
+              onSubmit={handleReturn}
+              onCancel={() => setReturning(false)}
+              error={returnError}
+            />
           )}
         </div>
       )}
@@ -463,6 +603,7 @@ function OrderCard({ order }) {
   );
 }
 
+// ── Orders Tab ────────────────────────────────────────────────────────────────
 function OrdersTab({ orders }) {
   if (orders.length === 0) {
     return (
@@ -531,7 +672,7 @@ function SecurityTab({ profile }) {
     <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
       <div style={{
         background: 'var(--surface)', border: '1px solid var(--border)',
-        borderRadius: 12, padding: '14px 16px', marginBottom: 4,
+        borderRadius: 12, padding: '14px 16px',
       }}>
         <div style={{ fontSize: 13, color: 'var(--text-muted)' }}>
           {hasPassword
@@ -554,6 +695,7 @@ function SecurityTab({ profile }) {
           />
         </div>
       )}
+
       <div>
         <label style={labelStyle}>{hasPassword ? 'New Password' : 'Set Password'}</label>
         <input
@@ -563,6 +705,7 @@ function SecurityTab({ profile }) {
           style={inputStyle(form.newPassword)}
         />
       </div>
+
       <div>
         <label style={labelStyle}>Confirm Password</label>
         <input
@@ -577,7 +720,7 @@ function SecurityTab({ profile }) {
         background: loading ? 'var(--gold-dark)' : 'var(--gold)',
         color: '#000', border: 'none', borderRadius: 12,
         padding: '14px', fontWeight: 800, fontSize: 14,
-        opacity: loading ? 0.7 : 1,
+        opacity: loading ? 0.7 : 1, cursor: 'pointer',
       }}>
         {loading ? 'Saving...' : hasPassword ? 'Change Password' : 'Set Password'}
       </button>
@@ -588,7 +731,7 @@ function SecurityTab({ profile }) {
 // ── Main AccountClient ────────────────────────────────────────────────────────
 export default function AccountClient({ profile, orders, addresses, authEmail }) {
   const router = useRouter();
-  const [tab, setTab]           = useState('orders');
+  const [tab, setTab]               = useState('orders');
   const [loggingOut, setLoggingOut] = useState(false);
 
   const handleLogout = async () => {
