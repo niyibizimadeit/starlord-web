@@ -35,8 +35,8 @@ export const LOG_ICONS = { ORDER_STATUS_CHANGED: '↺', return_request: '↩',PR
 export const S = {
   page:      { maxWidth: 1200, margin: '0 auto', padding: '24px 20px', fontFamily: "'Georgia', serif" },
   header:    { display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 24, paddingBottom: 16, borderBottom: '1px solid #2a2a2a' },
-  tabs:      { display: 'flex', gap: 6, marginBottom: 24, flexWrap: 'wrap' },
-  tab:       { padding: '8px 18px', borderRadius: 8, border: '1px solid #2a2a2a', background: '#141414', color: '#666', fontWeight: 700, fontSize: 12, cursor: 'pointer', letterSpacing: 0.5 },
+  tabs: { display: 'flex', gap: 6, marginBottom: 24, overflowX: 'auto', paddingBottom: 8, WebkitOverflowScrolling: 'touch', flexShrink: 0 },
+  tab:       { padding: '8px 18px', borderRadius: 8, borderWidth: 1, borderStyle: 'solid', borderColor: '#2a2a2a', background: '#141414', color: '#666', fontWeight: 700, fontSize: 12, cursor: 'pointer', letterSpacing: 0.5 },
   tabActive: { background: '#C9A84C', color: '#000', borderColor: '#C9A84C' },
   card:      { background: '#141414', border: '1px solid #2a2a2a', borderRadius: 14, marginBottom: 10, overflow: 'hidden' },
   badge:     { fontSize: 10, fontWeight: 800, padding: '3px 8px', borderRadius: 4, display: 'inline-block' },

@@ -416,7 +416,7 @@ export default function AdminPage() {
         {/* DASHBOARD */}
         {!loading && tab === 'dashboard' && (
           <div>
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 12, marginBottom: 24 }}>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: 12, marginBottom: 24 }}>
               <StatCard label="Revenue This Month" value={formatRWF(analytics?.revenue)} gold />
               <StatCard label="Pending Orders"     value={pendingOrders.length} alert={pendingOrders.length > 0} />
               <StatCard label="Low Stock Items"    value={alerts.length} alert={alerts.length > 0} />
@@ -428,7 +428,7 @@ export default function AdminPage() {
                 <BarChart data={analytics.dailyRevenue} />
               </div>
             )}
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: 16 }}>
               <div>
                 <div style={S.label}>Pending Orders</div>
                 {pendingOrders.length === 0 ? <div style={{ color: '#555', fontSize: 13, padding: '20px 0' }}>No pending orders</div>

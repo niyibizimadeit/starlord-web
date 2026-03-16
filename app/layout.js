@@ -195,16 +195,23 @@ function PaymentBadge({ text }) {
   );
 }
 
-export default function RootLayout({ children }) {
+import { headers } from 'next/headers';
+
+export default async function RootLayout({ children }) {
+  const headersList = await headers();
+  const pathname = headersList.get('x-pathname') || 
+                   headersList.get('next-url') || '';
+  const isAdmin = pathname.includes('/admin');
+
   return (
     <html lang="en" data-theme="light" suppressHydrationWarning>
       <body>
         <ThemeProvider>
           <CartProvider>
-            <Header />
+            {!isAdmin && <Header />}
             <main>{children}</main>
-            <Footer />
-            <WhatsAppWidget />
+            {!isAdmin && <Footer />}
+            {!isAdmin && <WhatsAppWidget />}
           </CartProvider>
         </ThemeProvider>
       </body>
