@@ -30,8 +30,10 @@ export async function GET(request) {
       return Response.json({ error: auth.error }, { status: auth.status });
     }
 
-    // Get user profile
-    const { data: profile, error } = await supabase
+    // Use service client to bypass RLS
+    const serviceSupabase = createServiceClient();
+
+    const { data: profile, error } = await serviceSupabase
       .from('users')
       .select('id, phone, full_name, email, role, password_set, created_at')
       .eq('id', auth.user.id)
@@ -41,8 +43,7 @@ export async function GET(request) {
       return Response.json({ error: 'Profile not found' }, { status: 404 });
     }
 
-    // Get addresses
-    const { data: addresses } = await supabase
+    const { data: addresses } = await serviceSupabase
       .from('addresses')
       .select('*')
       .eq('user_id', auth.user.id)
