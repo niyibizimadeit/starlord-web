@@ -71,11 +71,11 @@ function ProductCard({ product, onOpenModal }) {
           )}
         </div>
 
-        <div className={`${styles.productInfo}`}>
+        <div className={styles.productInfo}>
           <span className={styles.categoryLabel}>{product.category}</span>
           <h3 className={styles.productTitle}>{product.name}</h3>
           
-          <div className={`${styles.priceRow}`}>
+          <div className={styles.priceRow}>
             <div className={styles.prices}>
               <div className={styles.currentPriceLine}>
                 <span className={styles.currentPrice}>{formatRWF(product.price)}</span>
@@ -88,28 +88,19 @@ function ProductCard({ product, onOpenModal }) {
             </div>
 
             <button
-              className={`${styles.addToCartBtn}`}
+              className={styles.addToCartBtn}
               disabled={product.stock === 0}
               onClick={handleOpenModal}
               aria-label={product.stock === 0 ? 'Out of stock' : 'Add to cart'}
               title={product.stock === 0 ? 'Out of stock' : 'Add to cart'}
             >
-              <svg
-                width="18" 
-                height="18"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              >
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                 <circle cx="9" cy="21" r="1"/>
                 <circle cx="20" cy="21" r="1"/>
                 <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2.01-1.84L22.34 2H1Z"/>
-                <line x1="7" y1="7" x2="7" y2="7"/>
               </svg>
             </button>
+
             {product.stock !== 0 && (
               <button
                 className={styles.mobileAddToCartBtn}
