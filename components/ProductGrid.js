@@ -248,7 +248,7 @@ export default function ProductGrid({
         {/* Filters */}
         <div className={styles.filtersRow}>
           <div className={styles.categoryPills}>
-           {['All', ...categories].map(cat => (
+            {['All', ...categories.filter(c => c !== 'All')].map(cat => (
               <button
                 key={cat}
                 onClick={() => handleCategoryChange(cat)}

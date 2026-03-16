@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 
@@ -457,12 +457,12 @@ function OrderCard({ order }) {
   };
 
   // Check 6-hour return window
-  const canReturn = (() => {
+  const canReturn = useMemo(() => {
     if (order.status !== 'delivered') return false;
     const deliveredAt = new Date(order.updated_at || order.created_at);
-    const hoursElapsed = (Date.now() - deliveredAt.getTime()) / (1000 * 60 * 60);
+    const hoursElapsed = (new Date() - deliveredAt) / (1000 * 60 * 60);
     return hoursElapsed <= 6;
-  })();
+  }, [order.status, order.updated_at, order.created_at]);
 
   return (
     <div style={{
@@ -568,7 +568,7 @@ function OrderCard({ order }) {
               }}>Return window expired</div>
             )}
 
-            {(order.status === 'return_requested' || returnSent) && (
+          {(order.status === 'return_requested' || returnSent) && (
               <div style={{
                 flex: 1, textAlign: 'center', padding: '10px',
                 fontSize: 12, color: '#f5a623', fontWeight: 700,
