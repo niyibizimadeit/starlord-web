@@ -177,6 +177,16 @@ export async function GET(request) {
     return Response.json({ data: { created, skipped, message: `Sync complete — ${created} images linked, ${skipped} already existed.` } });
   }
 
+  if (type === 'reviews') {
+    const { data, error } = await supabase
+      .from('reviews')
+      .select('id, rating, comment, is_visible, created_at, product_id, products(name), users(full_name)')
+      .order('created_at', { ascending: false })
+      .limit(200);
+    if (error) return Response.json({ error: error.message }, { status: 500 });
+    return Response.json({ data });
+  }
+
   return Response.json({ error: 'Invalid type' }, { status: 400 });
 }
 

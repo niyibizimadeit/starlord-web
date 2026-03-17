@@ -4,6 +4,8 @@ import AddToCartButton from '@/components/AddToCartButton';
 import ImageGallery from '@/components/ImageGallery';
 import Link from 'next/link';
 import Image from 'next/image';
+import ProductReviews from '@/components/ProductReviews';
+import { createServerSupabaseClient } from '@/lib/supabase/server';
 
 export async function generateMetadata({ params }) {
   const resolvedParams = await params;
@@ -60,6 +62,23 @@ export default async function ProductPage({ params }) {
     }
     return p;
   });
+
+
+  // Fetch user's delivered orders for this product (for review form)
+  let deliveredOrders = [];
+  try {
+    const authClient = await createServerSupabaseClient();
+    const { data: { user } } = await authClient.auth.getUser();
+    if (user) {
+      const { data: orders } = await supabase
+        .from('orders')
+        .select('id, reference, order_items!inner(product_id)')
+        .eq('user_id', user.id)
+        .eq('status', 'delivered')
+        .eq('order_items.product_id', product.id);
+      deliveredOrders = orders || [];
+    }
+  } catch {}
 
   const images =
     productImages && productImages.length > 0
@@ -262,6 +281,11 @@ export default async function ProductPage({ params }) {
           </div>
         </div>
       )}
+      {/* Reviews */}
+      <ProductReviews
+        productId={product.id}
+        deliveredOrders={deliveredOrders}
+      />
     </div>
   );
 }
