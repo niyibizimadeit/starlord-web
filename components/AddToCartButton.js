@@ -3,7 +3,7 @@
 import { useRouter } from 'next/navigation';
 import { useCart } from './CartContext';
 
-export default function AddToCartButton({ product }) {
+export default function AddToCartButton({ product, compact = false }) {
   const { addToCart } = useCart();
   const router = useRouter();
 
@@ -14,10 +14,10 @@ export default function AddToCartButton({ product }) {
         background: 'var(--surface)',
         border: '1px solid var(--border)',
         borderRadius: 12,
-        padding: '16px',
+        padding: compact ? '8px' : '16px',
         textAlign: 'center',
         color: 'var(--text-muted)',
-        fontSize: 15,
+        fontSize: compact ? 12 : 15,
         fontWeight: 700,
       }}>
         Out of Stock
@@ -34,6 +34,28 @@ export default function AddToCartButton({ product }) {
     addToCart(product);
     router.push('/checkout');
   };
+
+  // Compact mode — just Add to Cart, no Buy Now
+  if (compact) {
+    return (
+      <button
+        onClick={e => { e.preventDefault(); handleAddToCart(); }}
+        style={{
+          width: '100%',
+          background: 'var(--gold)',
+          color: '#000',
+          border: 'none',
+          borderRadius: 8,
+          padding: '8px',
+          fontWeight: 700,
+          fontSize: 11,
+          cursor: 'pointer',
+        }}
+      >
+        Add to Cart
+      </button>
+    );
+  }
 
   return (
     <div style={{ display: 'flex', gap: 10 }}>
