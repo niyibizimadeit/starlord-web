@@ -231,6 +231,9 @@ export default function AdminPage() {
   const [settings,   setSettings]   = useState({});
   const [returns, setReturns] = useState([]);
   const [adminReviews, setAdminReviews] = useState([]);
+  const [banners, setBanners] = useState([]);
+  const [bannerForm, setBannerForm] = useState(null); // null = closed, {} = new, {id,...} = edit
+  const [bannerUploading, setBannerUploading] = useState(false);
 
   const [orderSearch,  setOrderSearch]  = useState('');
   const [orderFilter,  setOrderFilter]  = useState('all');
@@ -284,6 +287,14 @@ export default function AdminPage() {
     setAdminReviews(data || []);
   }, []);
 
+  const fetchBanners = useCallback(async () => {
+    const res = await fetch('/api/admin/banners', {
+      headers: { 'x-admin-secret': ADMIN_SECRET },
+    });
+    const data = await res.json();
+    setBanners(data.data || []);
+  }, []);
+
   const loadTab = async () => {
     setLoading(true);
     if      (tab === 'dashboard')  await Promise.all([fetchOrders('', 'pending'), fetchAlerts(), fetchAnalytics()]);
@@ -298,6 +309,7 @@ export default function AdminPage() {
     else if (tab === 'settings')   await fetchSettings();
     else if (tab === 'returns')    await fetchReturns();
     else if (tab === 'reviews') await fetchAdminReviews();
+    else if (tab === 'banners') await fetchBanners();
     setLoading(false);
   };
 
@@ -412,6 +424,7 @@ export default function AdminPage() {
             { id: 'settings',   label: 'Settings'     },
             { id: 'returns',    label: 'Returns'      },
             { id: 'reviews', label: 'Reviews' },
+            { id: 'banners', label: 'Banners' },
             { id: 'logs',       label: 'Activity Log' },
           ].map(t => (
             <button key={t.id} onClick={() => setTab(t.id)} style={{ ...S.tab, ...(tab === t.id ? S.tabActive : {}) }}>{t.label}</button>
@@ -981,6 +994,191 @@ export default function AdminPage() {
                 </div>
               </div>
             ))}
+          </div>
+        )}
+        {/* BANNERS */}
+        {!loading && tab === 'banners' && (
+          <div style={{ padding: '0 4px' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 20 }}>
+              <div style={S.label}>{banners.length} banner slides</div>
+              <button
+                onClick={() => setBannerForm({ title: '', subtitle: '', button_text: 'Shop Now', button_link: '/', image_url: '' })}
+                style={{ ...S.btn, background: '#C9A84C', color: '#000' }}
+              >+ Add Banner</button>
+            </div>
+
+            {banners.length === 0 && (
+              <div style={{ color: '#555', textAlign: 'center', padding: 60 }}>No banners yet — add one above</div>
+            )}
+
+            {banners.map((banner, index) => (
+              <div key={banner.id} style={{ ...S.card, padding: '16px 18px', marginBottom: 12 }}>
+                <div style={{ display: 'flex', gap: 14, alignItems: 'flex-start' }}>
+
+                  {/* Thumbnail */}
+                  <div style={{
+                    width: 80, height: 56, flexShrink: 0,
+                    borderRadius: 8, overflow: 'hidden',
+                    background: '#1c1c1c', border: '1px solid #2a2a2a',
+                    display: 'flex', alignItems: 'center', justifyContent: 'center',
+                  }}>
+                    {banner.image_url
+                      ? <img src={banner.image_url} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                      : <span style={{ fontSize: 10, color: '#444' }}>No image</span>
+                    }
+                  </div>
+
+                  {/* Info */}
+                  <div style={{ flex: 1 }}>
+                    <div style={{ fontSize: 14, fontWeight: 700, color: '#fff', marginBottom: 2 }}>
+                      {banner.title || '(No title)'}
+                    </div>
+                    <div style={{ fontSize: 12, color: '#666', marginBottom: 4 }}>
+                      {banner.subtitle || ''}
+                    </div>
+                    <div style={{ display: 'flex', gap: 8, alignItems: 'center', flexWrap: 'wrap' }}>
+                      <span style={{ ...S.badge, background: banner.is_active ? '#4caf7d22' : '#2e1a1a', color: banner.is_active ? '#4caf7d' : '#e05555' }}>
+                        {banner.is_active ? 'Active' : 'Hidden'}
+                      </span>
+                      <span style={{ fontSize: 11, color: '#555' }}>
+                        → {banner.button_link}
+                      </span>
+                    </div>
+                  </div>
+
+                  {/* Order controls */}
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
+                    <button
+                      disabled={index === 0}
+                      onClick={async () => {
+                        const prev = banners[index - 1];
+                        await fetch('/api/admin/banners', { method: 'PATCH', headers: { 'Content-Type': 'application/json', 'x-admin-secret': ADMIN_SECRET }, body: JSON.stringify({ id: banner.id, sort_order: prev.sort_order }) });
+                        await fetch('/api/admin/banners', { method: 'PATCH', headers: { 'Content-Type': 'application/json', 'x-admin-secret': ADMIN_SECRET }, body: JSON.stringify({ id: prev.id, sort_order: banner.sort_order }) });
+                        await fetchBanners();
+                      }}
+                      style={{ ...S.btn, background: '#1c1c1c', color: index === 0 ? '#333' : '#888', border: '1px solid #2a2a2a', padding: '4px 8px', fontSize: 12 }}
+                    >↑</button>
+                    <button
+                      disabled={index === banners.length - 1}
+                      onClick={async () => {
+                        const next = banners[index + 1];
+                        await fetch('/api/admin/banners', { method: 'PATCH', headers: { 'Content-Type': 'application/json', 'x-admin-secret': ADMIN_SECRET }, body: JSON.stringify({ id: banner.id, sort_order: next.sort_order }) });
+                        await fetch('/api/admin/banners', { method: 'PATCH', headers: { 'Content-Type': 'application/json', 'x-admin-secret': ADMIN_SECRET }, body: JSON.stringify({ id: next.id, sort_order: banner.sort_order }) });
+                        await fetchBanners();
+                      }}
+                      style={{ ...S.btn, background: '#1c1c1c', color: index === banners.length - 1 ? '#333' : '#888', border: '1px solid #2a2a2a', padding: '4px 8px', fontSize: 12 }}
+                    >↓</button>
+                  </div>
+                </div>
+
+                {/* Actions */}
+                <div style={{ display: 'flex', gap: 8, marginTop: 12, flexWrap: 'wrap' }}>
+                  <button
+                    onClick={() => setBannerForm({ ...banner })}
+                    style={{ ...S.btn, background: '#1c1c1c', color: '#888', border: '1px solid #2a2a2a' }}
+                  >Edit</button>
+                  <button
+                    onClick={async () => {
+                      await fetch('/api/admin/banners', { method: 'PATCH', headers: { 'Content-Type': 'application/json', 'x-admin-secret': ADMIN_SECRET }, body: JSON.stringify({ id: banner.id, is_active: !banner.is_active }) });
+                      await fetchBanners();
+                    }}
+                    style={{ ...S.btn, background: '#1c1c1c', color: '#888', border: '1px solid #2a2a2a' }}
+                  >{banner.is_active ? 'Hide' : 'Show'}</button>
+                  <button
+                    onClick={async () => {
+                      if (!confirm('Delete this banner?')) return;
+                      await fetch('/api/admin/banners', { method: 'DELETE', headers: { 'Content-Type': 'application/json', 'x-admin-secret': ADMIN_SECRET }, body: JSON.stringify({ id: banner.id }) });
+                      await fetchBanners();
+                    }}
+                    style={{ ...S.btn, background: '#2e1a1a', color: '#e05555', border: '1px solid #e0555533' }}
+                  >Delete</button>
+                </div>
+              </div>
+            ))}
+
+            {/* Banner Form Modal */}
+            {bannerForm !== null && (
+              <div style={S.modal} onClick={e => e.target === e.currentTarget && setBannerForm(null)}>
+                <div style={{ ...S.modalBox, maxWidth: 520 }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 20 }}>
+                    <div style={{ fontSize: 14, fontWeight: 800, color: '#C9A84C', letterSpacing: 1 }}>
+                      {bannerForm.id ? 'EDIT BANNER' : 'NEW BANNER'}
+                    </div>
+                    <button onClick={() => setBannerForm(null)} style={{ ...S.btn, background: '#1c1c1c', color: '#888', border: '1px solid #2a2a2a', fontSize: 16, padding: '6px 12px' }}>✕</button>
+                  </div>
+
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
+
+                    {/* Image upload */}
+                    <div>
+                      <label style={S.label}>Banner Image</label>
+                      {bannerForm.image_url && (
+                        <img src={bannerForm.image_url} alt="" style={{ width: '100%', height: 140, objectFit: 'cover', borderRadius: 8, marginBottom: 8, border: '1px solid #2a2a2a' }} />
+                      )}
+                      <input
+                        type="file" accept="image/*"
+                        onChange={async (e) => {
+                          const file = e.target.files?.[0];
+                          if (!file) return;
+                          setBannerUploading(true);
+                          const form = new FormData();
+                          form.append('file', file);
+                          const res = await fetch('/api/admin/banners/upload', {
+                            method: 'POST',
+                            headers: { 'x-admin-secret': ADMIN_SECRET },
+                            body: form,
+                          });
+                          const data = await res.json();
+                          if (data.url) setBannerForm(p => ({ ...p, image_url: data.url }));
+                          setBannerUploading(false);
+                        }}
+                        style={{ ...S.input, cursor: 'pointer' }}
+                      />
+                      {bannerUploading && <div style={{ fontSize: 11, color: '#C9A84C', marginTop: 4 }}>Uploading...</div>}
+                    </div>
+
+                    <div>
+                      <label style={S.label}>Title</label>
+                      <input style={S.input} value={bannerForm.title || ''} onChange={e => setBannerForm(p => ({ ...p, title: e.target.value }))} placeholder="e.g. New Season Arrivals" />
+                    </div>
+
+                    <div>
+                      <label style={S.label}>Subtitle</label>
+                      <input style={S.input} value={bannerForm.subtitle || ''} onChange={e => setBannerForm(p => ({ ...p, subtitle: e.target.value }))} placeholder="e.g. Premium accessories, now in stock" />
+                    </div>
+
+                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
+                      <div>
+                        <label style={S.label}>Button Text</label>
+                        <input style={S.input} value={bannerForm.button_text || ''} onChange={e => setBannerForm(p => ({ ...p, button_text: e.target.value }))} placeholder="Shop Now" />
+                      </div>
+                      <div>
+                        <label style={S.label}>Button Link</label>
+                        <input style={S.input} value={bannerForm.button_link || ''} onChange={e => setBannerForm(p => ({ ...p, button_link: e.target.value }))} placeholder="/products" />
+                      </div>
+                    </div>
+
+                    <div style={{ display: 'flex', gap: 8 }}>
+                      <button
+                        onClick={async () => {
+                          if (bannerForm.id) {
+                            await fetch('/api/admin/banners', { method: 'PATCH', headers: { 'Content-Type': 'application/json', 'x-admin-secret': ADMIN_SECRET }, body: JSON.stringify(bannerForm) });
+                          } else {
+                            await fetch('/api/admin/banners', { method: 'POST', headers: { 'Content-Type': 'application/json', 'x-admin-secret': ADMIN_SECRET }, body: JSON.stringify(bannerForm) });
+                          }
+                          await fetchBanners();
+                          setBannerForm(null);
+                        }}
+                        style={{ ...S.btn, background: '#C9A84C', color: '#000', flex: 1, justifyContent: 'center' }}
+                      >
+                        {bannerForm.id ? 'Save Changes' : 'Create Banner'}
+                      </button>
+                      <button onClick={() => setBannerForm(null)} style={{ ...S.btn, background: '#1c1c1c', color: '#888', border: '1px solid #2a2a2a' }}>Cancel</button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            )}
           </div>
         )}
 
