@@ -2,6 +2,8 @@ import { createServiceClient } from '@/lib/supabase/server';
 import { notFound } from 'next/navigation';
 import AddToCartButton from '@/components/AddToCartButton';
 import ImageGallery from '@/components/ImageGallery';
+import Link from 'next/link';
+import Image from 'next/image';
 
 export async function generateMetadata({ params }) {
   const resolvedParams = await params;
@@ -40,6 +42,24 @@ export default async function ProductPage({ params }) {
     .select('id, url, sort_order')
     .eq('product_id', resolvedParams.id)
     .order('sort_order', { ascending: true });
+
+  // Fetch related products — same category, exclude current product
+  const { data: relatedRaw } = await supabase
+    .from('products')
+    .select('*, product_images(url, sort_order)')
+    .eq('category', product.category)
+    .eq('is_active', true)
+    .neq('id', product.id)
+    .limit(6);
+
+  // Use first product_image if image_url is null
+  const related = (relatedRaw || []).map(p => {
+    if (!p.image_url && p.product_images?.length > 0) {
+      const sorted = [...p.product_images].sort((a, b) => a.sort_order - b.sort_order);
+      p.image_url = sorted[0].url;
+    }
+    return p;
+  });
 
   const images =
     productImages && productImages.length > 0
@@ -138,6 +158,110 @@ export default async function ProductPage({ params }) {
 
         <AddToCartButton product={product} />
       </div>
+
+      {/* ── Related Products ─────────────────────────────────── */}
+      {related.length > 0 && (
+        <div style={{ padding: '0 20px', marginTop: 8 }}>
+          {/* Section header */}
+          <div style={{
+            display: 'flex', alignItems: 'center',
+            justifyContent: 'space-between', marginBottom: 16,
+          }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+              <div style={{ width: 3, height: 20, background: 'var(--gold)', borderRadius: 2 }} />
+              <h2 style={{ fontSize: 14, fontWeight: 800, color: 'var(--text)', letterSpacing: 1, textTransform: 'uppercase', margin: 0 }}>
+                More in {product.category}
+              </h2>
+            </div>
+            <Link href={`/products?category=${product.category}`} style={{
+              fontSize: 12, color: 'var(--gold)', fontWeight: 700,
+            }}>
+              View all →
+            </Link>
+          </div>
+
+          {/* Scrollable row */}
+          <div style={{
+            display: 'flex', gap: 12,
+            overflowX: 'auto', paddingBottom: 8,
+            scrollSnapType: 'x mandatory',
+            WebkitOverflowScrolling: 'touch',
+          }}>
+            {related.map(p => {
+              const relDiscount = p.old_price
+                ? Math.round((1 - p.price / p.old_price) * 100)
+                : null;
+              return (
+                <Link
+                  key={p.id}
+                  href={`/products/${p.id}`}
+                  style={{
+                    flexShrink: 0, width: 150,
+                    scrollSnapAlign: 'start',
+                    background: 'var(--surface)',
+                    border: '1px solid var(--border)',
+                    borderRadius: 12, overflow: 'hidden',
+                    textDecoration: 'none',
+                    display: 'flex', flexDirection: 'column',
+                  }}
+                >
+                  {/* Image */}
+                  <div style={{ position: 'relative', paddingTop: '100%', background: 'var(--surface-2)' }}>
+                    {p.image_url ? (
+                      <img
+                        src={p.image_url}
+                        alt={p.name}
+                        style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover' }}
+                      />
+                    ) : (
+                      <div style={{ position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                        <span style={{ fontSize: 10, color: 'var(--text-faint)' }}>No image</span>
+                      </div>
+                    )}
+                    {relDiscount && (
+                      <span style={{
+                        position: 'absolute', top: 6, left: 6,
+                        background: 'var(--red)', color: '#fff',
+                        fontSize: 9, fontWeight: 800,
+                        padding: '2px 6px', borderRadius: 3,
+                        fontFamily: 'monospace',
+                      }}>-{relDiscount}%</span>
+                    )}
+                    {p.badge && (
+                      <span style={{
+                        position: 'absolute', top: relDiscount ? 24 : 6, left: 6,
+                        background: p.badge === 'SALE' ? 'var(--gold)' : p.badge === 'NEW' ? 'var(--green)' : 'var(--red)',
+                        color: p.badge === 'SALE' ? '#000' : '#fff',
+                        fontSize: 9, fontWeight: 800,
+                        padding: '2px 6px', borderRadius: 3,
+                        fontFamily: 'monospace',
+                      }}>{p.badge}</span>
+                    )}
+                  </div>
+
+                  {/* Info */}
+                  <div style={{ padding: '10px 10px 12px', flex: 1, display: 'flex', flexDirection: 'column', gap: 4 }}>
+                    <div style={{ fontSize: 11, fontWeight: 700, color: 'var(--text)', lineHeight: 1.3, display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>
+                      {p.name}
+                    </div>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginTop: 'auto', paddingTop: 4 }}>
+                      <span style={{ fontSize: 13, fontWeight: 800, color: 'var(--gold)' }}>
+                        {formatRWF(p.price)}
+                      </span>
+                      {p.old_price && (
+                        <span style={{ fontSize: 10, color: 'var(--text-faint)', textDecoration: 'line-through' }}>
+                          {formatRWF(p.old_price)}
+                        </span>
+                      )}
+                    </div>
+                    <AddToCartButton product={p} compact />
+                  </div>
+                </Link>
+              );
+            })}
+          </div>
+        </div>
+      )}
     </div>
   );
 }
