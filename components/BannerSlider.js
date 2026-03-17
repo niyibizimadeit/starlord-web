@@ -24,7 +24,7 @@ export default function BannerSlider() {
     if (banners.length <= 1) return;
     intervalRef.current = setInterval(() => {
       setActive(i => (i + 1) % banners.length);
-    }, 5000);
+    }, 3000);
     return () => clearInterval(intervalRef.current);
   }, [banners.length]);
 
@@ -33,7 +33,7 @@ export default function BannerSlider() {
     clearInterval(intervalRef.current);
     intervalRef.current = setInterval(() => {
       setActive(prev => (prev + 1) % banners.length);
-    }, 5000);
+    }, 3000);
   };
 
   const onTouchStart = (e) => { touchStartX.current = e.touches[0].clientX; };
@@ -64,6 +64,12 @@ export default function BannerSlider() {
       onTouchStart={onTouchStart}
       onTouchEnd={onTouchEnd}
     >
+      <style>{`
+        @media (max-width: 767px) {
+          .banner-arrow { display: none !important; }
+        }
+      `}</style>
+
       {/* Slides */}
       {banners.map((b, i) => (
         <div
@@ -156,6 +162,7 @@ export default function BannerSlider() {
       {banners.length > 1 && (
         <>
           <button
+            className="banner-arrow" 
             onClick={() => goTo((active - 1 + banners.length) % banners.length)}
             aria-label="Previous"
             style={{
@@ -169,6 +176,7 @@ export default function BannerSlider() {
             }}
           >‹</button>
           <button
+            className="banner-arrow" 
             onClick={() => goTo((active + 1) % banners.length)}
             aria-label="Next"
             style={{
