@@ -39,6 +39,7 @@ export default async function HomePage({ searchParams }) {
         initialCategory={category}
         initialSearch={search}
         initialBadge={badge}
+        hideDesktopFilters
       />
       <TrustBar className="mobile-trustbar-below-products mobile-only-trustbar" />
     </main>

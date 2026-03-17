@@ -179,8 +179,9 @@ export default async function ProductPage({ params }) {
       </div>
 
       {/* ── Related Products ─────────────────────────────────── */}
+      {/* ── Related Products ─────────────────────────────────── */}
       {related.length > 0 && (
-        <div style={{ padding: '0 20px', marginTop: 8 }}>
+        <div style={{ padding: '0 20px', marginTop: 24 }}>
           {/* Section header */}
           <div style={{
             display: 'flex', alignItems: 'center',
@@ -193,20 +194,19 @@ export default async function ProductPage({ params }) {
               </h2>
             </div>
             <Link href={`/products?category=${product.category}`} style={{
-              fontSize: 12, color: 'var(--gold)', fontWeight: 700,
+              fontSize: 12, color: 'var(--gold)', fontWeight: 700, textDecoration: 'none',
             }}>
               View all →
             </Link>
           </div>
 
-          {/* Scrollable row */}
+          {/* 2-column grid */}
           <div style={{
-            display: 'flex', gap: 12,
-            overflowX: 'auto', paddingBottom: 8,
-            scrollSnapType: 'x mandatory',
-            WebkitOverflowScrolling: 'touch',
+            display: 'grid',
+            gridTemplateColumns: '1fr 1fr',
+            gap: 12,
           }}>
-            {related.map(p => {
+            {related.slice(0, 2).map(p => {
               const relDiscount = p.old_price
                 ? Math.round((1 - p.price / p.old_price) * 100)
                 : null;
@@ -215,8 +215,6 @@ export default async function ProductPage({ params }) {
                   key={p.id}
                   href={`/products/${p.id}`}
                   style={{
-                    flexShrink: 0, width: 150,
-                    scrollSnapAlign: 'start',
                     background: 'var(--surface)',
                     border: '1px solid var(--border)',
                     borderRadius: 12, overflow: 'hidden',
@@ -259,11 +257,16 @@ export default async function ProductPage({ params }) {
                   </div>
 
                   {/* Info */}
-                  <div style={{ padding: '10px 10px 12px', flex: 1, display: 'flex', flexDirection: 'column', gap: 4 }}>
-                    <div style={{ fontSize: 11, fontWeight: 700, color: 'var(--text)', lineHeight: 1.3, display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>
+                  <div style={{ padding: '10px 10px 12px', flex: 1, display: 'flex', flexDirection: 'column', gap: 6 }}>
+                    <div style={{
+                      fontSize: 12, fontWeight: 700, color: 'var(--text)',
+                      lineHeight: 1.3,
+                      whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis',
+                    }}>
                       {p.name}
                     </div>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginTop: 'auto', paddingTop: 4 }}>
+                    {/* Price + old price on one line */}
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
                       <span style={{ fontSize: 13, fontWeight: 800, color: 'var(--gold)' }}>
                         {formatRWF(p.price)}
                       </span>
