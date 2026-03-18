@@ -249,6 +249,7 @@ export function CategoryModal({ category, onClose, onSave }) {
     name: category?.name || '', slug: category?.slug || '', description: category?.description || '',
     image_url: category?.image_url || '', sort_order: category?.sort_order !== undefined ? String(category.sort_order) : '0',
     is_active: category?.is_active ?? true,
+    show_in_nav: category?.show_in_nav ?? false, 
   });
   const f = (k, v) => setForm(p => ({ ...p, [k]: v }));
   const handleNameChange = (val) => { f('name', val); if (isNew) f('slug', toSlug(val)); };
@@ -280,6 +281,10 @@ export function CategoryModal({ category, onClose, onSave }) {
           <div style={{ display: 'flex', alignItems: 'center', gap: 10, paddingTop: 20 }}>
             <input type="checkbox" id="cat_active" checked={form.is_active} onChange={e => f('is_active', e.target.checked)} />
             <label htmlFor="cat_active" style={{ fontSize: 13, color: '#888', cursor: 'pointer' }}>Active (visible)</label>
+          </div>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 10, paddingTop: 8 }}>
+            <input type="checkbox" id="cat_nav" checked={form.show_in_nav || false} onChange={e => f('show_in_nav', e.target.checked)} />
+            <label htmlFor="cat_nav" style={{ fontSize: 13, color: '#888', cursor: 'pointer' }}>Show in navigation (max 4)</label>
           </div>
           <div style={{ gridColumn: '1 / -1' }}><label style={S.label}>Image URL (optional)</label><input style={S.input} value={form.image_url} onChange={e => f('image_url', e.target.value)} placeholder="https://..." /></div>
         </div>

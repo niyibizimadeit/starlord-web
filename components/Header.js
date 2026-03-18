@@ -11,16 +11,32 @@ export default function Header() {
   const { cartCount } = useCart();
   const [searchValue, setSearchValue] = useState('');
   const [user, setUser] = useState(null);
+  const [navCategories, setNavCategories] = useState([]);
 
-  // Check if user is logged in
   useEffect(() => {
     const supabase = createClient();
+
+    // Auth
     supabase.auth.getUser().then(({ data }) => {
       setUser(data.user ?? null);
     });
     const { data: listener } = supabase.auth.onAuthStateChange((_event, session) => {
       setUser(session?.user ?? null);
     });
+
+    // Fetch nav categories
+    supabase
+      .from('categories')
+      .select('id, name, slug')
+      .eq('is_active', true)
+      .eq('show_in_nav', true)
+      .order('sort_order', { ascending: true })
+      .limit(4)
+      .then(({ data, error }) => {
+        console.log('Nav categories:', data, 'Error:', error);
+        setNavCategories(data || []);
+      });
+
     return () => listener.subscription.unsubscribe();
   }, []);
 
@@ -42,64 +58,58 @@ export default function Header() {
       transition: 'background 0.3s ease',
     }}>
       <div style={{
-        maxWidth: 1280,
-        margin: '0 auto',
-        padding: '0 24px',
-        height: 64,
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'space-between',
-        gap: 16,
+        maxWidth: 1280, margin: '0 auto',
+        padding: '0 24px', height: 64,
+        display: 'flex', alignItems: 'center',
+        justifyContent: 'space-between', gap: 16,
       }}>
 
         {/* Logo */}
         <Link href="/" style={{ flexShrink: 0 }}>
           <div style={{
             fontFamily: 'Playfair Display, serif',
-            fontWeight: 800,
-            fontSize: 20,
-            color: 'var(--gold)',
-            letterSpacing: 3,
-            lineHeight: 1,
-          }}>
-            STARLORD
-          </div>
+            fontWeight: 800, fontSize: 20,
+            color: 'var(--gold)', letterSpacing: 3, lineHeight: 1,
+          }}>STARLORD</div>
           <div style={{
-            fontSize: 8,
-            color: 'var(--text-muted)',
-            letterSpacing: 5,
-            marginTop: 2,
-          }}>
-            GROUP
-          </div>
+            fontSize: 8, color: 'var(--text-muted)',
+            letterSpacing: 5, marginTop: 2,
+          }}>GROUP</div>
         </Link>
 
-        {/* Desktop Nav */}
+        {/* Desktop Nav — dynamic categories */}
         <nav style={{ display: 'flex', gap: 32 }} className="desktop-nav">
-           {['New Arrivals', 'Tech', 'Fashion', 'Sale'].map(item => (
+          {navCategories.map(cat => (
             <Link
-              key={item}
-              href={item === 'New Arrivals' ? '/products' : `/products?category=${item}`}
+              key={cat.id}
+              href={`/products?category=${encodeURIComponent(cat.name)}`}
               style={{
-                fontSize: 13,
-                fontWeight: 700,
-                color: 'var(--text-muted)',
-                letterSpacing: 1,
-                textTransform: 'uppercase',
-                transition: 'color 0.2s',
+                fontSize: 13, fontWeight: 700,
+                color: 'var(--text-muted)', letterSpacing: 1,
+                textTransform: 'uppercase', transition: 'color 0.2s',
               }}
               onMouseEnter={e => e.target.style.color = 'var(--gold)'}
               onMouseLeave={e => e.target.style.color = 'var(--text-muted)'}
             >
-              {item}
+              {cat.name}
             </Link>
           ))}
+          {/* Always show Products link */}
+          <Link
+            href="/products"
+            style={{
+              fontSize: 13, fontWeight: 700,
+              color: 'var(--text-muted)', letterSpacing: 1,
+              textTransform: 'uppercase', transition: 'color 0.2s',
+            }}
+            onMouseEnter={e => e.target.style.color = 'var(--gold)'}
+            onMouseLeave={e => e.target.style.color = 'var(--text-muted)'}
+          >
+          </Link>
         </nav>
 
         {/* Desktop Right Actions */}
         <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexShrink: 0 }} className="desktop-nav">
-
-          {/* Search — always visible on desktop */}
           <form onSubmit={handleSearchSubmit} style={{ display: 'flex', alignItems: 'center' }}>
             <input
               value={searchValue}
@@ -111,69 +121,42 @@ export default function Header() {
                 borderRadius: '8px 0 0 8px',
                 padding: '8px 14px',
                 color: 'var(--text)',
-                fontSize: 13,
-                outline: 'none',
-                width: 220,
+                fontSize: 13, outline: 'none', width: 220,
               }}
             />
-            <button
-              type="submit"
-              style={{
-                width: 40, height: 37,
-                display: 'flex', alignItems: 'center', justifyContent: 'center',
-                background: 'var(--gold)',
-                border: '1px solid var(--gold)',
-                borderRadius: '0 8px 8px 0',
-                color: '#000',
-                fontSize: 16,
-              }}
-              aria-label="Search"
-            >
+            <button type="submit" style={{
+              width: 40, height: 37,
+              display: 'flex', alignItems: 'center', justifyContent: 'center',
+              background: 'var(--gold)', border: '1px solid var(--gold)',
+              borderRadius: '0 8px 8px 0', color: '#000', fontSize: 16,
+            }} aria-label="Search">
               <SearchIcon />
             </button>
           </form>
 
-          {/* Theme Toggle */}
-          <button
-            onClick={toggleTheme}
-            style={{
-              width: 40, height: 40,
-              display: 'flex', alignItems: 'center', justifyContent: 'center',
-              background: 'var(--surface)',
-              border: '1px solid var(--border)',
-              borderRadius: 8,
-              color: 'var(--text-muted)',
-              fontSize: 16,
-            }}
-            aria-label="Toggle theme"
-          >
+          <button onClick={toggleTheme} style={{
+            width: 40, height: 40,
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
+            background: 'var(--surface)', border: '1px solid var(--border)',
+            borderRadius: 8, color: 'var(--text-muted)', fontSize: 16,
+          }} aria-label="Toggle theme">
             {theme === 'dark' ? <SunIcon /> : <MoonIcon />}
           </button>
 
-          {/* Account */}
           <Link href={user ? '/account' : '/login'} style={{
             display: 'flex', alignItems: 'center', gap: 6,
-            background: 'var(--surface)',
-            border: '1px solid var(--border)',
-            borderRadius: 8,
-            padding: '8px 14px',
-            fontSize: 13,
-            fontWeight: 700,
-            color: 'var(--text)',
+            background: 'var(--surface)', border: '1px solid var(--border)',
+            borderRadius: 8, padding: '8px 14px',
+            fontSize: 13, fontWeight: 700, color: 'var(--text)',
           }}>
             <PersonIcon />
             <span>{user ? 'Account' : 'Login'}</span>
           </Link>
 
-          {/* Cart */}
           <Link href="/cart" style={{
             display: 'flex', alignItems: 'center', gap: 8,
-            background: 'var(--gold)',
-            borderRadius: 8,
-            padding: '8px 16px',
-            fontSize: 13,
-            fontWeight: 700,
-            color: '#000',
+            background: 'var(--gold)', borderRadius: 8,
+            padding: '8px 16px', fontSize: 13, fontWeight: 700, color: '#000',
           }}>
             <CartIcon />
             <span>Cart{cartCount > 0 ? ` (${cartCount})` : ''}</span>
@@ -182,40 +165,28 @@ export default function Header() {
 
         {/* Mobile Right Actions */}
         <div style={{ display: 'flex', alignItems: 'center', gap: 8 }} className="mobile-actions">
-          <button
-            onClick={toggleTheme}
-            style={{
-              width: 38, height: 38,
-              display: 'flex', alignItems: 'center', justifyContent: 'center',
-              background: 'var(--surface)',
-              border: '1px solid var(--border)',
-              borderRadius: 8,
-              color: 'var(--text-muted)',
-            }}
-            aria-label="Toggle theme"
-          >
+          <button onClick={toggleTheme} style={{
+            width: 38, height: 38,
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
+            background: 'var(--surface)', border: '1px solid var(--border)',
+            borderRadius: 8, color: 'var(--text-muted)',
+          }} aria-label="Toggle theme">
             {theme === 'dark' ? <SunIcon /> : <MoonIcon />}
           </button>
 
           <Link href={user ? '/account' : '/login'} style={{
             width: 38, height: 38,
             display: 'flex', alignItems: 'center', justifyContent: 'center',
-            background: 'var(--surface)',
-            border: '1px solid var(--border)',
-            borderRadius: 8,
-            color: 'var(--text-muted)',
+            background: 'var(--surface)', border: '1px solid var(--border)',
+            borderRadius: 8, color: 'var(--text-muted)',
           }}>
             <PersonIcon />
           </Link>
 
           <Link href="/cart" style={{
             display: 'flex', alignItems: 'center', gap: 6,
-            background: 'var(--gold)',
-            borderRadius: 8,
-            padding: '8px 12px',
-            fontSize: 13,
-            fontWeight: 700,
-            color: '#000',
+            background: 'var(--gold)', borderRadius: 8,
+            padding: '8px 12px', fontSize: 13, fontWeight: 700, color: '#000',
           }}>
             <CartIcon />
             {cartCount > 0 && <span>{cartCount}</span>}
@@ -223,7 +194,7 @@ export default function Header() {
         </div>
       </div>
 
-      {/* Mobile Search Bar — full width, stays for mobile */}
+      {/* Mobile Search */}
       <div style={{ padding: '0 16px 12px' }} className="mobile-search">
         <form onSubmit={handleSearchSubmit} style={{ display: 'flex', alignItems: 'center' }}>
           <input
@@ -231,29 +202,19 @@ export default function Header() {
             onChange={e => setSearchValue(e.target.value)}
             placeholder="Search products..."
             style={{
-              flex: 1,
-              background: 'var(--surface)',
+              flex: 1, background: 'var(--surface)',
               border: '1px solid var(--border)',
               borderRadius: '10px 0 0 10px',
-              padding: '11px 16px',
-              color: 'var(--text)',
-              fontSize: 14,
-              outline: 'none',
+              padding: '11px 16px', color: 'var(--text)',
+              fontSize: 14, outline: 'none',
             }}
           />
-          <button
-            type="submit"
-            style={{
-              height: 44,
-              padding: '0 16px',
-              display: 'flex', alignItems: 'center', justifyContent: 'center',
-              background: 'var(--gold)',
-              border: 'none',
-              borderRadius: '0 10px 10px 0',
-              color: '#000',
-            }}
-            aria-label="Search"
-          >
+          <button type="submit" style={{
+            height: 44, padding: '0 16px',
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
+            background: 'var(--gold)', border: 'none',
+            borderRadius: '0 10px 10px 0', color: '#000',
+          }} aria-label="Search">
             <SearchIcon />
           </button>
         </form>

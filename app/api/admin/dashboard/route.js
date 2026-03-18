@@ -248,7 +248,7 @@ export async function PATCH(request) {
   if (body.type === 'category') {
     const { data: ex } = await supabase.from('categories').select('name').eq('id', body.id).single();
     const updates = {};
-    ['name','slug','description','image_url','is_active'].forEach(k => { if (body[k] !== undefined) updates[k] = body[k]; });
+    ['name','slug','description','image_url','is_active','show_in_nav'].forEach(k => { if (body[k] !== undefined) updates[k] = body[k]; });
     if (body.sort_order !== undefined) updates.sort_order = parseInt(body.sort_order);
     const { error } = await supabase.from('categories').update(updates).eq('id', body.id);
     if (error) return Response.json({ error: error.message }, { status: 500 });
