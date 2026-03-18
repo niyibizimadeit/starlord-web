@@ -87,7 +87,7 @@ function OrderModal({ orderId, onClose, onStatusChange }) {
               <button disabled={updating} onClick={() => handleStatus(NEXT_STATUS[order.status])} style={{ ...S.btn, background: '#C9A84C', color: '#000' }}>{updating ? '...' : `Mark as ${NEXT_STATUS[order.status]}`}</button>
               <button disabled={updating} onClick={() => handleStatus('cancelled')} style={{ ...S.btn, background: '#2e1a1a', color: '#e05555', border: '1px solid #e05555' }}>Cancel</button>
               <a href={`tel:${order.customer_phone}`} style={{ ...S.btn, background: '#1c1c1c', color: '#888', border: '1px solid #2a2a2a', textDecoration: 'none' }}>Call</a>
-              <a href={`https://wa.me/${order.customer_phone?.replace(/\D/g, '')}`} target="_blank" rel="noreferrer" style={{ ...S.btn, background: '#1c1c1c', color: '#888', border: '1px solid #2a2a2a', textDecoration: 'none' }}>WhatsApp</a>
+              <a href={`https://wa.me/${order.customer_phone?.replace(/\D/g, '').replace(/^0/, '250')}`} target="_blank" rel="noreferrer" style={{ ...S.btn, background: '#1c1c1c', color: '#888', border: '1px solid #2a2a2a', textDecoration: 'none' }}>WhatsApp</a>
             </div>
           )}
           {order.logs?.length > 0 && (
@@ -933,7 +933,7 @@ export default function AdminPage() {
                     View Full Order
                   </button>
                   
-                  <a href={'https://wa.me/' + (order.customer_phone?.replace(/\D/g, ''))} target="_blank" rel="noreferrer" style={{ ...S.btn, background: '#1c1c1c', color: '#888', border: '1px solid #2a2a2a', textDecoration: 'none' }}>WhatsApp</a>
+                  <a href={'https://wa.me/' + (order.customer_phone?.replace(/\D/g, '').replace(/^0/, '250'))} target="_blank" rel="noreferrer" style={{ ...S.btn, background: '#1c1c1c', color: '#888', border: '1px solid #2a2a2a', textDecoration: 'none' }}>WhatsApp</a>
                   
                   <a href={'tel:' + order.customer_phone} style={{ ...S.btn, background: '#1c1c1c', color: '#888', border: '1px solid #2a2a2a', textDecoration: 'none' }}>Call</a>
                 </div>
