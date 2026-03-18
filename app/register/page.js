@@ -196,7 +196,7 @@ export default function RegisterPage() {
         <div>
           <label style={labelStyle}>Full Name</label>
           <input
-            type="text" placeholder="Jean Paul Habimana"
+            type="text" placeholder="Ntwali Franklin"
             value={formData.full_name}
             onChange={e => setFormData(p => ({ ...p, full_name: e.target.value }))}
             style={inputStyle(formData.full_name)} autoFocus

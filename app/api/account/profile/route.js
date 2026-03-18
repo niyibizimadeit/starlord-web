@@ -115,6 +115,9 @@ export async function PATCH(request) {
 
     if (error) {
       console.error('Update profile error:', error);
+      if (error.code === '23505' && error.details?.includes('phone')) {
+        return Response.json({ error: 'This phone number is already linked to another account' }, { status: 400 });
+      }
       return Response.json({ error: 'Failed to update profile' }, { status: 500 });
     }
 

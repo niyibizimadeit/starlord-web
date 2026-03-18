@@ -43,7 +43,7 @@ function Footer() {
         {/* Help */}
         <div>
           <div style={{ fontSize: 11, fontWeight: 700, color: 'var(--text)', letterSpacing: 2, textTransform: 'uppercase', marginBottom: 16 }}>Help</div>
-          {[['/track', 'Track Order'], ['/about', 'About Us'], ['/faq', 'FAQ'], ['/returns', 'Returns'], ['/account', 'My Account'], ['/contact', 'Contact Us']].map(([href, text]) => (
+          {[['/track', 'Track Order'], ['/about', 'About Us'], ['/faq', 'FAQ'], ['/returns', 'Returns'], ['/account', 'My Account'], ['/contact', 'Contact Us'], ['/terms', 'Terms & Conditions'],].map(([href, text]) => (
             <Link key={href} href={href} style={{ display: 'block', fontSize: 13, color: 'var(--text-muted)', marginBottom: 10 }}>{text}</Link>
           ))}
         </div>

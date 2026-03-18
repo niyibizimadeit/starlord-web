@@ -366,7 +366,7 @@
 
 .endOfResults {
   text-align: center;
-  padding: 48px 0;
+  padding: 16px 0;
   color: var(--text-faint);
   font-size: 13px;
   letter-spacing: 2px;

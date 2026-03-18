@@ -7,15 +7,26 @@ export async function POST(request) {
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) return Response.json({ error: 'Unauthorized' }, { status: 401 });
 
-    const { newPassword } = await request.json();
+    const { currentPassword, newPassword } = await request.json();
+
     if (!newPassword || newPassword.length < 6) {
       return Response.json({ error: 'Password must be at least 6 characters' }, { status: 400 });
+    }
+
+    // If user has a password set, verify current password first
+    if (currentPassword) {
+      const { error: signInError } = await supabase.auth.signInWithPassword({
+        email: user.email,
+        password: currentPassword,
+      });
+      if (signInError) {
+        return Response.json({ error: 'Current password is incorrect' }, { status: 400 });
+      }
     }
 
     const { error } = await supabase.auth.updateUser({ password: newPassword });
     if (error) return Response.json({ error: error.message }, { status: 400 });
 
-    // Mark password as set in users table
     const serviceClient = createServiceClient();
     await serviceClient
       .from('users')

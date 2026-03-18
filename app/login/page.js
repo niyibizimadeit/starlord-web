@@ -143,8 +143,8 @@ export default function LoginPage() {
         padding: 4, border: '1px solid var(--border)',
       }}>
         {[
-          { key: 'phone', label: '📱 Phone OTP' },
-          { key: 'email', label: '✉️ Email' },
+          { key: 'phone', label: 'Phone OTP' },
+          { key: 'email', label: 'Email' },
         ].map(t => (
           <button
             key={t.key}
