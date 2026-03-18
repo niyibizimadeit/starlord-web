@@ -33,14 +33,14 @@ export async function GET(request) {
 
   if (type === 'order_detail') {
     const id = searchParams.get('id');
-    const { data, error } = await supabase.from('orders').select(`*, order_items(id, quantity, price_at_time, products(id, name, image_url, category))`).eq('id', id).single();
+    const { data, error } = await supabase.from('orders').select(`*, order_items(id, quantity, price_at_time, variations, products(id, name, image_url, category))`).eq('id', id).single();
     if (error) return Response.json({ error: error.message }, { status: 500 });
     const { data: logs } = await supabase.from('admin_logs').select('*').eq('entity_id', id).order('created_at', { ascending: true });
     return Response.json({ data: { ...data, logs: logs || [] } });
   }
 
   if (type === 'products') {
-    const { data, error } = await supabase.from('products').select(`*, product_images(id, url, sort_order)`).order('created_at', { ascending: false });
+    const { data, error } = await supabase.from('products').select(`*, product_images(id, url, sort_order), product_variations(id, name, options, is_required, sort_order)`).order('created_at', { ascending: false });
     if (error) return Response.json({ error: error.message }, { status: 500 });
     const sorted = data?.map(p => ({ ...p, product_images: (p.product_images || []).sort((a, b) => a.sort_order - b.sort_order) }));
     return Response.json({ data: sorted });
@@ -202,6 +202,19 @@ export async function POST(request) {
     await log(supabase, 'CATEGORY_CREATED', 'category', data.id, data.name, { slug: data.slug });
     return Response.json({ data });
   }
+  if (body.type === 'variation') {
+    const { data, error } = await supabase.from('product_variations').insert({
+      product_id: body.productId,
+      name: body.name,
+      options: body.options,
+      is_required: body.is_required ?? true,
+      sort_order: body.sort_order ?? 0,
+    }).select().single();
+    if (error) return Response.json({ error: error.message }, { status: 500 });
+    // Mark product as having variations
+    await supabase.from('products').update({ has_variations: true }).eq('id', body.productId);
+    return Response.json({ data });
+  }
   const { data, error } = await supabase.from('products').insert([{ name: body.name, description: body.description || '', category: body.category, price: parseInt(body.price), old_price: body.old_price ? parseInt(body.old_price) : null, stock: parseInt(body.stock), image_url: null, badge: body.badge || null, is_active: true }]).select().single();
   if (error) return Response.json({ error: error.message }, { status: 500 });
   await log(supabase, 'PRODUCT_CREATED', 'product', data.id, data.name, { price: data.price, stock: data.stock, category: data.category });
@@ -227,7 +240,7 @@ export async function PATCH(request) {
     if (body.description !== undefined) updates.description = body.description;
     if (body.category    !== undefined) updates.category    = body.category;
     if (body.badge       !== undefined) updates.badge       = body.badge;
-    if (body.old_price   !== undefined) updates.old_price   = body.old_price ? parseInt(body.old_price) : null;
+    if (body.has_variations !== undefined) updates.has_variations = body.has_variations;
     const { error } = await supabase.from('products').update(updates).eq('id', body.id);
     if (error) return Response.json({ error: error.message }, { status: 500 });
     const changes = {};
@@ -271,6 +284,14 @@ export async function DELETE(request) {
   if (!checkSecret(searchParams.get('secret'))) return unauthorized();
   const body = await request.json();
   const supabase = createServiceClient();
+  if (body.type === 'variation') {
+    const { error } = await supabase.from('product_variations').delete().eq('id', body.id);
+    if (error) return Response.json({ error: error.message }, { status: 500 });
+    // Check if product still has variations
+    const { count } = await supabase.from('product_variations').select('id', { count: 'exact', head: true }).eq('product_id', body.product_id);
+    if (count === 0) await supabase.from('products').update({ has_variations: false }).eq('id', body.product_id);
+    return Response.json({ success: true });
+  }
   if (body.type === 'category') {
     const { data: ex } = await supabase.from('categories').select('name, slug').eq('id', body.id).single();
     const { count } = await supabase.from('products').select('id', { count: 'exact', head: true }).eq('category', ex?.slug);

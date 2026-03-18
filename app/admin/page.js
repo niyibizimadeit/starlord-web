@@ -6,7 +6,7 @@ import {
   ADMIN_SECRET, S, formatRWF, formatDate, timeAgo, toSlug,
   STATUS_COLOR, NEXT_STATUS, LOG_ICONS,
   apiFetch, apiMutate, downloadCSV, printRevenueReport, printShippingLabel,
-  StatCard, BarChart, ImageUploader, StockModal, CategoryModal,
+  StatCard, BarChart, ImageUploader, StockModal, CategoryModal, VariationsEditor,
 } from './AdminHelpers';
 
 // ─── Order Modal ──────────────────────────────────────────────────────────────
@@ -56,6 +56,11 @@ function OrderModal({ orderId, onClose, onStatusChange }) {
                 <div>
                   <div style={{ fontSize: 13, color: '#fff', fontWeight: 600 }}>{item.products?.name}</div>
                   <div style={{ fontSize: 11, color: '#555' }}>{item.products?.category} · {formatRWF(item.price_at_time)} each</div>
+                  {item.variations?.length > 0 && (
+                    <div style={{ fontSize: 11, color: '#C9A84C', marginTop: 2 }}>
+                      {item.variations.map(v => `${v.name}: ${v.option}`).join(' · ')}
+                    </div>
+                  )}
                 </div>
                 <div style={{ textAlign: 'right' }}>
                   <div style={{ fontSize: 13, color: '#C9A84C', fontWeight: 800 }}>{formatRWF(item.price_at_time * item.quantity)}</div>
@@ -111,7 +116,8 @@ function ProductModal({ product, categories, onClose, onSave }) {
   const [saving,  setSaving]  = useState(false);
   const [error,   setError]   = useState('');
   const [savedId, setSavedId] = useState(product?.id || null);
-  const [images,  setImages]  = useState(product?.product_images || []);
+  const [images,     setImages]     = useState(product?.product_images || []);
+  const [variations, setVariations] = useState(product?.product_variations || []);
   const [form, setForm] = useState({
     name: product?.name || '', description: product?.description || '',
     category: product?.category || (categories?.[0]?.slug || 'accessories'),
@@ -126,11 +132,11 @@ function ProductModal({ product, categories, onClose, onSave }) {
     setError(''); setSaving(true);
     let result;
     if (isNew && !savedId) {
-      result = await apiMutate('POST', form);
+      result = await apiMutate('POST', { ...form, has_variations: false });
       if (result.error) { setError(result.error); setSaving(false); return; }
       setSavedId(result.data.id);
     } else {
-      result = await apiMutate('PATCH', { type: 'product', id: savedId || product.id, ...form });
+      result = await apiMutate('PATCH', { type: 'product', id: savedId || product.id, ...form, has_variations: variations.length > 0 });
       if (result.error) { setError(result.error); setSaving(false); return; }
     }
     setSaving(false); await onSave(); if (!isNew) onClose();
@@ -158,7 +164,20 @@ function ProductModal({ product, categories, onClose, onSave }) {
             </div>
           </div>
         )}
-        {(!isNew || savedId) && <div style={{ marginBottom: 20 }}><ImageUploader productId={savedId || product?.id} images={images} onImagesChange={setImages} /></div>}
+        {(!isNew || savedId) && (
+          <div style={{ marginBottom: 20 }}>
+            <ImageUploader productId={savedId || product?.id} images={images} onImagesChange={setImages} />
+          </div>
+        )}
+        {(!isNew || savedId) && (
+          <div style={{ marginBottom: 20 }}>
+            <VariationsEditor
+              productId={savedId || product?.id}
+              variations={variations}
+              onVariationsChange={setVariations}
+            />
+          </div>
+        )}
         <div style={{ display: 'flex', gap: 8 }}>
           {(!isNew || !savedId) && <button onClick={handleSave} disabled={saving} style={{ ...S.btn, background: saving ? '#555' : '#C9A84C', color: '#000', opacity: saving ? 0.6 : 1 }}>{saving ? 'Saving...' : isNew ? 'Save & Add Images' : 'Save Changes'}</button>}
           {isNew && savedId && <button onClick={async () => { await onSave(); onClose(); }} style={{ ...S.btn, background: '#C9A84C', color: '#000' }}>Done</button>}

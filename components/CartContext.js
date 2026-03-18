@@ -4,31 +4,40 @@ import { createContext, useContext, useState } from 'react';
 
 const CartContext = createContext(null);
 
+// Generate a unique cart key based on product id + selected variations
+function cartKey(product) {
+  const varKey = product.selectedVariations?.length
+    ? JSON.stringify(product.selectedVariations.map(v => `${v.name}:${v.option}`).sort())
+    : '';
+  return `${product.id}__${varKey}`;
+}
+
 export function CartProvider({ children }) {
   const [cart, setCart] = useState([]);
 
   const addToCart = (product, quantity = 1) => {
+    const key = cartKey(product);
     setCart(prev => {
-      const existing = prev.find(i => i.id === product.id);
+      const existing = prev.find(i => i._cartKey === key);
       if (existing) {
         return prev.map(i =>
-          i.id === product.id
+          i._cartKey === key
             ? { ...i, qty: i.qty + quantity }
             : i
         );
       }
-      return [...prev, { ...product, qty: quantity }];
+      return [...prev, { ...product, qty: quantity, _cartKey: key }];
     });
   };
 
-  const removeFromCart = (id) => {
-    setCart(prev => prev.filter(i => i.id !== id));
+  const removeFromCart = (key) => {
+    setCart(prev => prev.filter(i => i._cartKey !== key));
   };
 
-  const updateQty = (id, delta) => {
+  const updateQty = (key, delta) => {
     setCart(prev =>
       prev.map(i =>
-        i.id === id ? { ...i, qty: Math.max(1, i.qty + delta) } : i
+        i._cartKey === key ? { ...i, qty: Math.max(1, i.qty + delta) } : i
       )
     );
   };

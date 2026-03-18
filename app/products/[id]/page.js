@@ -6,6 +6,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import ProductReviews from '@/components/ProductReviews';
 import { createServerSupabaseClient } from '@/lib/supabase/server';
+import VariationSelector from '@/components/VariationSelector';
 
 export async function generateMetadata({ params }) {
   const resolvedParams = await params;
@@ -42,6 +43,13 @@ export default async function ProductPage({ params }) {
   const { data: productImages } = await supabase
     .from('product_images')
     .select('id, url, sort_order')
+    .eq('product_id', resolvedParams.id)
+    .order('sort_order', { ascending: true });
+
+  // Fetch product variations
+  const { data: variations } = await supabase
+    .from('product_variations')
+    .select('id, name, options, is_required, sort_order')
     .eq('product_id', resolvedParams.id)
     .order('sort_order', { ascending: true });
 
@@ -175,10 +183,12 @@ export default async function ProductPage({ params }) {
           </p>
         )}
 
-        <AddToCartButton product={product} />
+        <VariationSelector
+          product={product}
+          variations={variations || []}
+        />
       </div>
 
-      {/* ── Related Products ─────────────────────────────────── */}
       {/* ── Related Products ─────────────────────────────────── */}
       {related.length > 0 && (
         <div style={{ padding: '0 20px', marginTop: 24 }}>

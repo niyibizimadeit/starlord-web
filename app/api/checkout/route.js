@@ -174,6 +174,7 @@ export async function POST(request) {
         product_id:    item.productId,
         quantity:      item.quantity,
         price_at_time: product.price,
+        variations:    item.variations || null,
       };
     });
     await supabase.from('order_items').insert(orderItems);

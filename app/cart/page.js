@@ -106,13 +106,18 @@ export default function CartPage() {
               }}>
                 {item.name}
               </div>
+              {item.selectedVariations?.length > 0 && (
+                <div style={{ fontSize: 11, color: 'var(--text-faint)', marginBottom: 4 }}>
+                  {item.selectedVariations.map(v => `${v.name}: ${v.option}`).join(' · ')}
+                </div>
+              )}
               <div style={{ color: 'var(--gold)', fontWeight: 800, fontSize: 14, marginBottom: 10 }}>
                 {formatRWF(item.price)}
               </div>
 
               {/* Quantity Controls */}
               <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-                <button onClick={() => updateQty(item.id, -1)} style={{
+                <button onClick={() => updateQty(item._cartKey, -1)} style={{
                   background: 'var(--border)', border: 'none', color: 'var(--text)',
                   width: 28, height: 28, borderRadius: 7, fontWeight: 800, fontSize: 16,
                 }}>-</button>
@@ -120,7 +125,7 @@ export default function CartPage() {
                   color: 'var(--text)', fontWeight: 700, fontSize: 14,
                   minWidth: 20, textAlign: 'center',
                 }}>{item.qty}</span>
-                <button onClick={() => updateQty(item.id, 1)} style={{
+                <button onClick={() => updateQty(item._cartKey, 1)} style={{
                   background: 'var(--border)', border: 'none', color: 'var(--text)',
                   width: 28, height: 28, borderRadius: 7, fontWeight: 800, fontSize: 16,
                 }}>+</button>
@@ -128,7 +133,7 @@ export default function CartPage() {
             </div>
 
             {/* Remove */}
-            <button onClick={() => removeFromCart(item.id)} style={{
+            <button onClick={() => removeFromCart(item._cartKey)} style={{
               background: 'none', border: 'none',
               color: 'var(--text-faint)', fontSize: 18, padding: 4, flexShrink: 0,
             }}>x</button>
