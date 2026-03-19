@@ -41,11 +41,12 @@ function ProductCard({ product, onOpenModal }) {
           <div className={styles.productImageContainer}>
             {product.image_url ? (
               <Image
-                src={product.image_url}
-                alt={product.name}
-                fill
-                className={styles.productImage}
-              />
+              src={product.image_url}
+              alt={product.name}
+              fill
+              sizes="(max-width: 767px) 50vw, (max-width: 1280px) 33vw, 280px"
+              className={styles.productImage}
+            />
             ) : (
               <div className={styles.noImage}>No Image</div>
             )}

@@ -90,6 +90,8 @@ export default function BannerSlider() {
                 width: '100%', height: '100%',
                 objectFit: 'cover', display: 'block',
               }}
+              loading={active === 0 ? 'eager' : 'lazy'}
+              fetchpriority={active === 0 ? 'high' : 'auto'}
             />
           ) : (
             <div style={{
