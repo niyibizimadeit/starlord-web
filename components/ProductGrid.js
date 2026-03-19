@@ -111,7 +111,6 @@ function ProductCard({ product, onOpenModal }) {
   );
 }
 
-// ── Desktop section header ────────────────────────────────────────
 function DesktopSectionHeader({ title, subtitle }) {
   return (
     <div className={styles.sectionHeader}>
@@ -129,7 +128,7 @@ export default function ProductGrid({
   initialCategory = 'All',
   initialSearch = '',
   initialBadge,
-  categories = ['Tech', 'Fashion'],
+  categories = [],
   basePath = '/',
   pageTitle,
   showHeader = true,
@@ -200,27 +199,29 @@ export default function ProductGrid({
     <div className={styles.container}>
       <div className="container">
 
-        {/* ── Desktop header: title + search ── */}
+        {/* Desktop header */}
         {showHeader !== false && (
           <div className={styles.desktopHeader}>
             <DesktopSectionHeader title={title} subtitle={`${filtered.length} items available`} />
-            {!hideDesktopFilters && <div className={styles.searchInputContainer}>
-              <svg className={styles.searchIcon} viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" strokeWidth="2" fill="none" strokeLinecap="round" strokeLinejoin="round">
-                <circle cx="11" cy="11" r="8" />
-                <line x1="21" y1="21" x2="16.65" y2="16.65" />
-              </svg>
-              <input
-                type="text"
-                placeholder="Search products..."
-                value={search}
-                onChange={handleSearchChange}
-                className={styles.searchInput}
-              />
-            </div>}
+            {!hideDesktopFilters && (
+              <div className={styles.searchInputContainer}>
+                <svg className={styles.searchIcon} viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" strokeWidth="2" fill="none" strokeLinecap="round" strokeLinejoin="round">
+                  <circle cx="11" cy="11" r="8" />
+                  <line x1="21" y1="21" x2="16.65" y2="16.65" />
+                </svg>
+                <input
+                  type="text"
+                  placeholder="Search products..."
+                  value={search}
+                  onChange={handleSearchChange}
+                  className={styles.searchInput}
+                />
+              </div>
+            )}
           </div>
         )}
 
-        {/* ── Mobile header: styled title only (no search, no count) ── */}
+        {/* Mobile header */}
         {showHeader !== false && (
           <div className={styles.mobileHeader}>
             <div className={styles.mobileTitleRow}>
@@ -230,7 +231,7 @@ export default function ProductGrid({
           </div>
         )}
 
-        {/* ── Filters ── */}
+        {/* Filters */}
         <div className={`${styles.filtersRow} ${hideDesktopFilters ? styles.filtersRowMobileOnly : ''}`}>
           <div className={styles.categoryPills}>
             {['All', ...categories.filter(c => c !== 'All')].map(cat => (
@@ -252,7 +253,7 @@ export default function ProductGrid({
           </button>
         </div>
 
-        {/* ── Quick Add Modal ── */}
+        {/* Quick Add Modal */}
         {qtyModal.open && qtyModal.product && (
           <div className={styles.modalOverlay}>
             <div className={styles.modalContent}>
@@ -277,7 +278,7 @@ export default function ProductGrid({
           </div>
         )}
 
-        {/* ── Products ── */}
+        {/* Products */}
         {visible.length > 0 ? (
           <>
             <div className={styles.productGrid}>
