@@ -376,6 +376,11 @@
 /* ── Mobile ─────────────────────────────────────────────────── */
 
 @media (max-width: 767px) {
+  
+  .saleToggle,
+  .saleToggleActive {
+    display: none;
+  }
 
   .desktopHeader { display: none; }
   .mobileHeader { display: block; }

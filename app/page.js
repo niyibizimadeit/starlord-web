@@ -6,6 +6,18 @@ import TrustBar from '@/components/TrustBar';
 
 export const revalidate = 60;
 
+async function getNavCategories() {
+  const supabase = createServiceClient();
+  const { data } = await supabase
+    .from('categories')
+    .select('name')
+    .eq('is_active', true)
+    .eq('show_in_nav', true)
+    .order('sort_order', { ascending: true })
+    .limit(4);
+  return (data || []).map(c => c.name);
+}
+
 async function getProducts() {
   const supabase = createServiceClient();
   const { data } = await supabase
@@ -26,7 +38,10 @@ async function getProducts() {
 
 export default async function HomePage({ searchParams }) {
   const params   = await searchParams;
-  const products = await getProducts();
+  const [products, navCategories] = await Promise.all([
+    getProducts(),
+    getNavCategories(),
+  ]);
   const category = params?.category || 'All';
   const search   = params?.search   || '';
   const badge    = params?.badge    || '';
@@ -40,6 +55,7 @@ export default async function HomePage({ searchParams }) {
         initialSearch={search}
         initialBadge={badge}
         hideDesktopFilters
+        categories={navCategories}
       />
       <TrustBar className="mobile-trustbar-below-products mobile-only-trustbar" />
     </main>
