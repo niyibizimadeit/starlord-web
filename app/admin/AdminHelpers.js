@@ -2,7 +2,7 @@
 
 import { useState, useRef } from 'react';
 
-export const ADMIN_SECRET = 'starlord2024admin';
+export const ADMIN_SECRET = process.env.NEXT_PUBLIC_ADMIN_SECRET;
 const SITE_URL = 'https://starlordweb2-y9jldvw8c-niyibizimadeits-projects.vercel.app';
 
 export function formatRWF(n)  { return `RWF ${Number(n || 0).toLocaleString()}`; }

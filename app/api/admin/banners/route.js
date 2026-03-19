@@ -1,6 +1,7 @@
 import { createServiceClient } from '@/lib/supabase/server';
 
-const ADMIN_SECRET = process.env.ADMIN_SECRET || 'starlord2024admin';
+const ADMIN_SECRET = process.env.ADMIN_SECRET;
+if (!ADMIN_SECRET) throw new Error('Missing ADMIN_SECRET env variable');
 
 function checkSecret(req) {
   return req.headers.get('x-admin-secret') === ADMIN_SECRET;
