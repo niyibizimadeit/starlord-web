@@ -2,6 +2,7 @@ import './globals.css';
 import { ThemeProvider } from '@/components/ThemeProvider';
 import { CartProvider } from '@/components/CartContext';
 import ConditionalLayout from '@/components/ConditionalLayout';
+import { Analytics } from '@vercel/analytics/react';
 
 export const metadata = {
   title: 'STARLORD GROUP — Premium Accessories, Kigali',

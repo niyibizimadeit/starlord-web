@@ -4,6 +4,7 @@ import { usePathname } from 'next/navigation';
 import Header from './Header';
 import WhatsAppWidget from './WhatsAppWidget';
 import Link from 'next/link';
+import { Analytics } from '@vercel/analytics/react';
 
 function PaymentBadge({ text }) {
   return (
@@ -76,6 +77,7 @@ export default function ConditionalLayout({ children }) {
       <main>{children}</main>
       {!isAdmin && <Footer />}
       {!isAdmin && <WhatsAppWidget />}
+      <Analytics />
     </>
   );
 }
