@@ -308,7 +308,10 @@ export async function DELETE(request) {
     if (paths.length > 0) await supabase.storage.from('products').remove(paths);
   }
   const { error } = await supabase.from('products').delete().eq('id', body.id);
-  if (error) return Response.json({ error: error.message }, { status: 500 });
+  if (error) {
+    console.error('Product delete error:', JSON.stringify(error));
+    return Response.json({ error: error.message }, { status: 500 });
+  }
   await log(supabase, 'PRODUCT_DELETED', 'product', body.id, ex?.name, {});
   return Response.json({ success: true });
 }

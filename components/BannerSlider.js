@@ -91,7 +91,7 @@ export default function BannerSlider() {
                 objectFit: 'cover', display: 'block',
               }}
               loading={active === 0 ? 'eager' : 'lazy'}
-              fetchpriority={active === 0 ? 'high' : 'auto'}
+              fetchPriority={active === 0 ? 'high' : 'auto'}
             />
           ) : (
             <div style={{
