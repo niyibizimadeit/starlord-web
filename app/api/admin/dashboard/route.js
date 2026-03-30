@@ -303,10 +303,20 @@ export async function DELETE(request) {
   }
   const { data: ex }     = await supabase.from('products').select('name').eq('id', body.id).single();
   const { data: images } = await supabase.from('product_images').select('url').eq('product_id', body.id);
+
+  // Null out product_id on any order_items that reference this product
+  // so order history is preserved even after deletion
+  await supabase
+    .from('order_items')
+    .update({ product_id: null })
+    .eq('product_id', body.id);
+
+  // Remove images from storage
   if (images?.length > 0) {
     const paths = images.map(img => img.url.split('/storage/v1/object/public/products/')[1]).filter(Boolean);
     if (paths.length > 0) await supabase.storage.from('products').remove(paths);
   }
+
   const { error } = await supabase.from('products').delete().eq('id', body.id);
   if (error) {
     console.error('Product delete error:', JSON.stringify(error));
