@@ -2,7 +2,8 @@
 
 import { useState, useRef } from 'react';
 
-export const ADMIN_SECRET = process.env.NEXT_PUBLIC_ADMIN_SECRET;
+// Admin secret is no longer exposed to client - auth is via httpOnly cookie
+// These helpers now rely on the admin_auth cookie set by /api/admin/auth
 const SITE_URL = 'https://starlordweb2-y9jldvw8c-niyibizimadeits-projects.vercel.app';
 
 export function formatRWF(n)  { return `RWF ${Number(n || 0).toLocaleString()}`; }
@@ -47,14 +48,50 @@ export const S = {
   modalBox:  { background: '#141414', border: '1px solid #2a2a2a', borderRadius: 16, width: '100%', maxWidth: 720, padding: 28 },
 };
 
+// API helpers now use cookie-based auth instead of secret parameter
 export async function apiFetch(type, params = {}) {
-  const qs  = new URLSearchParams({ secret: ADMIN_SECRET, type, ...params });
-  const res = await fetch(`/api/admin/dashboard?${qs}`);
+  const qs  = new URLSearchParams({ type, ...params });
+  const res = await fetch(`/api/admin/dashboard?${qs}`, {
+    credentials: 'include', // Include cookies for auth
+  });
+  if (res.status === 401) {
+    // Session expired - redirect to login
+    window.location.reload();
+    return { error: 'Session expired' };
+  }
   return res.json();
 }
+
 export async function apiMutate(method, body) {
-  const res = await fetch(`/api/admin/dashboard?secret=${ADMIN_SECRET}`, {
-    method, headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body),
+  const res = await fetch('/api/admin/dashboard', {
+    method,
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(body),
+    credentials: 'include', // Include cookies for auth
+  });
+  if (res.status === 401) {
+    window.location.reload();
+    return { error: 'Session expired' };
+  }
+  return res.json();
+}
+
+// New helper for admin login
+export async function adminLogin(password) {
+  const res = await fetch('/api/admin/auth', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ password }),
+    credentials: 'include',
+  });
+  return res.json();
+}
+
+// New helper for admin logout
+export async function adminLogout() {
+  const res = await fetch('/api/admin/auth', {
+    method: 'DELETE',
+    credentials: 'include',
   });
   return res.json();
 }
@@ -149,7 +186,7 @@ export function ImageUploader({ productId, images, onImagesChange }) {
     for (const file of Array.from(files)) {
       const form = new FormData();
       form.append('file', file); form.append('productId', productId);
-      const res  = await fetch('/api/admin/upload', { method: 'POST', headers: { 'x-admin-secret': ADMIN_SECRET }, body: form });
+      const res  = await fetch('/api/admin/upload', { method: 'POST', credentials: 'include', body: form });
       const data = await res.json();
       if (data.error) { setError(data.error); break; } else results.push(data.data);
     }
@@ -159,7 +196,7 @@ export function ImageUploader({ productId, images, onImagesChange }) {
 
   const handleDelete = async (img) => {
     if (!confirm('Remove this image?')) return;
-    const res  = await fetch('/api/admin/upload', { method: 'DELETE', headers: { 'Content-Type': 'application/json', 'x-admin-secret': ADMIN_SECRET }, body: JSON.stringify({ imageId: img.id, url: img.url }) });
+    const res  = await fetch('/api/admin/upload', { method: 'DELETE', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ imageId: img.id, url: img.url }), credentials: 'include' });
     const data = await res.json();
     if (data.error) { setError(data.error); return; }
     onImagesChange(images.filter(i => i.id !== img.id));
@@ -171,7 +208,7 @@ export function ImageUploader({ productId, images, onImagesChange }) {
     [updated[index - 1], updated[index]] = [updated[index], updated[index - 1]];
     const reordered = updated.map((img, i) => ({ ...img, sort_order: i }));
     onImagesChange(reordered);
-    await fetch('/api/admin/upload', { method: 'PATCH', headers: { 'Content-Type': 'application/json', 'x-admin-secret': ADMIN_SECRET }, body: JSON.stringify({ images: reordered.map(img => ({ id: img.id, sort_order: img.sort_order })) }) });
+    await fetch('/api/admin/upload', { method: 'PATCH', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ images: reordered.map(img => ({ id: img.id, sort_order: img.sort_order })) }), credentials: 'include' });
   };
 
   return (
@@ -221,10 +258,11 @@ export function VariationsEditor({ productId, variations, onVariationsChange }) 
     if (options.length < 2) { setError('Add at least 2 options separated by commas'); return; }
     if (!productId) { setError('Save the product first'); return; }
     setSaving(true);
-    const res = await fetch(`/api/admin/dashboard?secret=${ADMIN_SECRET}`, {
+    const res = await fetch('/api/admin/dashboard', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ type: 'variation', productId, name: newName.trim(), options, sort_order: variations.length }),
+      credentials: 'include',
     });
     const data = await res.json();
     setSaving(false);
@@ -253,10 +291,11 @@ export function VariationsEditor({ productId, variations, onVariationsChange }) 
     const options = editOptions.split(',').map(o => o.trim()).filter(Boolean);
     if (options.length < 2) { setEditError('At least 2 options required'); return; }
     setEditSaving(true);
-    const res = await fetch(`/api/admin/dashboard?secret=${ADMIN_SECRET}`, {
+    const res = await fetch('/api/admin/dashboard', {
       method: 'PATCH',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ type: 'variation', id, name: editName.trim(), options }),
+      credentials: 'include',
     });
     const data = await res.json();
     setEditSaving(false);
@@ -267,10 +306,11 @@ export function VariationsEditor({ productId, variations, onVariationsChange }) 
 
   const handleDelete = async (id) => {
     if (!confirm('Delete this variation?')) return;
-    await fetch(`/api/admin/dashboard?secret=${ADMIN_SECRET}`, {
+    await fetch('/api/admin/dashboard', {
       method: 'DELETE',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ type: 'variation', id }),
+      credentials: 'include',
     });
     onVariationsChange(variations.filter(v => v.id !== id));
   };

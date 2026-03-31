@@ -1,8 +1,13 @@
 import { createServiceClient } from '@/lib/supabase/server';
+import { cookies } from 'next/headers';
+
+async function checkAdminAuth() {
+  const cookieStore = await cookies();
+  return cookieStore.get('admin_auth')?.value === 'authenticated';
+}
 
 export async function POST(request) {
-  const secret = request.headers.get('x-admin-secret');
-  if (secret !== process.env.ADMIN_SECRET) {
+  if (!(await checkAdminAuth())) {
     return Response.json({ error: 'Unauthorized' }, { status: 401 });
   }
 
@@ -74,8 +79,7 @@ export async function POST(request) {
 }
 
 export async function DELETE(request) {
-  const secret = request.headers.get('x-admin-secret');
-  if (secret !== process.env.ADMIN_SECRET) {
+  if (!(await checkAdminAuth())) {
     return Response.json({ error: 'Unauthorized' }, { status: 401 });
   }
 

@@ -3,9 +3,9 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
 import Link from 'next/link';
 import {
-  ADMIN_SECRET, S, formatRWF, formatDate, timeAgo, toSlug,
+  S, formatRWF, formatDate, timeAgo, toSlug,
   STATUS_COLOR, NEXT_STATUS, LOG_ICONS,
-  apiFetch, apiMutate, downloadCSV, printRevenueReport, printShippingLabel,
+  apiFetch, apiMutate, adminLogin, downloadCSV, printRevenueReport, printShippingLabel,
   StatCard, BarChart, ImageUploader, StockModal, CategoryModal, VariationsEditor,
 } from './AdminHelpers';
 
@@ -308,7 +308,7 @@ export default function AdminPage() {
 
   const fetchBanners = useCallback(async () => {
     const res = await fetch('/api/admin/banners', {
-      headers: { 'x-admin-secret': ADMIN_SECRET },
+      credentials: 'include',
     });
     const data = await res.json();
     setBanners(data.data || []);
@@ -348,7 +348,11 @@ export default function AdminPage() {
     clearTimeout(userSearchTimeout.current);
     userSearchTimeout.current = setTimeout(() => fetchUsers(val), 400);
   };
-  const handleLogin = () => { if (password === ADMIN_SECRET) setAuthed(true); else alert('Wrong password'); };
+  const handleLogin = async () => {
+    const result = await adminLogin(password);
+    if (result.success) setAuthed(true); 
+    else alert('Wrong password');
+  };
 
   const btnFilter = (active) => ({
     ...S.btn, background: active ? '#C9A84C' : '#141414', color: active ? '#000' : '#666', border: '1px solid #2a2a2a', fontSize: 11, padding: '5px 12px',
@@ -987,8 +991,9 @@ export default function AdminPage() {
                     onClick={async () => {
                       await fetch('/api/admin/reviews', {
                         method: 'PATCH',
-                        headers: { 'Content-Type': 'application/json', 'x-admin-secret': ADMIN_SECRET },
+                        headers: { 'Content-Type': 'application/json' },
                         body: JSON.stringify({ id: review.id, is_visible: !review.is_visible }),
+                        credentials: 'include',
                       });
                       await fetchAdminReviews();
                     }}
@@ -1001,8 +1006,9 @@ export default function AdminPage() {
                       if (!confirm('Delete this review permanently?')) return;
                       await fetch('/api/admin/reviews', {
                         method: 'DELETE',
-                        headers: { 'Content-Type': 'application/json', 'x-admin-secret': ADMIN_SECRET },
+                        headers: { 'Content-Type': 'application/json' },
                         body: JSON.stringify({ id: review.id }),
+                        credentials: 'include',
                       });
                       await fetchAdminReviews();
                     }}

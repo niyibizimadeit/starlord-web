@@ -1,7 +1,14 @@
 import { createServiceClient } from '@/lib/supabase/server';
+import { cookies } from 'next/headers';
 
 function unauthorized() { return Response.json({ error: 'Unauthorized' }, { status: 401 }); }
-function checkSecret(s)  { return s === process.env.ADMIN_SECRET; }
+
+// Check admin auth cookie instead of secret parameter
+async function checkAdminAuth() {
+  const cookieStore = await cookies();
+  const adminAuth = cookieStore.get('admin_auth')?.value;
+  return adminAuth === 'authenticated';
+}
 async function log(supabase, action, entity_type, entity_id, entity_ref, details = {}) {
   await supabase.from('admin_logs').insert([{ action, entity_type, entity_id, entity_ref, details }]);
 }
@@ -16,7 +23,7 @@ function periodStart(period) {
 
 export async function GET(request) {
   const { searchParams } = new URL(request.url);
-  if (!checkSecret(searchParams.get('secret'))) return unauthorized();
+  if (!(await checkAdminAuth())) return unauthorized();
   const supabase = createServiceClient();
   const type     = searchParams.get('type') || 'orders';
 
@@ -191,8 +198,7 @@ export async function GET(request) {
 }
 
 export async function POST(request) {
-  const { searchParams } = new URL(request.url);
-  if (!checkSecret(searchParams.get('secret'))) return unauthorized();
+  if (!(await checkAdminAuth())) return unauthorized();
   const body = await request.json();
   const supabase = createServiceClient();
   if (body.type === 'category') {
@@ -222,8 +228,7 @@ export async function POST(request) {
 }
 
 export async function PATCH(request) {
-  const { searchParams } = new URL(request.url);
-  if (!checkSecret(searchParams.get('secret'))) return unauthorized();
+  if (!(await checkAdminAuth())) return unauthorized();
   const body = await request.json();
   const supabase = createServiceClient();
   if (body.type === 'order_status') {
@@ -290,8 +295,7 @@ export async function PATCH(request) {
 
 
 export async function DELETE(request) {
-  const { searchParams } = new URL(request.url);
-  if (!checkSecret(searchParams.get('secret'))) return unauthorized();
+  if (!(await checkAdminAuth())) return unauthorized();
   const body = await request.json();
   const supabase = createServiceClient();
   if (body.type === 'variation') {
