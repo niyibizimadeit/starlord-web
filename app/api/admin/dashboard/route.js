@@ -241,6 +241,7 @@ export async function PATCH(request) {
     if (body.category    !== undefined) updates.category    = body.category;
     if (body.badge       !== undefined) updates.badge       = body.badge;
     if (body.has_variations !== undefined) updates.has_variations = body.has_variations;
+    updates.old_price = body.old_price ? parseInt(body.old_price) : null;
     const { error } = await supabase.from('products').update(updates).eq('id', body.id);
     if (error) return Response.json({ error: error.message }, { status: 500 });
     const changes = {};
@@ -276,8 +277,17 @@ export async function PATCH(request) {
     await log(supabase, 'SETTINGS_UPDATED', 'settings', 'global', 'settings', body.values);
     return Response.json({ success: true });
   }
-  return Response.json({ error: 'Invalid type' }, { status: 400 });
+  if (body.type === 'variation') {
+    const { error } = await supabase
+      .from('product_variations')
+      .update({ name: body.name, options: body.options })
+      .eq('id', body.id);
+    if (error) return Response.json({ error: error.message }, { status: 500 });
+    return Response.json({ success: true });
+  }
+  return Response.json({ error: 'Invalid type' }, { status: 400 }); 
 }
+
 
 export async function DELETE(request) {
   const { searchParams } = new URL(request.url);
