@@ -1,34 +1,15 @@
-export async function GET() {
+export default function robots() {
     const base = 'https://starlordgroup.rw';
   
-    const content = `User-agent: *
-  Allow: /
-  Allow: /about
-  Allow: /products
-  Allow: /products/
-  Allow: /category/
-  Allow: /sitemap.xml
-  Allow: /favicon.ico
-  
-  Disallow: /admin/
-  Disallow: /admin
-  Disallow: /api/
-  Disallow: /account/
-  Disallow: /account
-  Disallow: /login/
-  Disallow: /register/
-  Disallow: /forgot-password/
-  Disallow: /checkout/
-  Disallow: /cart/
-  Disallow: /private/
-  
-  Sitemap: ${base}/sitemap.xml
-  Host: ${base}`;
-  
-    return new Response(content, {
-      headers: {
-        'Content-Type': 'text/plain',
-        'Cache-Control': 'public, s-maxage=86400',
-      },
-    });
+    return {
+      rules: [
+        {
+          userAgent: '*',
+          allow: ['/', '/about', '/products', '/products/', '/category/'],
+          disallow: ['/admin', '/api/', '/account', '/login', '/register', '/forgot-password', '/checkout', '/cart', '/private/'],
+        },
+      ],
+      sitemap: `${base}/sitemap.xml`,
+      host: base,
+    };
   }
