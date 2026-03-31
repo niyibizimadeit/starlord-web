@@ -207,6 +207,13 @@ export function VariationsEditor({ productId, variations, onVariationsChange }) 
   const [saving, setSaving]         = useState(false);
   const [error, setError]           = useState('');
 
+  // Edit state
+  const [editingId, setEditingId]     = useState(null);
+  const [editName, setEditName]       = useState('');
+  const [editOptions, setEditOptions] = useState('');
+  const [editSaving, setEditSaving]   = useState(false);
+  const [editError, setEditError]     = useState('');
+
   const handleAdd = async () => {
     setError('');
     if (!newName.trim()) { setError('Variation name required'); return; }
@@ -217,19 +224,45 @@ export function VariationsEditor({ productId, variations, onVariationsChange }) 
     const res = await fetch(`/api/admin/dashboard?secret=${ADMIN_SECRET}`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        type: 'variation',
-        productId,
-        name: newName.trim(),
-        options,
-        sort_order: variations.length,
-      }),
+      body: JSON.stringify({ type: 'variation', productId, name: newName.trim(), options, sort_order: variations.length }),
     });
     const data = await res.json();
     setSaving(false);
     if (data.error) { setError(data.error); return; }
     onVariationsChange([...variations, data.data]);
     setNewName(''); setNewOptions('');
+  };
+
+  const handleStartEdit = (v) => {
+    setEditingId(v.id);
+    setEditName(v.name);
+    setEditOptions(v.options.join(', '));
+    setEditError('');
+  };
+
+  const handleCancelEdit = () => {
+    setEditingId(null);
+    setEditName('');
+    setEditOptions('');
+    setEditError('');
+  };
+
+  const handleSaveEdit = async (id) => {
+    setEditError('');
+    if (!editName.trim()) { setEditError('Name required'); return; }
+    const options = editOptions.split(',').map(o => o.trim()).filter(Boolean);
+    if (options.length < 2) { setEditError('At least 2 options required'); return; }
+    setEditSaving(true);
+    const res = await fetch(`/api/admin/dashboard?secret=${ADMIN_SECRET}`, {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ type: 'variation', id, name: editName.trim(), options }),
+    });
+    const data = await res.json();
+    setEditSaving(false);
+    if (data.error) { setEditError(data.error); return; }
+    onVariationsChange(variations.map(v => v.id === id ? { ...v, name: editName.trim(), options } : v));
+    handleCancelEdit();
   };
 
   const handleDelete = async (id) => {
@@ -251,62 +284,94 @@ export function VariationsEditor({ productId, variations, onVariationsChange }) 
 
       {/* Existing variations */}
       {variations.map(v => (
-        <div key={v.id} style={{
-          background: '#0a0a0a', borderRadius: 8,
-          padding: '10px 12px', marginBottom: 8,
-          display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start',
-        }}>
-          <div>
-            <div style={{ fontSize: 13, fontWeight: 700, color: '#C9A84C', marginBottom: 4 }}>
-              {v.name} {v.is_required && <span style={{ fontSize: 10, color: '#555' }}>(required)</span>}
+        <div key={v.id} style={{ background: '#0a0a0a', borderRadius: 8, padding: '10px 12px', marginBottom: 8 }}>
+          {editingId === v.id ? (
+            /* ── Edit mode ── */
+            <div>
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 2fr', gap: 8, marginBottom: 8 }}>
+                <div>
+                  <label style={S.label}>Name</label>
+                  <input
+                    style={S.input} value={editName}
+                    onChange={e => setEditName(e.target.value)}
+                    placeholder="e.g. Color"
+                    autoFocus
+                  />
+                </div>
+                <div>
+                  <label style={S.label}>Options (comma separated)</label>
+                  <input
+                    style={S.input} value={editOptions}
+                    onChange={e => setEditOptions(e.target.value)}
+                    placeholder="e.g. Red, Blue, Black"
+                  />
+                </div>
+              </div>
+              {editError && <div style={{ fontSize: 11, color: '#e05555', marginBottom: 8 }}>{editError}</div>}
+              <div style={{ display: 'flex', gap: 8 }}>
+                <button
+                  onClick={() => handleSaveEdit(v.id)}
+                  disabled={editSaving}
+                  style={{ ...S.btn, background: editSaving ? '#555' : '#C9A84C', color: '#000' }}
+                >
+                  {editSaving ? 'Saving...' : '✓ Save'}
+                </button>
+                <button
+                  onClick={handleCancelEdit}
+                  style={{ ...S.btn, background: '#1c1c1c', color: '#888', border: '1px solid #2a2a2a' }}
+                >
+                  Cancel
+                </button>
+              </div>
             </div>
-            <div style={{ display: 'flex', gap: 4, flexWrap: 'wrap' }}>
-              {v.options.map(opt => (
-                <span key={opt} style={{
-                  background: '#1c1c1c', border: '1px solid #2a2a2a',
-                  borderRadius: 4, padding: '2px 8px',
-                  fontSize: 11, color: '#ccc',
-                }}>{opt}</span>
-              ))}
+          ) : (
+            /* ── Display mode ── */
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+              <div>
+                <div style={{ fontSize: 13, fontWeight: 700, color: '#C9A84C', marginBottom: 4 }}>
+                  {v.name} {v.is_required && <span style={{ fontSize: 10, color: '#555' }}>(required)</span>}
+                </div>
+                <div style={{ display: 'flex', gap: 4, flexWrap: 'wrap' }}>
+                  {v.options.map(opt => (
+                    <span key={opt} style={{ background: '#1c1c1c', border: '1px solid #2a2a2a', borderRadius: 4, padding: '2px 8px', fontSize: 11, color: '#ccc' }}>
+                      {opt}
+                    </span>
+                  ))}
+                </div>
+              </div>
+              <div style={{ display: 'flex', gap: 6, flexShrink: 0, marginLeft: 8 }}>
+                <button
+                  onClick={() => handleStartEdit(v)}
+                  style={{ ...S.btn, background: '#1c1c1c', color: '#C9A84C', border: '1px solid #C9A84C33', padding: '4px 10px', fontSize: 11 }}
+                >
+                  ✎ Edit
+                </button>
+                <button
+                  onClick={() => handleDelete(v.id)}
+                  style={{ ...S.btn, background: '#2e1a1a', color: '#e05555', border: '1px solid #e0555533', padding: '4px 8px', fontSize: 11 }}
+                >
+                  ✕
+                </button>
+              </div>
             </div>
-          </div>
-          <button onClick={() => handleDelete(v.id)} style={{
-            ...S.btn, background: '#2e1a1a',
-            color: '#e05555', border: '1px solid #e0555533',
-            padding: '4px 8px', fontSize: 11,
-          }}>✕</button>
+          )}
         </div>
       ))}
 
       {/* Add new variation */}
-      <div style={{
-        background: '#0a0a0a', borderRadius: 8,
-        padding: 12, border: '1px dashed #333',
-      }}>
+      <div style={{ background: '#0a0a0a', borderRadius: 8, padding: 12, border: '1px dashed #333' }}>
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 2fr', gap: 8, marginBottom: 8 }}>
           <div>
             <label style={S.label}>Name</label>
-            <input
-              style={S.input} value={newName}
-              onChange={e => setNewName(e.target.value)}
-              placeholder="e.g. Color"
-            />
+            <input style={S.input} value={newName} onChange={e => setNewName(e.target.value)} placeholder="e.g. Color" />
           </div>
           <div>
             <label style={S.label}>Options (comma separated)</label>
-            <input
-              style={S.input} value={newOptions}
-              onChange={e => setNewOptions(e.target.value)}
-              placeholder="e.g. Red, Blue, Black"
-            />
+            <input style={S.input} value={newOptions} onChange={e => setNewOptions(e.target.value)} placeholder="e.g. Red, Blue, Black" />
           </div>
         </div>
         {error && <div style={{ fontSize: 11, color: '#e05555', marginBottom: 8 }}>{error}</div>}
-        <button
-          onClick={handleAdd}
-          disabled={saving}
-          style={{ ...S.btn, background: saving ? '#555' : '#C9A84C', color: '#000' }}
-        >
+        <button onClick={handleAdd} disabled={saving} style={{ ...S.btn, background: saving ? '#555' : '#C9A84C', color: '#000' }}>
           {saving ? 'Adding...' : '+ Add Variation'}
         </button>
       </div>
