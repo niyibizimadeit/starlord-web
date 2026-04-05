@@ -2,15 +2,15 @@
 
 import { createContext, useContext, useState, useEffect } from 'react';
 
-const ThemeContext = createContext({ theme: 'dark', toggleTheme: () => {} });
+const ThemeContext = createContext({ theme: 'light', toggleTheme: () => {} });
 
 function getInitialTheme() {
-  if (typeof window === 'undefined') return 'dark';
-  return localStorage.getItem('starlord-theme') || 'dark';
+  if (typeof window === 'undefined') return 'light';
+  return localStorage.getItem('starlord-theme') || 'light';
 }
 
 export function ThemeProvider({ children }) {
-  const [theme, setTheme] = useState('dark');
+  const [theme, setTheme] = useState('light');
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
@@ -34,7 +34,7 @@ export function ThemeProvider({ children }) {
   // Prevent hydration mismatch by not rendering theme-dependent content until mounted
   if (!mounted) {
     return (
-      <ThemeContext.Provider value={{ theme: 'dark', toggleTheme }}>
+      <ThemeContext.Provider value={{ theme: 'light', toggleTheme }}>
         {children}
       </ThemeContext.Provider>
     );
