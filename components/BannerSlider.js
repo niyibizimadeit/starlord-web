@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 
 export default function BannerSlider() {
   const [banners, setBanners]   = useState([]);
@@ -41,16 +42,16 @@ export default function BannerSlider() {
     if (touchStartX.current === null) return;
     const diff = touchStartX.current - e.changedTouches[0].clientX;
     if (Math.abs(diff) > 40) {
-      diff > 0
-        ? goTo((active + 1) % banners.length)
-        : goTo((active - 1 + banners.length) % banners.length);
+      if (diff > 0) {
+        goTo((active + 1) % banners.length);
+      } else {
+        goTo((active - 1 + banners.length) % banners.length);
+      }
     }
     touchStartX.current = null;
   };
 
   if (loading || banners.length === 0) return null;
-
-  const banner = banners[active];
 
   return (
     <div
@@ -81,17 +82,20 @@ export default function BannerSlider() {
             pointerEvents: i === active ? 'auto' : 'none',
           }}
         >
-          {/* Background image */}
+          {/* Background image — Next.js Image for auto WebP + resizing */}
           {b.image_url ? (
-            <img
+            <Image
               src={b.image_url}
               alt={b.title || ''}
-              style={{
-                width: '100%', height: '100%',
-                objectFit: 'cover', display: 'block',
-              }}
-              loading={active === 0 ? 'eager' : 'lazy'}
-              fetchPriority={active === 0 ? 'high' : 'auto'}
+              fill
+              style={{ objectFit: 'cover' }}
+              // First slide loads eagerly as LCP element; rest are lazy
+              priority={i === 0}
+              loading={i === 0 ? 'eager' : 'lazy'}
+              // Tells Next.js what size to generate:
+              // mobile: full viewport width, desktop: capped at 1280px
+              sizes="(max-width: 767px) 100vw, 1280px"
+              quality={75}
             />
           ) : (
             <div style={{
@@ -141,7 +145,7 @@ export default function BannerSlider() {
                 style={{
                   display: 'inline-block',
                   background: 'var(--gold)',
-                  color: '#000',
+                  color: '#fff',
                   fontWeight: 800,
                   fontSize: 'clamp(12px, 1.5vw, 14px)',
                   padding: 'clamp(10px, 1.5vw, 14px) clamp(20px, 3vw, 32px)',
