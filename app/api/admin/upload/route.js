@@ -106,13 +106,11 @@ export async function DELETE(request) {
 }
 
 export async function PATCH(request) {
-  const secret = request.headers.get('x-admin-secret');
-  if (secret !== process.env.ADMIN_SECRET) {
+  if (!(await checkAdminAuth())) {
     return Response.json({ error: 'Unauthorized' }, { status: 401 });
   }
 
   try {
-    // Reorder images: body = { images: [{id, sort_order}] }
     const { images } = await request.json();
     const supabase   = createServiceClient();
 
