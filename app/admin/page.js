@@ -1077,8 +1077,8 @@ export default function AdminPage() {
                       disabled={index === 0}
                       onClick={async () => {
                         const prev = banners[index - 1];
-                        await fetch('/api/admin/banners', { method: 'PATCH', headers: { 'Content-Type': 'application/json', 'x-admin-secret': ADMIN_SECRET }, body: JSON.stringify({ id: banner.id, sort_order: prev.sort_order }) });
-                        await fetch('/api/admin/banners', { method: 'PATCH', headers: { 'Content-Type': 'application/json', 'x-admin-secret': ADMIN_SECRET }, body: JSON.stringify({ id: prev.id, sort_order: banner.sort_order }) });
+                        await fetch('/api/admin/banners', { method: 'PATCH', headers: { 'Content-Type': 'application/json' }, credentials: 'include', body: JSON.stringify({ id: banner.id, sort_order: prev.sort_order }) });
+                        await fetch('/api/admin/banners', { method: 'PATCH', headers: { 'Content-Type': 'application/json' }, credentials: 'include', body: JSON.stringify({ id: prev.id, sort_order: banner.sort_order }) });
                         await fetchBanners();
                       }}
                       style={{ ...S.btn, background: '#1c1c1c', color: index === 0 ? '#333' : '#888', border: '1px solid #2a2a2a', padding: '4px 8px', fontSize: 12 }}
@@ -1087,8 +1087,8 @@ export default function AdminPage() {
                       disabled={index === banners.length - 1}
                       onClick={async () => {
                         const next = banners[index + 1];
-                        await fetch('/api/admin/banners', { method: 'PATCH', headers: { 'Content-Type': 'application/json', 'x-admin-secret': ADMIN_SECRET }, body: JSON.stringify({ id: banner.id, sort_order: next.sort_order }) });
-                        await fetch('/api/admin/banners', { method: 'PATCH', headers: { 'Content-Type': 'application/json', 'x-admin-secret': ADMIN_SECRET }, body: JSON.stringify({ id: next.id, sort_order: banner.sort_order }) });
+                        await fetch('/api/admin/banners', { method: 'PATCH', headers: { 'Content-Type': 'application/json' }, credentials: 'include', body: JSON.stringify({ id: banner.id, sort_order: next.sort_order }) });
+                        await fetch('/api/admin/banners', { method: 'PATCH', headers: { 'Content-Type': 'application/json' }, credentials: 'include', body: JSON.stringify({ id: next.id, sort_order: banner.sort_order }) });
                         await fetchBanners();
                       }}
                       style={{ ...S.btn, background: '#1c1c1c', color: index === banners.length - 1 ? '#333' : '#888', border: '1px solid #2a2a2a', padding: '4px 8px', fontSize: 12 }}
@@ -1104,7 +1104,7 @@ export default function AdminPage() {
                   >Edit</button>
                   <button
                     onClick={async () => {
-                      await fetch('/api/admin/banners', { method: 'PATCH', headers: { 'Content-Type': 'application/json', 'x-admin-secret': ADMIN_SECRET }, body: JSON.stringify({ id: banner.id, is_active: !banner.is_active }) });
+                      await fetch('/api/admin/banners', { method: 'PATCH', headers: { 'Content-Type': 'application/json' }, credentials: 'include', body: JSON.stringify({ id: banner.id, is_active: !banner.is_active }) });
                       await fetchBanners();
                     }}
                     style={{ ...S.btn, background: '#1c1c1c', color: '#888', border: '1px solid #2a2a2a' }}
@@ -1112,7 +1112,7 @@ export default function AdminPage() {
                   <button
                     onClick={async () => {
                       if (!confirm('Delete this banner?')) return;
-                      await fetch('/api/admin/banners', { method: 'DELETE', headers: { 'Content-Type': 'application/json', 'x-admin-secret': ADMIN_SECRET }, body: JSON.stringify({ id: banner.id }) });
+                      await fetch('/api/admin/banners', { method: 'DELETE', headers: { 'Content-Type': 'application/json' }, credentials: 'include', body: JSON.stringify({ id: banner.id }) });
                       await fetchBanners();
                     }}
                     style={{ ...S.btn, background: '#2e1a1a', color: '#e05555', border: '1px solid #e0555533' }}
@@ -1150,7 +1150,7 @@ export default function AdminPage() {
                           form.append('file', file);
                           const res = await fetch('/api/admin/banners/upload', {
                             method: 'POST',
-                            headers: { 'x-admin-secret': ADMIN_SECRET },
+                            credentials: 'include',
                             body: form,
                           });
                           const data = await res.json();
@@ -1187,9 +1187,9 @@ export default function AdminPage() {
                       <button
                         onClick={async () => {
                           if (bannerForm.id) {
-                            await fetch('/api/admin/banners', { method: 'PATCH', headers: { 'Content-Type': 'application/json', 'x-admin-secret': ADMIN_SECRET }, body: JSON.stringify(bannerForm) });
+                            await fetch('/api/admin/banners', { method: 'PATCH', headers: { 'Content-Type': 'application/json' }, credentials: 'include', body: JSON.stringify(bannerForm) });
                           } else {
-                            await fetch('/api/admin/banners', { method: 'POST', headers: { 'Content-Type': 'application/json', 'x-admin-secret': ADMIN_SECRET }, body: JSON.stringify(bannerForm) });
+                            await fetch('/api/admin/banners', { method: 'POST', headers: { 'Content-Type': 'application/json' }, credentials: 'include', body: JSON.stringify(bannerForm) });
                           }
                           await fetchBanners();
                           setBannerForm(null);
