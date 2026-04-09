@@ -1,12 +1,25 @@
 import { createServiceClient } from '@/lib/supabase/server';
 
 const ADMIN_SECRET = process.env.ADMIN_SECRET;
-if (!ADMIN_SECRET) throw new Error('Missing ADMIN_SECRET env variable');
+
+// Accepts either the secret header OR the admin cookie
+function isAuthorized(request) {
+  const secret = request.headers.get('x-admin-secret');
+  if (secret && secret === ADMIN_SECRET) return true;
+
+  const cookieHeader = request.headers.get('cookie') || '';
+  const adminAuth = cookieHeader
+    .split(';')
+    .find(c => c.trim().startsWith('admin_auth='))
+    ?.split('=')[1]
+    ?.trim();
+  return adminAuth === 'authenticated';
+}
 
 export async function PATCH(request) {
   try {
-    const secret = request.headers.get('x-admin-secret');
-    if (secret !== ADMIN_SECRET) return Response.json({ error: 'Unauthorized' }, { status: 401 });
+    if (!isAuthorized(request)) 
+      return Response.json({ error: 'Unauthorized' }, { status: 401 });
 
     const { id, is_visible } = await request.json();
     const supabase = createServiceClient();
@@ -19,8 +32,8 @@ export async function PATCH(request) {
 
 export async function DELETE(request) {
   try {
-    const secret = request.headers.get('x-admin-secret');
-    if (secret !== ADMIN_SECRET) return Response.json({ error: 'Unauthorized' }, { status: 401 });
+    if (!isAuthorized(request))
+      return Response.json({ error: 'Unauthorized' }, { status: 401 });
 
     const { id } = await request.json();
     const supabase = createServiceClient();

@@ -1,20 +1,26 @@
+// app/admin/middleware.js
 import { NextResponse } from 'next/server';
+
+const ADMIN_SECRET = process.env.ADMIN_SECRET;
 
 export function middleware(request) {
   const { pathname } = request.nextUrl;
 
-  // Skip auth check for the admin login page itself (if you create one)
-  // For now, we check all admin routes
+  // For API routes: accept either the cookie OR the x-admin-secret header
+  if (pathname.startsWith('/api/admin')) {
+    const adminAuth = request.cookies.get('admin_auth')?.value;
+    const secretHeader = request.headers.get('x-admin-secret');
 
-  const adminAuth = request.cookies.get('admin_auth')?.value;
-
-  // If not authenticated, redirect to login or return 401 for API calls
-  if (adminAuth !== 'authenticated') {
-    if (pathname.startsWith('/api/admin')) {
+    if (adminAuth !== 'authenticated' && secretHeader !== ADMIN_SECRET) {
       return Response.json({ error: 'Unauthorized' }, { status: 401 });
     }
-    // For admin pages, we'll let the page handle the redirect
-    // This allows the admin page.js to show its own login UI
+    return NextResponse.next();
+  }
+
+  // For admin pages: cookie only
+  const adminAuth = request.cookies.get('admin_auth')?.value;
+  if (adminAuth !== 'authenticated') {
+    // Let the page handle its own login UI
   }
 
   return NextResponse.next();
