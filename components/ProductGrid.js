@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useRef, useCallback } from 'react';
+import { useState, useEffect, useRef, useCallback, useMemo } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { useCart } from './CartContext';
@@ -136,6 +136,10 @@ export default function ProductGrid({
   hideDesktopFilters = false,
 }) {
   const [category, setCategory] = useState(initialCategory);
+  useEffect(() => {
+    setCategory(initialCategory);
+    setPage(1);
+  }, [initialCategory]);
   const [search, setSearch] = useState(initialSearch);
   const [saleOnly, setSaleOnly] = useState(initialBadge === 'SALE');
   const [page, setPage] = useState(1);
@@ -194,7 +198,15 @@ export default function ProductGrid({
     if (qtyModal.product) { addToCart(qtyModal.product, selectedQty); closeQtyModal(); }
   };
 
-  const title = saleOnly ? 'On Sale' : category === 'All' ? (pageTitle || 'Latest') : category;
+  const activeCategoryName = categories
+  .map(c => typeof c === 'string' ? { name: c, slug: c } : c)
+  .find(c => c.slug === category)?.name;
+
+  const title = saleOnly
+    ? 'On Sale'
+    : category === 'All'
+      ? (pageTitle || 'Latest')
+      : (activeCategoryName || category);
 
   return (
     <div className={styles.container}>
@@ -234,17 +246,22 @@ export default function ProductGrid({
 
         {/* Filters */}
         <div className={`${styles.filtersRow} ${hideDesktopFilters ? styles.filtersRowMobileOnly : ''}`}>
-          <div className={styles.categoryPills}>
-            {['All', ...categories.filter(c => c !== 'All')].map(cat => (
-              <button
-                key={cat}
-                onClick={() => handleCategoryChange(cat)}
-                className={`${styles.categoryPill} ${category === cat ? styles.categoryPillActive : ''}`}
-              >
-                {cat}
-              </button>
-            ))}
-          </div>
+        <div className={styles.categoryPills}>
+          {[
+            { name: 'All', slug: 'All' },
+            ...categories
+              .map(c => typeof c === 'string' ? { name: c, slug: c } : c)
+              .filter(c => c.slug !== 'All')
+          ].map(cat => (
+            <button
+              key={cat.slug}
+              onClick={() => handleCategoryChange(cat.slug)}
+              className={`${styles.categoryPill} ${category === cat.slug ? styles.categoryPillActive : ''}`}
+            >
+              {cat.name}
+            </button>
+          ))}
+        </div>
           <button
             type="button"
             onClick={toggleSaleOnly}

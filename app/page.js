@@ -10,12 +10,12 @@ async function getNavCategories() {
   const supabase = createServiceClient();
   const { data } = await supabase
     .from('categories')
-    .select('name')
+    .select('name, slug')
     .eq('is_active', true)
     .eq('show_in_nav', true)
     .order('sort_order', { ascending: true })
     .limit(4);
-  return (data || []).map(c => c.name);
+  return data || [];
 }
 
 async function getProducts() {
