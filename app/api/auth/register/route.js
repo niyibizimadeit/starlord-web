@@ -10,45 +10,19 @@ export async function POST(request) {
     }
 
     const supabase = await createServerSupabaseClient();
-    const serviceSupabase = createServiceClient();
-
     const { data, error } = await supabase.auth.signUp({
       email,
       password,
-      options: {
-        data: { full_name },
-      },
+      options: { data: { full_name } },
     });
 
     if (error) {
       return Response.json({ error: error.message }, { status: 400 });
     }
 
-    if (data.user) {
-      // Check if already provisioned
-      const { data: existing } = await serviceSupabase
-        .from('users')
-        .select('id')
-        .eq('id', data.user.id)
-        .single();
-
-      if (!existing) {
-        const { error: insertError } = await serviceSupabase
-          .from('users')
-          .insert({
-            id:           data.user.id,
-            email:        data.user.email,
-            full_name:    full_name || email.split('@')[0],
-            phone:        null,   // ← explicitly null for email registrations
-            role:         'customer',
-            password_set: true,
-          });
-
-        if (insertError) {
-          console.error('User provision error:', JSON.stringify(insertError));
-          // Don't block registration — user can still verify and log in
-        }
-      }
+    // Supabase returns empty identities array for already-registered emails
+    if (data.user && data.user.identities && data.user.identities.length === 0) {
+      return Response.json({ error: 'account_exists' }, { status: 409 });
     }
 
     return Response.json({
@@ -56,7 +30,8 @@ export async function POST(request) {
       message: 'Check your email for your verification code',
       needsEmailConfirmation: !data.session,
     });
-  } catch {
+  } catch (err) {
+    console.error('Registration error:', err);
     return Response.json({ error: 'Registration failed' }, { status: 500 });
   }
 }

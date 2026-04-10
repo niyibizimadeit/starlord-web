@@ -5,6 +5,17 @@ import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { createBrowserClient } from '@supabase/ssr';
 
+function ErrorBox({ msg }) {
+  if (!msg) return null;
+  return (
+    <div style={{
+      background: '#2e1a1a', border: '1px solid var(--red)',
+      borderRadius: 10, padding: '12px 14px',
+      color: 'var(--red)', fontSize: 13, marginBottom: 16,
+    }}>{msg}</div>
+  );
+}
+
 export default function RegisterPage() {
   const router = useRouter();
   const [step, setStep]     = useState(1); // 1=form, 2=verify OTP
@@ -16,6 +27,7 @@ export default function RegisterPage() {
   const [loading, setLoading]   = useState(false);
   const [error, setError]       = useState('');
   const [message, setMessage]   = useState('');
+  const [accountExists, setAccountExists] = useState(false);
 
   // Redirect logged-in users
   useEffect(() => {
@@ -54,6 +66,7 @@ export default function RegisterPage() {
 
   const handleRegister = async () => {
     setError('');
+    setAccountExists(false);
     if (!formData.full_name || !formData.email || !formData.password) {
       setError('All fields are required'); return;
     }
@@ -63,7 +76,7 @@ export default function RegisterPage() {
     if (formData.password.length < 6) {
       setError('Password must be at least 6 characters'); return;
     }
-
+  
     setLoading(true);
     try {
       const res = await fetch('/api/auth/register', {
@@ -72,7 +85,9 @@ export default function RegisterPage() {
         body: JSON.stringify(formData),
       });
       const data = await res.json();
-      if (res.ok) {
+      if (res.status === 409 && data.error === 'account_exists') {
+        setAccountExists(true);
+      } else if (res.ok) {
         setStep(2);
         setMessage(`A 6-digit code was sent to ${formData.email}`);
       } else {
@@ -102,14 +117,7 @@ export default function RegisterPage() {
     setLoading(false);
   };
 
-  const ErrorBox = ({ msg }) => msg ? (
-    <div style={{
-      background: '#2e1a1a', border: '1px solid var(--red)',
-      borderRadius: 10, padding: '12px 14px',
-      color: 'var(--red)', fontSize: 13, marginBottom: 16,
-    }}>{msg}</div>
-  ) : null;
-
+  
   // ── Step 2: Email OTP verification ────────────────────────────────
   if (step === 2) {
     return (
@@ -187,10 +195,44 @@ export default function RegisterPage() {
         Create Account
       </h1>
       <p style={{ color: 'var(--text-muted)', fontSize: 14, marginBottom: 32 }}>
-        We'll send a 6-digit code to your email to verify your account.
+        We will send a 6-digit code to your email to verify your account.
       </p>
 
       <ErrorBox msg={error} />
+
+      {accountExists && (
+        <div style={{
+          background: '#1a1f2e', border: '1px solid var(--gold)',
+          borderRadius: 10, padding: '16px',
+          marginBottom: 16,
+        }}>
+          <div style={{ fontSize: 14, fontWeight: 700, color: 'var(--gold)', marginBottom: 8 }}>
+            An account with this email already exists
+          </div>
+          <div style={{ fontSize: 13, color: 'var(--text-muted)', marginBottom: 14 }}>
+            Would you like to sign in or reset your password?
+          </div>
+          <div style={{ display: 'flex', gap: 8 }}>
+            <Link href={`/login?email=${encodeURIComponent(formData.email)}`} style={{
+              flex: 1, textAlign: 'center',
+              background: 'var(--gold)', color: '#000',
+              borderRadius: 8, padding: '10px',
+              fontWeight: 800, fontSize: 13, textDecoration: 'none',
+            }}>
+              Sign In
+            </Link>
+            <Link href={`/forgot-password?email=${encodeURIComponent(formData.email)}`} style={{
+              flex: 1, textAlign: 'center',
+              background: 'var(--surface)', color: 'var(--text-muted)',
+              border: '1px solid var(--border)',
+              borderRadius: 8, padding: '10px',
+              fontWeight: 700, fontSize: 13, textDecoration: 'none',
+            }}>
+              Reset Password
+            </Link>
+          </div>
+        </div>
+      )}
 
       <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
         <div>
