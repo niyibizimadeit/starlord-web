@@ -36,7 +36,7 @@ function Footer() {
         {/* Shop */}
         <div>
           <div style={{ fontSize: 11, fontWeight: 700, color: 'var(--text)', letterSpacing: 2, textTransform: 'uppercase', marginBottom: 16 }}>Shop</div>
-          {[['/', 'All Products'], ['/products?category=Tech', 'Tech'], ['/products?category=Fashion', 'Fashion'], ['/products?badge=SALE', 'Sale']].map(([href, text]) => (
+          {[['/', 'All Products'], ['/products?category=phone-case', 'Phone Cases'], ['/products?category=accessories', 'Accessories']].map(([href, text]) => (
             <Link key={href} href={href} style={{ display: 'block', fontSize: 13, color: 'var(--text-muted)', marginBottom: 10 }}>{text}</Link>
           ))}
         </div>
