@@ -7,10 +7,6 @@ import { createBrowserClient } from '@supabase/ssr';
 
 export default function LoginPage() {
   const router = useRouter();
-  const [tab, setTab]         = useState('phone'); // 'phone' | 'email'
-  const [step, setStep]       = useState(1);       // phone: 1=enter phone, 2=enter OTP
-  const [phone, setPhone]     = useState('');
-  const [otp, setOtp]         = useState('');
   const [email, setEmail]     = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
@@ -54,45 +50,6 @@ export default function LoginPage() {
     fontWeight: 700, letterSpacing: 0.5,
   };
 
-  // ── Phone OTP handlers ────────────────────────────────────────────
-  const handleRequestOTP = async () => {
-    setError('');
-    const cleanPhone = phone.replace(/\s/g, '');
-    if (!/^(078|079|072|073)\d{7}$/.test(cleanPhone)) {
-      setError('Enter a valid Rwandan phone number (078, 079, 072, or 073)');
-      return;
-    }
-    setLoading(true);
-    try {
-      const res = await fetch('/api/auth/request-otp', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ phone: cleanPhone }),
-      });
-      const data = await res.json();
-      if (!res.ok) setError(data.error || 'Could not send code. Try again.');
-      else setStep(2);
-    } catch { setError('Connection error. Try again.'); }
-    setLoading(false);
-  };
-
-  const handleVerifyOTP = async () => {
-    setError('');
-    if (otp.length < 4) { setError('Enter the full code from your SMS'); return; }
-    setLoading(true);
-    try {
-      const res = await fetch('/api/auth/verify-otp', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ phone: phone.replace(/\s/g, ''), token: otp }),
-      });
-      const data = await res.json();
-      if (!res.ok) setError(data.error || 'Incorrect code. Try again.');
-      else router.push('/account');
-    } catch { setError('Connection error. Try again.'); }
-    setLoading(false);
-  };
-
   // ── Email/Password handler ────────────────────────────────────────
   const handleEmailLogin = async () => {
     setError('');
@@ -132,95 +89,13 @@ export default function LoginPage() {
         <div style={{ fontSize: 10, color: 'var(--text-muted)', letterSpacing: 5 }}>GROUP</div>
       </div>
 
-      <h1 style={{ fontSize: 24, fontWeight: 800, color: 'var(--text)', marginBottom: 24 }}>
+      <h1 style={{ fontSize: 24, fontWeight: 800, color: 'var(--text)', marginBottom: 32 }}>
         Sign in
       </h1>
 
-      {/* Tabs */}
-      <div style={{
-        display: 'flex', gap: 0, marginBottom: 32,
-        background: 'var(--surface)', borderRadius: 12,
-        padding: 4, border: '1px solid var(--border)',
-      }}>
-        {[
-          { key: 'phone', label: 'Phone OTP' },
-          { key: 'email', label: 'Email' },
-        ].map(t => (
-          <button
-            key={t.key}
-            onClick={() => { setTab(t.key); setError(''); setStep(1); }}
-            style={{
-              flex: 1, padding: '10px 0',
-              border: 'none', borderRadius: 9,
-              background: tab === t.key ? 'var(--gold)' : 'transparent',
-              color: tab === t.key ? '#000' : 'var(--text-muted)',
-              fontWeight: 800, fontSize: 13, cursor: 'pointer',
-              transition: 'all 0.2s',
-            }}
-          >
-            {t.label}
-          </button>
-        ))}
-      </div>
-
-      {/* ── Phone OTP Tab ── */}
-      {tab === 'phone' && step === 1 && (
-        <>
-          <div style={{ marginBottom: 16 }}>
-            <label style={labelStyle}>Phone Number</label>
-            <input
-              type="tel" placeholder="e.g. 0788 123 456"
-              value={phone} onChange={e => setPhone(e.target.value)}
-              onKeyDown={e => e.key === 'Enter' && handleRequestOTP()}
-              style={inputStyle(phone)} autoFocus
-            />
-          </div>
-          <ErrorBox msg={error} />
-          <button onClick={handleRequestOTP} disabled={loading || !phone} style={{
-            width: '100%', background: loading || !phone ? 'var(--gold-dark)' : 'var(--gold)',
-            color: '#000', border: 'none', borderRadius: 12, padding: '16px',
-            fontWeight: 800, fontSize: 15, opacity: loading || !phone ? 0.7 : 1,
-          }}>
-            {loading ? 'Sending...' : 'Send Code'}
-          </button>
-        </>
-      )}
-
-      {tab === 'phone' && step === 2 && (
-        <>
-          <p style={{ color: 'var(--text-muted)', fontSize: 14, marginBottom: 24 }}>
-            Code sent to <span style={{ color: 'var(--gold)', fontWeight: 700 }}>{phone}</span>
-          </p>
-          <div style={{ marginBottom: 16 }}>
-            <label style={{ ...labelStyle, textAlign: 'center' }}>One-Time Code</label>
-            <input
-              type="number" placeholder="------"
-              value={otp} onChange={e => setOtp(e.target.value.slice(0, 6))}
-              onKeyDown={e => e.key === 'Enter' && handleVerifyOTP()}
-              style={{ ...inputStyle(otp), letterSpacing: 6, textAlign: 'center' }} autoFocus
-            />
-          </div>
-          <ErrorBox msg={error} />
-          <button onClick={handleVerifyOTP} disabled={loading || otp.length < 4} style={{
-            width: '100%', background: loading || otp.length < 4 ? 'var(--gold-dark)' : 'var(--gold)',
-            color: '#000', border: 'none', borderRadius: 12, padding: '16px',
-            fontWeight: 800, fontSize: 15, opacity: loading || otp.length < 4 ? 0.7 : 1,
-          }}>
-            {loading ? 'Verifying...' : 'Confirm Code'}
-          </button>
-          <button onClick={() => { setStep(1); setOtp(''); setError(''); }} style={{
-            width: '100%', background: 'none', border: 'none',
-            color: 'var(--text-muted)', fontSize: 13, marginTop: 12, padding: '8px', cursor: 'pointer',
-          }}>
-            Wrong number? Go back
-          </button>
-        </>
-      )}
-
-      {/* ── Email Tab ── */}
-      {tab === 'email' && (
-        <>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 16, marginBottom: 16 }}>
+      {/* ── Email Login ── */}
+      <div>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 16, marginBottom: 16 }}>
             <div>
               <label style={labelStyle}>Email</label>
               <input
@@ -255,15 +130,14 @@ export default function LoginPage() {
           }}>
             {loading ? 'Signing in...' : 'Sign In'}
           </button>
-        </>
-      )}
+        </div>
 
-      <p style={{ textAlign: 'center', marginTop: 28, color: 'var(--text-muted)', fontSize: 13 }}>
-        No account?{' '}
-        <Link href="/register" style={{ color: 'var(--gold)', fontWeight: 700 }}>
-          Create one
-        </Link>
-      </p>
-    </div>
+        <p style={{ textAlign: 'center', marginTop: 28, color: 'var(--text-muted)', fontSize: 13 }}>
+          No account?{' '}
+          <Link href="/register" style={{ color: 'var(--gold)', fontWeight: 700 }}>
+            Create one
+          </Link>
+        </p>
+      </div>
   );
 }
