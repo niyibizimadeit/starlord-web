@@ -68,10 +68,26 @@ export function middleware(request) {
   }
 
   // Rate limiting for API routes
+  // Rate limiting for API routes
   if (pathname.startsWith('/api')) {
-    const identifier = request.headers.get('x-forwarded-for') ||
-                       request.headers.get('x-real-ip') ||
-                       'anonymous';
+    // In production, use request.ip set by Vercel's edge — cannot be spoofed.
+    // x-forwarded-for is client-controlled and must NOT be trusted in production.
+    let identifier;
+    if (process.env.NODE_ENV === 'production') {
+      identifier = request.ip ?? null;
+      if (!identifier) {
+        // Can't identify caller — block to be safe
+        return new NextResponse(
+          JSON.stringify({ error: 'Unable to verify request origin' }),
+          { status: 403, headers: { 'Content-Type': 'application/json' } }
+        );
+      }
+    } else {
+      // Local dev: Next.js dev server doesn't populate request.ip
+      identifier = request.headers.get('x-forwarded-for')?.split(',')[0].trim()
+                ?? request.headers.get('x-real-ip')
+                ?? '127.0.0.1';
+    }
 
     const config = getRateLimitConfig(pathname);
     const result = checkRateLimit(identifier, config);

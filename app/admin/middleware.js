@@ -1,28 +1,37 @@
-// app/admin/middleware.js
 import { NextResponse } from 'next/server';
+import { jwtVerify } from 'jose';
 
-const ADMIN_SECRET = process.env.ADMIN_SECRET;
+const JWT_SECRET = new TextEncoder().encode(process.env.ADMIN_SECRET);
 
-export function middleware(request) {
+async function isValidAdminToken(token) {
+  if (!token) return false;
+  try {
+    const { payload } = await jwtVerify(token, JWT_SECRET);
+    return payload.role === 'admin';
+  } catch {
+    // Catches: expired, bad signature, malformed
+    return false;
+  }
+}
+
+export async function middleware(request) {
   const { pathname } = request.nextUrl;
+  const token = request.cookies.get('admin_auth')?.value;
 
-  // For API routes: accept either the cookie OR the x-admin-secret header
+  // ── API routes ──────────────────────────────────────────────────────────────
   if (pathname.startsWith('/api/admin')) {
-    const adminAuth = request.cookies.get('admin_auth')?.value;
-    const secretHeader = request.headers.get('x-admin-secret');
+    // Allow the auth endpoint itself through (login/logout don't need a valid token)
+    if (pathname === '/api/admin/auth') return NextResponse.next();
 
-    if (adminAuth !== 'authenticated' && secretHeader !== ADMIN_SECRET) {
+    if (!(await isValidAdminToken(token))) {
       return Response.json({ error: 'Unauthorized' }, { status: 401 });
     }
     return NextResponse.next();
   }
 
-  // For admin pages: cookie only
-  const adminAuth = request.cookies.get('admin_auth')?.value;
-  if (adminAuth !== 'authenticated') {
-    // Let the page handle its own login UI
-  }
-
+  // ── Admin UI pages ──────────────────────────────────────────────────────────
+  // Let the page render — admin/page.js handles its own login UI.
+  // The API routes above are what truly gate access to data.
   return NextResponse.next();
 }
 

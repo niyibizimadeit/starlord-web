@@ -1,13 +1,23 @@
 import { createServiceClient } from '@/lib/supabase/server';
 import { cookies } from 'next/headers';
+import { jwtVerify } from 'jose';
 
 function unauthorized() { return Response.json({ error: 'Unauthorized' }, { status: 401 }); }
 
 // Check admin auth cookie instead of secret parameter
 async function checkAdminAuth() {
   const cookieStore = await cookies();
-  const adminAuth = cookieStore.get('admin_auth')?.value;
-  return adminAuth === 'authenticated';
+  const token = cookieStore.get('admin_auth')?.value;
+  if (!token) return false;
+  try {
+    const { payload } = await jwtVerify(
+      token,
+      new TextEncoder().encode(process.env.ADMIN_SECRET)
+    );
+    return payload.role === 'admin';
+  } catch {
+    return false;
+  }
 }
 async function log(supabase, action, entity_type, entity_id, entity_ref, details = {}) {
   await supabase.from('admin_logs').insert([{ action, entity_type, entity_id, entity_ref, details }]);
