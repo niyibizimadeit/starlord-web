@@ -4,7 +4,7 @@ import { useState, useRef } from 'react';
 
 // Admin secret is no longer exposed to client - auth is via httpOnly cookie
 // These helpers now rely on the admin_auth cookie set by /api/admin/auth
-const SITE_URL = 'https://starlordweb2-y9jldvw8c-niyibizimadeits-projects.vercel.app';
+const SITE_URL = 'https://starlordgroup.rw';
 
 export function formatRWF(n)  { return `RWF ${Number(n || 0).toLocaleString()}`; }
 export function formatDate(d) {
