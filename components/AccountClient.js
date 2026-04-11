@@ -118,18 +118,11 @@ function ProfileTab({ profile }) {
           type="tel"
           placeholder="e.g. 0788 123 456"
           value={form.phone}
-          disabled={!!profile?.phone}
           onChange={e => setForm(p => ({ ...p, phone: e.target.value }))}
-          style={{
-            ...inputStyle(form.phone),
-            opacity: profile?.phone ? 0.6 : 1,
-            cursor: profile?.phone ? 'not-allowed' : 'text',
-          }}
+          style={inputStyle(form.phone)}
         />
         <div style={{ fontSize: 11, color: 'var(--text-faint)', marginTop: 4 }}>
-          {profile?.phone
-            ? 'Phone number cannot be changed'
-            : 'Add your phone number for faster checkout'}
+          Add your phone number for faster checkout
         </div>
       </div>
 
