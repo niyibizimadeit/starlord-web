@@ -86,8 +86,14 @@ export async function PATCH(request, { params }) {
     }
 
     // Prevent cancelling already dispatched orders
-    if (order.status === 'dispatched' && status === 'cancelled') {
-      return Response.json({ error: 'Cannot cancel a dispatched order' }, { status: 400 });
+    const allowed = VALID_TRANSITIONS[order.status];
+    if (!allowed) {
+      return Response.json({ error: `Unknown current status: ${order.status}` }, { status: 400 });
+    }
+    if (!allowed.includes(status)) {
+      return Response.json({
+        error: `Cannot transition from '${order.status}' to '${status}'. Allowed: ${allowed.join(', ') || 'none'}`,
+      }, { status: 400 });
     }
 
     // Update status

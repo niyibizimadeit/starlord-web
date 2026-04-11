@@ -17,13 +17,10 @@ export async function POST(request) {
     });
 
     if (error) {
-      return Response.json({ error: error.message }, { status: 400 });
+      return Response.json({ error: 'Registration failed. Please try again.' }, { status: 400 });
     }
 
     // Supabase returns empty identities array for already-registered emails
-    if (data.user && data.user.identities && data.user.identities.length === 0) {
-      return Response.json({ error: 'account_exists' }, { status: 409 });
-    }
 
     return Response.json({
       success: true,

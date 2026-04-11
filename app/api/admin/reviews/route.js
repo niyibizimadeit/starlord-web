@@ -1,26 +1,28 @@
 import { createServiceClient } from '@/lib/supabase/server';
+import { jwtVerify } from 'jose';
 
-const ADMIN_SECRET = process.env.ADMIN_SECRET;
+const JWT_SECRET = new TextEncoder().encode(process.env.ADMIN_SECRET);
 
-// Accepts either the secret header OR the admin cookie
-function isAuthorized(request) {
-  const secret = request.headers.get('x-admin-secret');
-  if (secret && secret === ADMIN_SECRET) return true;
-
+async function isAuthorized(request) {
   const cookieHeader = request.headers.get('cookie') || '';
-  const adminAuth = cookieHeader
+  const token = cookieHeader
     .split(';')
     .find(c => c.trim().startsWith('admin_auth='))
     ?.split('=')[1]
     ?.trim();
-  return adminAuth === 'authenticated';
+  if (!token) return false;
+  try {
+    const { payload } = await jwtVerify(token, JWT_SECRET);
+    return payload.role === 'admin';
+  } catch {
+    return false;
+  }
 }
 
 export async function PATCH(request) {
   try {
-    if (!isAuthorized(request)) 
+    if (!(await isAuthorized(request)))
       return Response.json({ error: 'Unauthorized' }, { status: 401 });
-
     const { id, is_visible } = await request.json();
     const supabase = createServiceClient();
     await supabase.from('reviews').update({ is_visible }).eq('id', id);
@@ -32,9 +34,8 @@ export async function PATCH(request) {
 
 export async function DELETE(request) {
   try {
-    if (!isAuthorized(request))
+    if (!(await isAuthorized(request)))
       return Response.json({ error: 'Unauthorized' }, { status: 401 });
-
     const { id } = await request.json();
     const supabase = createServiceClient();
     await supabase.from('reviews').delete().eq('id', id);

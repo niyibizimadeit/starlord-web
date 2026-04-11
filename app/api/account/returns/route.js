@@ -51,8 +51,10 @@ export async function POST(request) {
       .update({ status: 'return_requested' })
       .eq('id', orderId);
 
-    console.log('Return update error:', JSON.stringify(updateError));
-    console.log('Return update orderId:', orderId);
+    if (updateError) {
+      console.error('[Returns] Update failed:', updateError.message);
+      return Response.json({ error: 'Failed to submit return request' }, { status: 500 });
+    }
 
     return Response.json({ success: true });
     

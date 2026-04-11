@@ -4,11 +4,8 @@ import sanitizeHtml from 'sanitize-html';
 
 function generateReference() {
   const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
-  let ref = 'SL-';
-  for (let i = 0; i < 6; i++) {
-    ref += chars[Math.floor(Math.random() * chars.length)];
-  }
-  return ref;
+  const bytes = crypto.getRandomValues(new Uint8Array(6));
+  return 'SL-' + Array.from(bytes).map(b => chars[b % chars.length]).join('');
 }
 
 export async function POST(request) {
@@ -85,12 +82,16 @@ export async function POST(request) {
     }
 
     for (const item of items) {
-      const product = products.find(p => p.id === item.productId);
-      if (!product) return Response.json({ error: 'Product not found' }, { status: 400 });
-      if (product.stock < item.quantity) {
+      const { data: success, error } = await supabase.rpc('deduct_stock', {
+        p_product_id: item.productId,
+        p_quantity:   item.quantity,
+      });
+      if (!success || error) {
+        await supabase.from('orders').update({ status: 'stock_conflict' }).eq('id', order.id);
         return Response.json({
-          error: `${product.name} only has ${product.stock} units left`,
-        }, { status: 400 });
+          error: 'One or more items just sold out. Please review your cart and try again.',
+          code:  'STOCK_CONFLICT',
+        }, { status: 409 });
       }
     }
 
@@ -102,13 +103,16 @@ export async function POST(request) {
     const total = subtotal + DELIVERY_FEE;
 
     // ── Sanitise inputs ───────────────────────────────────────────────
-    const sanitize = (str) => sanitizeHtml(str, {
-      allowedTags: [],        // Strip ALL HTML tags
-      allowedAttributes: {},  // Strip ALL attributes
+    const sanitize = (str) => sanitizeHtml(String(str ?? ''), {
+      allowedTags: [],
+      allowedAttributes: {},
     }).trim();
     
-    const safeName    = sanitize(customer.name).slice(0, 100);
-    const safeAddress = sanitize(customer.address).slice(0, 300);
+    const safeName        = sanitize(customer.name).slice(0, 100);
+    const safeAddress     = sanitize(customer.address).slice(0, 300);
+    const safeDeliverySlot = deliverySlot ? sanitize(deliverySlot).slice(0, 100) : null;
+    // phone is already validated by regex — no HTML risk, but normalize it
+    const safePhone = cleanPhone; // already stripped of spaces + regex-validated
 
     // ── Resolve user_id ───────────────────────────────────────────────
     // Priority: 1) logged-in session, 2) createAccount flow, 3) null (guest)
