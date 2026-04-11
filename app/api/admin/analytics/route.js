@@ -130,7 +130,7 @@ export async function GET(request) {
       }
     });
 
-    response.headers.set('Cache-Control', `public, s-maxage=${cacheSeconds}, stale-while-revalidate=${cacheSeconds}`);
+    response.headers.set('Cache-Control', 'private, no-store');
     
     return response;
   } catch (err) {

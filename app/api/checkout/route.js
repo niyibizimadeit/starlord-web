@@ -1,5 +1,6 @@
 import { createServiceClient } from '@/lib/supabase/server';
 import { createServerSupabaseClient } from '@/lib/supabase/server';
+import sanitizeHtml from 'sanitize-html';
 
 function generateReference() {
   const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
@@ -101,9 +102,13 @@ export async function POST(request) {
     const total = subtotal + DELIVERY_FEE;
 
     // ── Sanitise inputs ───────────────────────────────────────────────
-    const stripHtml = (str) => str.replace(/<[^>]*>/g, '').replace(/[<>'"]/g, '').trim();
-    const safeName    = stripHtml(customer.name).slice(0, 100);
-    const safeAddress = stripHtml(customer.address).slice(0, 300);
+    const sanitize = (str) => sanitizeHtml(str, {
+      allowedTags: [],        // Strip ALL HTML tags
+      allowedAttributes: {},  // Strip ALL attributes
+    }).trim();
+    
+    const safeName    = sanitize(customer.name).slice(0, 100);
+    const safeAddress = sanitize(customer.address).slice(0, 300);
 
     // ── Resolve user_id ───────────────────────────────────────────────
     // Priority: 1) logged-in session, 2) createAccount flow, 3) null (guest)
