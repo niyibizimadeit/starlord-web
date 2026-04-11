@@ -29,9 +29,9 @@ async function getCategories() {
   const supabase = createServiceClient();
   const { data } = await supabase
     .from('categories')
-    .select('name')
+    .select('name, slug')
     .order('name', { ascending: true });
-  return data?.map(c => c.name) || [];
+  return data?.map(c => ({ name: c.name, slug: c.slug })) || [];
 }
 
 export default async function ProductsPage({ searchParams }) {
@@ -54,7 +54,7 @@ export default async function ProductsPage({ searchParams }) {
         initialBadge={badge}
         categories={categories}
         showHeader={true}
-        pageTitle={category === 'All' ? 'All Products' : category}
+        pageTitle={category === 'All' ? 'All Products' : undefined}
       />
     </main>
   );
