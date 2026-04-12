@@ -99,7 +99,10 @@ export async function PATCH(request) {
     if (fullName !== undefined) updates.full_name = fullName.slice(0, 100);
     if (email !== undefined) updates.email = email;
     if (phone !== undefined && phone) {
-      const cleanPhone = phone.replace(/\s/g, '');
+      let cleanPhone = phone.replace(/\s/g, '');
+      // Normalize +250 prefix to local format
+      if (cleanPhone.startsWith('+250')) cleanPhone = '0' + cleanPhone.slice(4);
+      if (cleanPhone.startsWith('250'))  cleanPhone = '0' + cleanPhone.slice(3);
       const phoneRegex = /^(078|079|072|073)\d{7}$/;
       if (!phoneRegex.test(cleanPhone)) {
         return Response.json({ error: 'Enter a valid Rwandan phone number' }, { status: 400 });

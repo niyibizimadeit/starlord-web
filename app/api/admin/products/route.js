@@ -62,6 +62,18 @@ export async function POST(request) {
     }
 
     const serviceClient = createServiceClient();
+    const { data: categoryExists } = await serviceClient
+      .from('categories')
+      .select('id')
+      .eq('slug', category)
+      .eq('is_active', true)
+      .single();
+
+    if (!categoryExists) {
+      return Response.json({ error: 'Invalid category' }, { status: 400 });
+    }
+
+    const serviceClient = createServiceClient();
 
     // Create product
     const { data, error } = await serviceClient

@@ -18,7 +18,9 @@ export async function GET(request) {
   }
 
   if (search) {
-    query = query.ilike('name', `%${search}%`);
+    // Escape special LIKE characters to prevent overly broad matches
+    const safeSearch = search.replace(/[%_\\]/g, '\\$&').slice(0, 100);
+    query = query.ilike('name', `%${safeSearch}%`);
   }
 
   const { data, error } = await query;

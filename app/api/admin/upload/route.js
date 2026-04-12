@@ -1,9 +1,20 @@
 import { createServiceClient } from '@/lib/supabase/server';
 import { cookies } from 'next/headers';
+import { jwtVerify } from 'jose';
 
 async function checkAdminAuth() {
   const cookieStore = await cookies();
-  return cookieStore.get('admin_auth')?.value === 'authenticated';
+  const token = cookieStore.get('admin_auth')?.value;
+  if (!token) return false;
+  try {
+    const { payload } = await jwtVerify(
+      token,
+      new TextEncoder().encode(process.env.ADMIN_SECRET)
+    );
+    return payload.role === 'admin';
+  } catch {
+    return false;
+  }
 }
 
 export async function POST(request) {
@@ -33,7 +44,7 @@ export async function POST(request) {
 
     const supabase  = createServiceClient();
     const ext       = file.name.split('.').pop().toLowerCase();
-    const fileName  = `${productId}/${Date.now()}-${Math.random().toString(36).slice(2)}.${ext}`;
+    const fileName = `${productId}/${crypto.randomUUID()}.${ext}`;
     const buffer    = Buffer.from(await file.arrayBuffer());
 
     const { error: uploadError } = await supabase.storage

@@ -198,7 +198,7 @@ function TrackPageInner() {
 
             <div style={{ borderTop: '1px solid var(--border)', paddingTop: 16 }}>
               <div style={{ fontSize: 12, color: 'var(--text-muted)', marginBottom: 12 }}>Items</div>
-              {order.items.map(item => (
+              {(order.items ?? []).map(item => (
                 <div key={item.id} style={{
                   display: 'flex', alignItems: 'center',
                   gap: 12, padding: '8px 0',

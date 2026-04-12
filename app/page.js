@@ -1,7 +1,6 @@
 import { createServiceClient } from '@/lib/supabase/server';
 import BannerSlider from '@/components/BannerSlider';
 import ProductGrid from '@/components/ProductGrid';
-/* import CategoryStrip from '@/components/CategoryStrip'; */
 import TrustBar from '@/components/TrustBar';
 
 export const revalidate = 60;

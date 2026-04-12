@@ -135,10 +135,20 @@ export async function DELETE(request, { params }) {
 
     // Check if category has products
     const serviceClient = createServiceClient();
+    const { data: category } = await serviceClient
+      .from('categories')
+      .select('slug')
+      .eq('id', id)
+      .single();
+
+    if (!category) {
+      return NextResponse.json({ error: 'Category not found' }, { status: 404 });
+    }
+
     const { count: productCount } = await serviceClient
       .from('products')
       .select('*', { count: 'exact', head: true })
-      .eq('category', id);
+      .eq('category', category.slug);
 
     if (productCount > 0) {
       return NextResponse.json({ error: 'Cannot delete category with products' }, { status: 400 });

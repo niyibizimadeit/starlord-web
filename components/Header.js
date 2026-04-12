@@ -33,7 +33,6 @@ export default function Header() {
       .order('sort_order', { ascending: true })
       .limit(4)
       .then(({ data, error }) => {
-        console.log('Nav categories:', data, 'Error:', error);
         setNavCategories(data || []);
       });
 

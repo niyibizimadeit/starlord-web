@@ -75,10 +75,6 @@ export default function CheckoutPage() {
 
       const { profile, addresses: addrs } = data;
 
-      // TEMP DEBUG
-      console.log('profile:', JSON.stringify(profile));
-      console.log('addresses:', JSON.stringify(addrs));
-
       // Prefill name + phone
       setForm(prev => ({
         ...prev,

@@ -81,19 +81,6 @@ export async function POST(request) {
       return Response.json({ error: 'Could not verify products' }, { status: 400 });
     }
 
-    for (const item of items) {
-      const { data: success, error } = await supabase.rpc('deduct_stock', {
-        p_product_id: item.productId,
-        p_quantity:   item.quantity,
-      });
-      if (!success || error) {
-        await supabase.from('orders').update({ status: 'stock_conflict' }).eq('id', order.id);
-        return Response.json({
-          error: 'One or more items just sold out. Please review your cart and try again.',
-          code:  'STOCK_CONFLICT',
-        }, { status: 409 });
-      }
-    }
 
     // ── Calculate totals ──────────────────────────────────────────────
     const subtotal = products.reduce((sum, product) => {

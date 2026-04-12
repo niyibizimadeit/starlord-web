@@ -16,7 +16,8 @@ export async function POST(request) {
     });
 
     if (error) {
-      return Response.json({ error: error.message }, { status: 400 });
+      console.error('[Login]', error.message); // internal only
+      return Response.json({ error: 'Invalid email or password' }, { status: 400 });
     }
 
     return Response.json({ 
