@@ -4,6 +4,7 @@ import { ThemeProvider } from '@/components/ThemeProvider';
 import { CartProvider } from '@/components/CartContext';
 import ConditionalLayout from '@/components/ConditionalLayout';
 import { Analytics } from '@vercel/analytics/react';
+import { SpeedInsights } from '@vercel/speed-insights/next';
 
 const playfair = Playfair_Display({
   subsets: ['latin'],
