@@ -73,8 +73,6 @@ export async function POST(request) {
       return Response.json({ error: 'Invalid category' }, { status: 400 });
     }
 
-    const serviceClient = createServiceClient();
-
     // Create product
     const { data, error } = await serviceClient
       .from('products')
