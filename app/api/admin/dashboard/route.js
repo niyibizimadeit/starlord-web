@@ -40,7 +40,7 @@ export async function GET(request) {
   if (type === 'orders') {
     const search = searchParams.get('search') || '';
     const status = searchParams.get('status') || 'all';
-    let query = supabase.from('orders').select('id, reference, customer_name, customer_phone, delivery_address, subtotal, delivery_fee, total, status, payment_status, payment_method, created_at').order('created_at', { ascending: false }).limit(200);
+    let query = supabase.from('orders').select('id, reference, customer_name, customer_phone, delivery_address, subtotal, delivery_fee, total, status, payment_status, payment_method, created_at, review_token').order('created_at', { ascending: false }).limit(200);
     if (status !== 'all') query = query.eq('status', status);
     if (search) query = query.or(`reference.ilike.%${search}%,customer_name.ilike.%${search}%,customer_phone.ilike.%${search}%`);
     const { data, error } = await query;

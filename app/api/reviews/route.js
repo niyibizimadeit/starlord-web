@@ -10,7 +10,7 @@ export async function GET(request) {
     const supabase = createServiceClient();
     const { data: reviews } = await supabase
       .from('reviews')
-      .select('id, rating, comment, created_at, users(full_name)')
+      .select('id, rating, comment, reviewer_name, created_at, users(full_name)')
       .eq('product_id', productId)
       .eq('is_visible', true)
       .order('created_at', { ascending: false });
@@ -79,7 +79,7 @@ export async function POST(request) {
         comment:    comment.trim().slice(0, 1000),
         is_visible: true,
       })
-      .select('id, rating, comment, created_at, users(full_name)')
+      .select('id, rating, comment, reviewer_name, created_at, users(full_name)')
       .single();
 
     if (error) return Response.json({ error: error.message }, { status: 500 });

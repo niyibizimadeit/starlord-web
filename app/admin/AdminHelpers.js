@@ -128,7 +128,7 @@ export function printRevenueReport(data, period) {
 }
 
 export function printShippingLabel(order) {
-  const trackUrl = encodeURIComponent(`${SITE_URL}/track?ref=${order.reference}`);
+  const trackUrl = encodeURIComponent(`${SITE_URL}/review?token=${order.review_token}`);
   const qrUrl    = `https://api.qrserver.com/v1/create-qr-code/?size=140x140&data=${trackUrl}`;
   const w = window.open('', '_blank');
   w.document.write(`<!DOCTYPE html><html><head><title>Label — ${order.reference}</title>

@@ -276,7 +276,7 @@ export default function ProductReviews({ productId, deliveredOrders = [] }) {
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 8 }}>
                 <div>
                   <div style={{ fontSize: 13, fontWeight: 700, color: 'var(--text)', marginBottom: 4 }}>
-                    {review.users?.full_name || 'Customer'}
+                    {review.users?.full_name || review.reviewer_name || 'Customer'}
                   </div>
                   <StarRating value={review.rating} readonly />
                 </div>
