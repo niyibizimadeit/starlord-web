@@ -9,7 +9,7 @@ export async function GET(request) {
   const { data: order } = await supabase
     .from('orders')
     .select(`
-      id, reference, customer_name, status,
+      id, reference, customer_name, status, delivery_address, delivery_slot,
       order_items(
         product_id, quantity,
         products(id, name, image_url)
@@ -19,10 +19,8 @@ export async function GET(request) {
     .single();
 
   if (!order) return Response.json({ error: 'Invalid or expired link' }, { status: 404 });
-  if (order.status !== 'delivered') {
-    return Response.json({ error: 'Reviews are only available after delivery' }, { status: 400 });
-  }
 
+  // Always return the order — client decides what to show based on status
   return Response.json({ order });
 }
 
