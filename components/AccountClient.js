@@ -537,12 +537,21 @@ function OrderCard({ order }) {
 
           {/* Action Buttons */}
           <div style={{ display: 'flex', gap: 8 }}>
-            <Link href={'/track?ref=' + order.reference} style={{
-              flex: 1, display: 'block', textAlign: 'center',
-              background: 'var(--surface-2)', border: '1px solid var(--border)',
-              borderRadius: 10, padding: '10px',
-              fontSize: 13, fontWeight: 700, color: 'var(--text)',
-            }}>Track Order</Link>
+            {order.status === 'delivered' ? (
+              <Link href={`/products?review=true&orderId=${order.id}`} style={{
+                flex: 1, display: 'block', textAlign: 'center',
+                background: 'var(--gold)', border: 'none',
+                borderRadius: 10, padding: '10px',
+                fontSize: 13, fontWeight: 700, color: '#000',
+              }}>Leave a Review</Link>
+            ) : (
+              <Link href={'/track?ref=' + order.reference} style={{
+                flex: 1, display: 'block', textAlign: 'center',
+                background: 'var(--surface-2)', border: '1px solid var(--border)',
+                borderRadius: 10, padding: '10px',
+                fontSize: 13, fontWeight: 700, color: 'var(--text)',
+              }}>Track Order</Link>
+            )}
 
             {order.status === 'delivered' && canReturn && !returnSent && (
               <button onClick={() => setReturning(r => !r)} style={{
