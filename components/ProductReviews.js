@@ -95,7 +95,7 @@ export default function ProductReviews({ productId, deliveredOrders = [] }) {
   };
 
   return (
-    <div style={{ padding: '0 20px', marginTop: 32 }}>
+    <div id="reviews" style={{ padding: '0 20px', marginTop: 32 }}>
 
       {/* Header */}
       <div style={{

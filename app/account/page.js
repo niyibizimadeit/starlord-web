@@ -23,8 +23,8 @@ export default async function AccountPage() {
       total, delivery_fee, created_at,
       delivery_address,
       order_items (
-        quantity, price_at_time,
-        products ( name, image_url )
+        quantity, price_at_time, product_id,
+        products ( id, name, image_url )
       )
     `)
     .eq('user_id', user.id)
