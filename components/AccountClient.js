@@ -320,7 +320,7 @@ function ReturnForm({ onSubmit, onCancel, error }) {
   const [agreed, setAgreed]         = useState(false);
   const [submitting, setSubmitting] = useState(false);
 
-  const RETURN_SLOTS = ['Morning 9:00–12:00', 'Afternoon 2:00–5:00', 'Evening 6:00–8:00'];
+  const RETURN_SLOTS = ['Morning 9:00 AM - 12:00 PM', 'Afternoon 12:10 PM - 5:00 PM'];
 
   const handleSubmit = async () => {
     if (!agreed || !note.trim()) return;
