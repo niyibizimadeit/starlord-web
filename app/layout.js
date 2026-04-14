@@ -38,6 +38,7 @@ export default function RootLayout({ children }) {
           </CartProvider>
         </ThemeProvider>
         <Analytics />
+        <SpeedInsights />
       </body>
     </html>
   );
