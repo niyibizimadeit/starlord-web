@@ -1,36 +1,175 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# StarlordGroup Web - starlordgroup.rw
 
-## Getting Started
+## 🌟 Project Overview
 
-First, run the development server:
+**StarlordGroup.rw** is a live, production e-commerce platform built for simplicity, cleanliness, efficiency, and effectiveness. Deployed on [Vercel](https://vercel.com) and powered by [Supabase](https://supabase.com), it serves real users in Rwanda with a fully functional online store including product browsing, cart, checkout, order tracking, user accounts, and a comprehensive admin dashboard.
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+The entire philosophy behind StarlordGroup is **minimalism with maximum impact**:
+- **Simplicity**: Intuitive UI/UX, no bloat.
+- **Cleanliness**: Well-organized code, TypeScript everywhere, TailwindCSS for styling.
+- **Efficiency**: Optimized Next.js App Router, server-side rendering, fast API routes.
+- **Effectiveness**: Real-world features like OTP auth, order management, reviews – battle-tested with actual users.
+
+Live site: [starlordgroup.rw](https://starlordgroup.rw)
+
+## 🚀 Key Features
+
+### User-Facing:
+- Browse products/categories with grid view, image gallery, variation selector.
+- Shopping cart with persistence (CartContext).
+- Checkout & orders with tracking/returns.
+- User accounts: Login/register (email/OTP), profile, addresses, order history.
+- Product reviews & ratings.
+- Contact/FAQ/Terms pages.
+- WhatsApp widget for support.
+
+### Admin Dashboard:
+- Authentication & middleware protection.
+- Dashboard analytics.
+- Product/Category/Banner management (CRUD, image upload).
+- Order management (view/update status).
+- Review moderation.
+- File uploads to Supabase Storage.
+
+### Note on Payments:
+Payment integration API is a work-in-progress. Currently, all payments are handled **manually**. IremboPay webhook (`/api/webhooks/irembopay`) is set up, and full integration is being developed.
+
+## 🏗️ Tech Stack & Architecture
+
+- **Frontend**: Next.js 14+ (App Router), React 19, TypeScript, TailwindCSS 4 (via PostCSS).
+- **Backend/DB**: Supabase (Postgres DB, Auth, Storage, Realtime).
+  - SSR clients (`@supabase/ssr`).
+  - Server actions/API routes for all ops.
+- **Styling**: TailwindCSS + module CSS (e.g., ProductGrid.module.css).
+- **Payments**: IremboPay (webhook-ready).
+- **Analytics**: Vercel Analytics & Speed Insights.
+- **Security**: Custom headers (HSTS, XFO, etc.), Supabase RLS, middleware.
+- **Images**: Optimized via next.config.ts for Supabase Storage (`zphpfahgyerabtpvtwol.supabase.co`).
+- **Other**: ESLint, jose (JWT), sanitize-html.
+
+**Architecture Flow**:
+1. User interacts → App Router pages/components.
+2. Auth checks → Supabase server/browser clients.
+3. Data ops → API routes (`/api/products`, `/api/orders`, etc.) → Supabase queries.
+4. Admin → Protected layouts/middleware.
+5. Webhooks → Payment confirmations.
+
+## 📁 Folder Structure & Descriptions
+
+```
+starlord-web/
+├── app/                    # Next.js App Router: Pages & API routes
+│   ├── (auth)/             # Auth pages: login, register, forgot-password, etc.
+│   ├── account/            # User profile, orders, addresses, returns
+│   ├── admin/              # Admin dashboard (layout, middleware, pages: dashboard, products, orders)
+│   │   └── api/            # Admin API: analytics, products CRUD, orders, etc.
+│   ├── api/                # Public API routes
+│   │   ├── auth/           # Login/register/OTP/reset
+│   │   ├── products/       # List/detail/variations
+│   │   ├── orders/         # Create/track/update status
+│   │   ├── checkout/       # Process orders
+│   │   ├── reviews/        # Submit/moderate
+│   │   └── webhooks/       # IremboPay
+│   ├── products/           # Product listing/detail pages
+│   ├── cart/               # Cart page
+│   ├── checkout/           # Checkout
+│   ├── globals.css         # Global styles (Tailwind)
+│   ├── layout.js           # Root layout (ThemeProvider, Header)
+│   ├── middleware.js       # Auth middleware?
+│   └── page.js             # Home/landing
+├── components/             # Reusable UI components
+│   ├── Header.js           # Site header with cart
+│   ├── ProductGrid.js      # Product listings (.module.css)
+│   ├── BannerSlider.js     # Homepage banners
+│   ├── CartContext.js      # Cart state provider
+│   ├── ImageGallery.js     # Product images
+│   ├── VariationSelector.js# Product options
+│   ├── ProductReviews.js   # Reviews section
+│   ├── TrustBar.js         # Trust badges
+│   └── WhatsAppWidget.js   # Support chat
+├── lib/supabase/           # Supabase clients
+│   ├── client.js           # Browser client
+│   └── server.js           # Server/SSR client + service role
+├── public/                 # Static assets
+│   └── *.svg               # Icons (next.svg, vercel.svg, etc.)
+├── next.config.ts          # Config: images (Supabase), security headers
+├── package.json            # Deps: Next.js, Supabase, Tailwind
+├── tailwind.config.ts      # (Inferred)
+├── tsconfig.json           # TypeScript config
+├── eslint.config.mjs       # Linting
+└── README.md               # This file!
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## 🛠️ Getting Started (Local Development)
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+### Prerequisites
+- Node.js 20+
+- Supabase project (free tier OK): Get URL, ANON_KEY, SERVICE_ROLE_KEY.
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+### 1. Clone & Install
+```bash
+git clone <repo>
+cd starlord-web
+npm install
+```
 
-## Learn More
+### 2. Environment Variables
+Create `.env.local`:
+```
+NEXT_PUBLIC_SUPABASE_URL=your_supabase_url
+NEXT_PUBLIC_SUPABASE_ANON_KEY=your_anon_key
+SUPABASE_SERVICE_ROLE_KEY=your_service_role_key
+# Optional: NEXT_PUBLIC_SITE_URL=http://localhost:3000
+```
 
-To learn more about Next.js, take a look at the following resources:
+### 3. Run Dev Server
+```bash
+npm run dev
+```
+Open [http://localhost:3000](http://localhost:3000).
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+### Scripts
+- `npm run dev` - Development
+- `npm run build` - Production build
+- `npm run start` - Production server
+- `npm run lint` - Lint code
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## ☁️ Deployment
 
-## Deploy on Vercel
+Hosted on **Vercel** (seamless for Next.js):
+1. Push to GitHub.
+2. Connect repo in Vercel dashboard.
+3. Add env vars (Supabase keys).
+4. Deploy! Auto-builds on push.
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+**Custom Domain**: starlordgroup.rw already live.
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+**Production Config**:
+- Set `NEXT_PUBLIC_SITE_URL=https://starlordgroup.rw`
+- Supabase Edge Functions if needed for complex logic.
+
+## 🔒 Environment Variables Reference
+| Key | Description | Required |
+|-----|-------------|----------|
+| `NEXT_PUBLIC_SUPABASE_URL` | Supabase project URL | Yes |
+| `NEXT_PUBLIC_SUPABASE_ANON_KEY` | Public anon key | Yes |
+| `SUPABASE_SERVICE_ROLE_KEY` | Service role (bypass RLS) | Yes (admin/server ops) |
+| `NEXT_PUBLIC_SITE_URL` | Site base URL | Prod |
+
+## 🤝 Contributing
+1. Fork & PR.
+2. Follow TypeScript/Tailwind/ESLint standards.
+3. Test API routes with Supabase seed data.
+
+## 📄 License
+MIT
+
+## 🙌 Acknowledgments
+- [Next.js](https://nextjs.org)
+- [Supabase](https://supabase.com)
+- [Vercel](https://vercel.com)
+- [TailwindCSS](https://tailwindcss.com)
+
+---
+
+*Built with simplicity in mind. Efficient. Effective. Clean.*
