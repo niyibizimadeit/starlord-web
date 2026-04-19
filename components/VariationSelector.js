@@ -105,10 +105,27 @@ export default function VariationSelector({ product, variations }) {
         <button
           onClick={() => validateAndAdd(false)}
           style={{
-            flex: 1, background: 'var(--surface-2)',
-            color: 'var(--text)', border: '1px solid var(--border)',
-            borderRadius: 12, padding: '16px',
-            fontWeight: 700, fontSize: 15, cursor: 'pointer',
+            flex: 1,
+            background: 'rgba(255,255,255,0.08)',
+            backdropFilter: 'blur(16px)',
+            WebkitBackdropFilter: 'blur(16px)',
+            color: 'var(--text)',
+            border: '1px solid rgba(255,255,255,0.18)',
+            borderRadius: 14,
+            padding: '16px',
+            fontWeight: 700,
+            fontSize: 15,
+            cursor: 'pointer',
+            boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.25), inset 0 -1px 0 rgba(0,0,0,0.08), 0 4px 16px rgba(0,0,0,0.12)',
+            transition: 'box-shadow 0.2s, transform 0.18s',
+          }}
+          onMouseEnter={e => {
+            e.currentTarget.style.boxShadow = 'inset 0 1px 0 rgba(255,255,255,0.35), 0 6px 20px rgba(0,0,0,0.18)';
+            e.currentTarget.style.transform = 'translateY(-1px)';
+          }}
+          onMouseLeave={e => {
+            e.currentTarget.style.boxShadow = 'inset 0 1px 0 rgba(255,255,255,0.25), inset 0 -1px 0 rgba(0,0,0,0.08), 0 4px 16px rgba(0,0,0,0.12)';
+            e.currentTarget.style.transform = 'translateY(0)';
           }}
         >
           Add to Cart
@@ -116,10 +133,27 @@ export default function VariationSelector({ product, variations }) {
         <button
           onClick={() => validateAndAdd(true)}
           style={{
-            flex: 1, background: 'var(--gold)',
-            color: '#000', border: 'none',
-            borderRadius: 12, padding: '16px',
-            fontWeight: 800, fontSize: 15, cursor: 'pointer',
+            flex: 1,
+            background: 'linear-gradient(148deg, rgba(184,134,11,0.97) 0%, rgba(139,101,8,0.97) 100%)',
+            backdropFilter: 'blur(14px)',
+            WebkitBackdropFilter: 'blur(14px)',
+            color: '#000',
+            border: '1px solid rgba(255,255,255,0.28)',
+            borderRadius: 14,
+            padding: '16px',
+            fontWeight: 800,
+            fontSize: 15,
+            cursor: 'pointer',
+            boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.42), inset 0 -1px 0 rgba(0,0,0,0.12), 0 4px 16px rgba(184,134,11,0.32)',
+            transition: 'box-shadow 0.2s, transform 0.18s',
+          }}
+          onMouseEnter={e => {
+            e.currentTarget.style.boxShadow = 'inset 0 1px 0 rgba(255,255,255,0.5), 0 6px 20px rgba(184,134,11,0.42)';
+            e.currentTarget.style.transform = 'translateY(-1px)';
+          }}
+          onMouseLeave={e => {
+            e.currentTarget.style.boxShadow = 'inset 0 1px 0 rgba(255,255,255,0.42), inset 0 -1px 0 rgba(0,0,0,0.12), 0 4px 16px rgba(184,134,11,0.32)';
+            e.currentTarget.style.transform = 'translateY(0)';
           }}
         >
           Buy Now

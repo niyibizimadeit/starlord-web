@@ -158,33 +158,6 @@ export default async function ProductPage({ params }) {
           )}
         </div>
 
-        {/* Stock badge */}
-        <div style={{
-          display: 'inline-flex', alignItems: 'center', gap: 6,
-          padding: '6px 14px', borderRadius: 20, marginBottom: 20,
-          background: product.stock === 0
-            ? 'var(--red-bg)'
-            : product.stock <= 5
-            ? 'rgba(177,39,4,0.08)'
-            : 'var(--green-bg)',
-          border: `1px solid ${product.stock === 0 ? 'var(--red)' : product.stock <= 5 ? 'var(--red)' : 'var(--green)'}`,
-          opacity: 0.9,
-        }}>
-          <span style={{
-            width: 7, height: 7, borderRadius: '50%', flexShrink: 0,
-            background: product.stock === 0 ? 'var(--red)' : product.stock <= 5 ? 'var(--red)' : 'var(--green)',
-          }} />
-          <span style={{
-            color: product.stock === 0 ? 'var(--red)' : product.stock <= 5 ? 'var(--red)' : 'var(--green)',
-            fontSize: 12, fontWeight: 700,
-          }}>
-            {product.stock === 0
-              ? 'Out of stock'
-              : product.stock <= 5
-              ? `Only ${product.stock} left`
-              : `In stock (${product.stock} available)`}
-          </span>
-        </div>
 
         {product.description && (
           <p style={{
@@ -227,8 +200,9 @@ export default async function ProductPage({ params }) {
             </Link>
           </div>
 
-          {/* 2-column grid */}
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
+
+          {/* 2-column grid — matches homepage ProductCard exactly */}
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10 }}>
             {related.slice(0, 2).map(p => {
               const relDiscount = p.old_price
                 ? Math.round((1 - p.price / p.old_price) * 100)
@@ -237,100 +211,150 @@ export default async function ProductPage({ params }) {
                 <Link
                   key={p.id}
                   href={`/products/${p.id}`}
-                  style={{
+                  style={{ display: 'block', textDecoration: 'none', color: 'inherit' }}
+                >
+                  <article style={{
                     background: 'var(--surface)',
-                    border: '1px solid var(--border-subtle)',
-                    borderRadius: 16,
+                    borderRadius: 20,
                     overflow: 'hidden',
-                    textDecoration: 'none',
+                    border: '1px solid var(--border-subtle)',
                     display: 'flex',
                     flexDirection: 'column',
-                    boxShadow: '0 1px 3px rgba(0,0,0,0.06), 0 4px 12px rgba(0,0,0,0.04)',
-                  }}
-                >
-                  {/* Image with chip overlays */}
-                  <div style={{ position: 'relative', paddingTop: '90%', background: 'var(--surface-2)', overflow: 'hidden' }}>
-                    {p.image_url ? (
-                      <img
-                        src={p.image_url}
-                        alt={p.name}
-                        style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover' }}
-                      />
-                    ) : (
-                      <div style={{
-                        position: 'absolute', inset: 0,
-                        display: 'flex', alignItems: 'center', justifyContent: 'center', flexDirection: 'column', gap: 6,
-                      }}>
-                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round" style={{ opacity: 0.3, color: 'var(--text-faint)' }}>
-                          <rect x="3" y="3" width="18" height="18" rx="3" />
-                          <circle cx="8.5" cy="8.5" r="1.5" />
-                          <polyline points="21 15 16 10 5 21" />
-                        </svg>
-                        <span style={{ fontSize: 9, color: 'var(--text-faint)', textTransform: 'uppercase', letterSpacing: 1, opacity: 0.5 }}>
-                          No image
-                        </span>
-                      </div>
-                    )}
+                    boxShadow: '0 1px 3px rgba(0,0,0,0.06), 0 4px 16px rgba(0,0,0,0.05)',
+                    transition: 'transform 0.28s ease, box-shadow 0.28s ease',
+                  }}>
 
-                    {/* Category chip — glass pill */}
-                    <span style={{
-                      position: 'absolute', top: 8, left: 8, zIndex: 2,
-                      padding: '3px 9px', borderRadius: 20,
-                      fontSize: 9, fontWeight: 700, letterSpacing: 1,
-                      textTransform: 'uppercase', color: '#333',
-                      background: 'rgba(255,255,255,0.72)',
-                      backdropFilter: 'blur(10px)',
-                      WebkitBackdropFilter: 'blur(10px)',
-                      border: '1px solid rgba(255,255,255,0.5)',
-                      boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.85), 0 2px 6px rgba(0,0,0,0.08)',
-                    }}>
-                      {p.category}
-                    </span>
+                    {/* Image container */}
+                    <div style={{ position: 'relative', paddingTop: '95%', background: 'var(--surface-2)', overflow: 'hidden' }}>
+                      {p.image_url ? (
+                        <img
+                          src={p.image_url}
+                          alt={p.name}
+                          style={{
+                            position: 'absolute', inset: 0,
+                            width: '100%', height: '100%',
+                            objectFit: 'cover',
+                            transition: 'transform 0.45s ease',
+                          }}
+                        />
+                      ) : (
+                        <div style={{
+                          position: 'absolute', inset: 0,
+                          display: 'flex', flexDirection: 'column',
+                          alignItems: 'center', justifyContent: 'center', gap: 10,
+                          color: 'var(--text-faint)',
+                        }}>
+                          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round" style={{ opacity: 0.4 }}>
+                            <rect x="3" y="3" width="18" height="18" rx="3" />
+                            <circle cx="8.5" cy="8.5" r="1.5" />
+                            <polyline points="21 15 16 10 5 21" />
+                          </svg>
+                          <span style={{ fontSize: 9, fontWeight: 700, letterSpacing: 2, textTransform: 'uppercase', opacity: 0.5 }}>NO IMAGE</span>
+                        </div>
+                      )}
 
-                    {/* Discount — top-right */}
-                    {relDiscount && (
-                      <span style={{
-                        position: 'absolute', top: 8, right: 8, zIndex: 2,
-                        padding: '3px 8px', borderRadius: 20,
-                        fontSize: 9, fontWeight: 800, color: '#fff',
-                        background: 'var(--badge-sale-bg)',
-                        boxShadow: '0 2px 6px rgba(0,0,0,0.18)',
-                      }}>
-                        -{relDiscount}%
-                      </span>
-                    )}
-                  </div>
-
-                  {/* Info */}
-                  <div style={{ padding: '11px 11px 13px', flex: 1, display: 'flex', flexDirection: 'column', gap: 6 }}>
-                    <div style={{
-                      fontSize: 13, fontWeight: 600,
-                      color: 'var(--text)',
-                      fontFamily: 'var(--font-playfair, serif)',
-                      lineHeight: 1.3,
-                      display: '-webkit-box',
-                      WebkitLineClamp: 2,
-                      WebkitBoxOrient: 'vertical',
-                      overflow: 'hidden',
-                    }}>
-                      {p.name}
-                    </div>
-                    <div style={{ display: 'flex', alignItems: 'baseline', gap: 6, marginTop: 'auto', paddingTop: 4 }}>
-                      <span style={{
-                        fontSize: 14, fontWeight: 800,
-                        color: 'var(--price-color)',
-                        fontFamily: 'Lato, sans-serif',
-                      }}>
-                        {formatRWF(p.price)}
-                      </span>
-                      {p.old_price && (
-                        <span style={{ fontSize: 10, color: 'var(--text-faint)', textDecoration: 'line-through' }}>
-                          {formatRWF(p.old_price)}
+                      {/* Category chip — glass pill */}
+                      {p.category && (
+                        <span style={{
+                          position: 'absolute', top: 8, left: 8, zIndex: 2,
+                          padding: '3px 8px', borderRadius: 20,
+                          fontSize: 9, fontWeight: 700, letterSpacing: 1.2,
+                          textTransform: 'uppercase', color: '#333',
+                          background: 'rgba(255,255,255,0.72)',
+                          backdropFilter: 'blur(12px)',
+                          WebkitBackdropFilter: 'blur(12px)',
+                          border: '1px solid rgba(255,255,255,0.55)',
+                          boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.9), 0 2px 8px rgba(0,0,0,0.1)',
+                        }}>
+                          {p.category}
                         </span>
                       )}
+
+                      {/* Discount badge */}
+                      {relDiscount && (
+                        <span style={{
+                          position: 'absolute', top: 8, right: 8, zIndex: 2,
+                          padding: '3px 7px', borderRadius: 20,
+                          fontSize: 9, fontWeight: 800, color: '#fff',
+                          background: 'var(--badge-sale-bg)',
+                          boxShadow: '0 2px 8px rgba(0,0,0,0.18)',
+                        }}>
+                          -{relDiscount}%
+                        </span>
+                      )}
+
+                      {/* Low stock */}
+                      {p.stock !== undefined && p.stock <= 5 && p.stock > 0 && (
+                        <div style={{
+                          position: 'absolute', bottom: 8, right: 8, zIndex: 2,
+                          background: 'rgba(0,0,0,0.55)',
+                          backdropFilter: 'blur(8px)',
+                          WebkitBackdropFilter: 'blur(8px)',
+                          border: '1px solid rgba(255,255,255,0.12)',
+                          color: 'var(--gold)',
+                          fontSize: 9, fontWeight: 700,
+                          padding: '3px 8px', borderRadius: 20,
+                        }}>
+                          {p.stock} left
+                        </div>
+                      )}
+
+                      {/* Sold out overlay */}
+                      {p.stock === 0 && (
+                        <div style={{
+                          position: 'absolute', inset: 0,
+                          background: 'var(--overlay)',
+                          display: 'flex', alignItems: 'center', justifyContent: 'center',
+                          zIndex: 3,
+                        }}>
+                          <span style={{
+                            background: 'rgba(255,255,255,0.18)',
+                            backdropFilter: 'blur(12px)',
+                            WebkitBackdropFilter: 'blur(12px)',
+                            border: '1px solid rgba(255,255,255,0.3)',
+                            boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.35)',
+                            color: '#fff',
+                            fontSize: 10, fontWeight: 800,
+                            padding: '7px 16px', borderRadius: 8,
+                            letterSpacing: 2, textTransform: 'uppercase',
+                          }}>
+                            Sold Out
+                          </span>
+                        </div>
+                      )}
                     </div>
-                    <AddToCartButton product={p} compact />
-                  </div>
+
+                    
+                    {/* Info */}
+                    <div style={{ padding: '10px 10px 12px', flex: 1, display: 'flex', flexDirection: 'column', gap: 6 }}>
+                      <h3 style={{
+                        fontFamily: 'var(--font-playfair, serif)',
+                        fontSize: 12, fontWeight: 700,
+                        color: 'var(--text)', lineHeight: 1.35, margin: 0,
+                        display: '-webkit-box',
+                        WebkitLineClamp: 2,
+                        WebkitBoxOrient: 'vertical',
+                        overflow: 'hidden',
+                      }}>
+                        {p.name}
+                      </h3>
+
+                      {/* Price row + glass cart icon */}
+                      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 8, marginTop: 'auto' }}>
+                        <div style={{ display: 'flex', alignItems: 'baseline', gap: 4, flex: 1, minWidth: 0, flexWrap: 'wrap' }}>
+                          <span style={{ fontSize: 13, fontWeight: 800, color: 'var(--price-color)', fontFamily: 'Lato, sans-serif', whiteSpace: 'nowrap' }}>
+                            {formatRWF(p.price)}
+                          </span>
+                          {p.old_price && (
+                            <span style={{ fontSize: 10, color: 'var(--text-faint)', textDecoration: 'line-through', whiteSpace: 'nowrap' }}>
+                              {formatRWF(p.old_price)}
+                            </span>
+                          )}
+                        </div>
+                        <AddToCartButton product={p} compact />
+                      </div>
+                    </div>
+                  </article>
                 </Link>
               );
             })}
