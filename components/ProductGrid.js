@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useRef, useCallback, useMemo } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { useCart } from './CartContext';
@@ -9,18 +9,7 @@ import styles from './ProductGrid.module.css';
 const PAGE_SIZE = 8;
 
 function formatRWF(n) {
-  return `RWF ${Number(n).toLocaleString()}`;
-}
-
-function Badge({ text }) {
-  if (!text) return null;
-  const badgeStyles = {
-    HOT: 'badge badgeHot',
-    NEW: 'badge badgeNew',
-    SALE: 'badge badgeSale',
-  };
-  const className = badgeStyles[text] || 'badge badgeHot';
-  return <span className={className}>{text}</span>;
+  return `${Number(n).toLocaleString()} RWF`;
 }
 
 function ProductCard({ product, onOpenModal }) {
@@ -35,79 +24,83 @@ function ProductCard({ product, onOpenModal }) {
   };
 
   return (
-    <Link href={`/products/${product.id}`} className={`${styles.productCard} ${styles.productCardArticle}`}>
-      <div>
-        <article>
-          <div className={styles.productImageContainer}>
-            {product.image_url ? (
-              <Image
+    <Link href={`/products/${product.id}`} className={styles.productCardLink}>
+      <article className={styles.productCard}>
+
+        {/* ── Image ─────────────────────────────────────────── */}
+        <div className={styles.productImageContainer}>
+          {product.image_url ? (
+            <Image
               src={product.image_url}
               alt={product.name}
               fill
               sizes="(max-width: 767px) 50vw, (max-width: 1280px) 33vw, 280px"
               className={styles.productImage}
             />
-            ) : (
-              <div className={styles.noImage}>No Image</div>
-            )}
+          ) : (
+            <div className={styles.noImage}>
+              <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round">
+                <rect x="3" y="3" width="18" height="18" rx="3" />
+                <circle cx="8.5" cy="8.5" r="1.5" />
+                <polyline points="21 15 16 10 5 21" />
+              </svg>
+              <span>NO IMAGE</span>
+            </div>
+          )}
 
-            <div className={styles.badgesContainer}>
-              <Badge text={product.badge} />
-              {discount && (
-                <span className={styles.discountBadge}>-{discount}%</span>
+          {product.category && (
+            <span className={styles.categoryChip}>{product.category}</span>
+          )}
+
+          {product.badge && product.badge !== 'SALE' && (
+            <span className={`${styles.hotBadge} ${product.badge === 'NEW' ? styles.hotBadgeNew : ''}`}>
+              {product.badge}
+            </span>
+          )}
+
+          {discount && (
+            <span className={styles.discountBadge}>-{discount}%</span>
+          )}
+
+          {product.stock !== undefined && product.stock <= 5 && product.stock > 0 && (
+            <div className={styles.lowStock}>{product.stock} left</div>
+          )}
+
+          {product.stock === 0 && (
+            <div className={styles.soldOutOverlay}>
+              <span className={styles.soldOutLabel}>Sold Out</span>
+            </div>
+          )}
+        </div>
+
+        {/* ── Info ──────────────────────────────────────────── */}
+        <div className={styles.productInfo}>
+          <h3 className={styles.productTitle}>{product.name}</h3>
+
+          <div className={styles.priceRow}>
+            <div className={styles.prices}>
+              <span className={styles.currentPrice}>{formatRWF(product.price)}</span>
+              {product.old_price && (
+                <span className={styles.oldPrice}>{formatRWF(product.old_price)}</span>
               )}
             </div>
 
-            {product.stock !== undefined && product.stock <= 5 && product.stock > 0 && (
-              <div className={styles.lowStock}>{product.stock} left</div>
-            )}
-
-            {product.stock === 0 && (
-              <div className={styles.soldOutOverlay}>
-                <span className={styles.soldOutLabel}>Sold Out</span>
-              </div>
-            )}
+            {/* Glass circle icon — shown on ALL screen sizes */}
+            <button
+              className={styles.addToCartBtn}
+              disabled={product.stock === 0}
+              onClick={handleOpenModal}
+              aria-label={product.stock === 0 ? 'Out of stock' : 'Add to cart'}
+            >
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+                <circle cx="9" cy="21" r="1"/>
+                <circle cx="20" cy="21" r="1"/>
+                <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.84L22.34 2H1Z"/>
+              </svg>
+            </button>
           </div>
-
-          <div className={styles.productInfo}>
-            <span className={styles.categoryLabel}>{product.category}</span>
-            <h3 className={styles.productTitle}>{product.name}</h3>
-
-            <div className={styles.priceRow}>
-              <div className={styles.prices}>
-                <span className={styles.currentPrice}>{formatRWF(product.price)}</span>
-                {product.old_price && (
-                  <span className={styles.oldPrice}>{formatRWF(product.old_price)}</span>
-                )}
-              </div>
-
-              <button
-                className={styles.addToCartBtn}
-                disabled={product.stock === 0}
-                onClick={handleOpenModal}
-                aria-label={product.stock === 0 ? 'Out of stock' : 'Add to cart'}
-                title={product.stock === 0 ? 'Out of stock' : 'Add to cart'}
-              >
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                  <circle cx="9" cy="21" r="1"/>
-                  <circle cx="20" cy="21" r="1"/>
-                  <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2.01-1.84L22.34 2H1Z"/>
-                </svg>
-              </button>
-
-              {product.stock !== 0 && (
-                <button
-                  className={styles.mobileAddToCartBtn}
-                  onClick={handleOpenModal}
-                  aria-label="Add to cart"
-                >
-                  Add to cart
-                </button>
-              )}
-            </div>
-          </div>
-        </article>
-      </div>
+        </div>
+      </article>
     </Link>
   );
 }
@@ -192,15 +185,15 @@ export default function ProductGrid({
     return () => observer.disconnect();
   }, [hasMore, loading, page]);
 
-  const openQtyModal = (product) => { setQtyModal({ open: true, product }); setSelectedQty(1); };
+  const openQtyModal  = (product) => { setQtyModal({ open: true, product }); setSelectedQty(1); };
   const closeQtyModal = () => { setQtyModal({ open: false, product: null }); setSelectedQty(1); };
   const addToCartHandler = () => {
     if (qtyModal.product) { addToCart(qtyModal.product, selectedQty); closeQtyModal(); }
   };
 
   const activeCategoryName = categories
-  .map(c => typeof c === 'string' ? { name: c, slug: c } : c)
-  .find(c => c.slug === category)?.name;
+    .map(c => typeof c === 'string' ? { name: c, slug: c } : c)
+    .find(c => c.slug === category)?.name;
 
   const title = saleOnly
     ? 'On Sale'
@@ -212,13 +205,12 @@ export default function ProductGrid({
     <div className={styles.container}>
       <div className="container">
 
-        {/* Desktop header */}
         {showHeader !== false && (
           <div className={styles.desktopHeader}>
             <DesktopSectionHeader title={title} subtitle={`${filtered.length} items available`} />
             {!hideDesktopFilters && (
               <div className={styles.searchInputContainer}>
-                <svg className={styles.searchIcon} viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" strokeWidth="2" fill="none" strokeLinecap="round" strokeLinejoin="round">
+                <svg className={styles.searchIcon} viewBox="0 0 24 24" width="18" height="18" stroke="currentColor" strokeWidth="2" fill="none" strokeLinecap="round" strokeLinejoin="round">
                   <circle cx="11" cy="11" r="8" />
                   <line x1="21" y1="21" x2="16.65" y2="16.65" />
                 </svg>
@@ -234,7 +226,6 @@ export default function ProductGrid({
           </div>
         )}
 
-        {/* Mobile header */}
         {showHeader !== false && (
           <div className={styles.mobileHeader}>
             <div className={styles.mobileTitleRow}>
@@ -244,24 +235,23 @@ export default function ProductGrid({
           </div>
         )}
 
-        {/* Filters */}
         <div className={`${styles.filtersRow} ${hideDesktopFilters ? styles.filtersRowMobileOnly : ''}`}>
-        <div className={styles.categoryPills}>
-          {[
-            { name: 'All', slug: 'All' },
-            ...categories
-              .map(c => typeof c === 'string' ? { name: c, slug: c } : c)
-              .filter(c => c.slug !== 'All')
-          ].map(cat => (
-            <button
-              key={cat.slug}
-              onClick={() => handleCategoryChange(cat.slug)}
-              className={`${styles.categoryPill} ${category === cat.slug ? styles.categoryPillActive : ''}`}
-            >
-              {cat.name}
-            </button>
-          ))}
-        </div>
+          <div className={styles.categoryPills}>
+            {[
+              { name: 'All', slug: 'All' },
+              ...categories
+                .map(c => typeof c === 'string' ? { name: c, slug: c } : c)
+                .filter(c => c.slug !== 'All')
+            ].map(cat => (
+              <button
+                key={cat.slug}
+                onClick={() => handleCategoryChange(cat.slug)}
+                className={`${styles.categoryPill} ${category === cat.slug ? styles.categoryPillActive : ''}`}
+              >
+                {cat.name}
+              </button>
+            ))}
+          </div>
           <button
             type="button"
             onClick={toggleSaleOnly}
@@ -271,7 +261,6 @@ export default function ProductGrid({
           </button>
         </div>
 
-        {/* Quick Add Modal */}
         {qtyModal.open && qtyModal.product && (
           <div className={styles.modalOverlay}>
             <div className={styles.modalContent}>
@@ -289,14 +278,17 @@ export default function ProductGrid({
                 <span className={styles.qtyDisplay}>{selectedQty}</span>
                 <button onClick={() => setSelectedQty(Math.min(selectedQty + 1, qtyModal.product?.stock ?? 99))} className={styles.qtyBtn}>+</button>
               </div>
-              <button onClick={addToCartHandler} disabled={qtyModal.product?.stock === 0 || selectedQty === 0} className={styles.addToCartModalBtn}>
+              <button
+                onClick={addToCartHandler}
+                disabled={qtyModal.product?.stock === 0 || selectedQty === 0}
+                className={styles.addToCartModalBtn}
+              >
                 Add {selectedQty} to Cart
               </button>
             </div>
           </div>
         )}
 
-        {/* Products */}
         {visible.length > 0 ? (
           <>
             <div className={styles.productGrid}>
