@@ -57,47 +57,7 @@ Payment integration API is a work-in-progress. Currently, all payments are handl
 ## 📁 Folder Structure & Descriptions
 
 ```
-starlord-web/
-├── app/                    # Next.js App Router: Pages & API routes
-│   ├── (auth)/             # Auth pages: login, register, forgot-password, etc.
-│   ├── account/            # User profile, orders, addresses, returns
-│   ├── admin/              # Admin dashboard (layout, middleware, pages: dashboard, products, orders)
-│   │   └── api/            # Admin API: analytics, products CRUD, orders, etc.
-│   ├── api/                # Public API routes
-│   │   ├── auth/           # Login/register/OTP/reset
-│   │   ├── products/       # List/detail/variations
-│   │   ├── orders/         # Create/track/update status
-│   │   ├── checkout/       # Process orders
-│   │   ├── reviews/        # Submit/moderate
-│   │   └── webhooks/       # IremboPay
-│   ├── products/           # Product listing/detail pages
-│   ├── cart/               # Cart page
-│   ├── checkout/           # Checkout
-│   ├── globals.css         # Global styles (Tailwind)
-│   ├── layout.js           # Root layout (ThemeProvider, Header)
-│   ├── middleware.js       # Auth middleware?
-│   └── page.js             # Home/landing
-├── components/             # Reusable UI components
-│   ├── Header.js           # Site header with cart
-│   ├── ProductGrid.js      # Product listings (.module.css)
-│   ├── BannerSlider.js     # Homepage banners
-│   ├── CartContext.js      # Cart state provider
-│   ├── ImageGallery.js     # Product images
-│   ├── VariationSelector.js# Product options
-│   ├── ProductReviews.js   # Reviews section
-│   ├── TrustBar.js         # Trust badges
-│   └── WhatsAppWidget.js   # Support chat
-├── lib/supabase/           # Supabase clients
-│   ├── client.js           # Browser client
-│   └── server.js           # Server/SSR client + service role
-├── public/                 # Static assets
-│   └── *.svg               # Icons (next.svg, vercel.svg, etc.)
-├── next.config.ts          # Config: images (Supabase), security headers
-├── package.json            # Deps: Next.js, Supabase, Tailwind
-├── tailwind.config.ts      # (Inferred)
-├── tsconfig.json           # TypeScript config
-├── eslint.config.mjs       # Linting
-└── README.md               # This file!
+to be updated
 ```
 
 ## 🛠️ Getting Started (Local Development)
