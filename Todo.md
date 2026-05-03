@@ -1,93 +1,64 @@
 # IremboPay Payment Integration TODO
 
-**Status**: Project complete except payments. Current: Manual processing post-checkout. Goal: Full MTN MoMo/Airtel Money via IremboPay sandbox → prod.
+**Status**: Core infrastructure complete. Checkout flow, webhook handler, stock reservation, and polling UI all implemented. Pending: IremboPay sandbox credentials to wire up the actual API call.
 
-## 📋 Step-by-Step Integration Plan
+## ✅ Completed
 
-### 1. **Prep & Research (1-2 hours)**
-   - [ ] Sign up IremboPay Sandbox: Get merchant account, API keys (public/secret), webhook secret.
-   - [ ] Review docs: Confirm:
-     | Item | Current Assumption | Confirm |
-     |------|--------------------|---------|
-     | Success status | `SUCCESS` | ? |
-     | Fail status | `FAILED`/`CANCELLED` | ? |
-     | Payload fields | `transaction_id`, `status`, `order_reference`, `payment_method` | ? |
-     | Sig header | `x-irembopay-signature` | ? |
-     | HMAC alg | SHA256 | ? |
-     | Payment URL | `/payments/initiate` (POST/GET?) | ? |
-     | Required params | `amount`, `phone`, `reference`, `callback_url` | ? |
-   - [ ] Create Supabase table `processed_webhooks` if missing:
-     ```sql
-     CREATE TABLE processed_webhooks (
-       id SERIAL PRIMARY KEY,
-       transaction_id TEXT UNIQUE NOT NULL,
-       order_id UUID REFERENCES orders(id),
-       created_at TIMESTAMP DEFAULT NOW()
-     );
-     ```
+- [x] Database migrations: removed `pawapay_deposit_id`, added `irembopay_transaction_id`, `payment_expires_at`
+- [x] `processed_webhooks` table confirmed exists
+- [x] `restore_stock` RPC created (mirrors `deduct_stock`)
+- [x] `/api/payments/initiate/route.js` — initiates push payment, stores `irembopay_transaction_id`
+- [x] `/api/orders/payment-status/route.js` — polling endpoint for Step 3
+- [x] `checkout/route.js` — stock reserved at order creation, `payment_expires_at` set (15 min TTL), returns `total`
+- [x] `webhooks/irembopay/route.js` — sig verification, idempotency, order confirmation, stock restore on failure, audit log
+- [x] `checkout/page.js` — Step 3 is now a "Check your phone" waiting screen with 4s polling, transitions to paid/failed/expired states
 
-### 2. **Environment Vars (Vercel + .env.local)**
-   - [ ] Add to `.env.local` & Vercel:
-     ```
-     IREMBOPAY_PUBLIC_KEY=...
-     IREMBOPAY_SECRET_KEY=...
-     IREMBOPAY_WEBHOOK_SECRET=...
-     IREMBOPAY_SANDBOX_URL=https://sandbox.irembopay.com  # Confirm
-     IREMBOPAY_BASE_URL=https://api.irembopay.com  # Prod
-     ```
+## 📋 Remaining
 
-### 3. **Frontend: Checkout Payment Initiation (~2 hours)**
-   - [ ] In `app/checkout/page.js` (step 2):
-     - After validateStep1(), call `/api/checkout` → get `order.reference`.
-     - Then POST to new `/api/payments/initiate` (create below).
-     - On success → redirect to IremboPay URL (with phone/amount/ref).
-     - Hide manual 'Pay' button, show loader + redirect.
-   - [ ] Update step 3 (confirmation): Poll `/api/orders/[ref]/status` every 5s for payment_status.
+### 1. Sandbox Access (blocker)
+- [ ] Sign up at IremboPay sandbox, get: `IREMBOPAY_PUBLIC_KEY`, `IREMBOPAY_SECRET_KEY`, `IREMBOPAY_WEBHOOK_SECRET`, base URL
+- [ ] Add all keys to `.env.local` and Vercel
 
-### 4. **New API: `/api/payments/initiate/route.js` (Server) (~1 hour)**
-   ```js
-   // POST { reference, amount, phone, method }
-   // Calls IremboPay /initiate → returns redirect_url
-   // Log transaction_id if provided
-   ```
+### 2. Confirm API shape (unblock `/api/payments/initiate`)
+   | Item | Assumed | Confirmed |
+   |------|---------|-----------|
+   | Initiate endpoint | `POST /payments/initiate` | ? |
+   | Auth header | `Bearer IREMBOPAY_SECRET_KEY` | ? |
+   | Payload fields | `amount, phone, reference, payment_method, callback_url` | ? |
+   | Transaction ID field in response | `transaction_id` | ? |
+   | Success webhook status | `SUCCESS` | ? |
+   | Failure webhook statuses | `FAILED` / `CANCELLED` | ? |
+   | Signature header | `x-irembopay-signature` | ? |
+   | HMAC algorithm | SHA256 | ? |
 
-### 5. **Fix Webhook `/api/webhooks/irembopay/route.js` (~2 hours)**
-   - [ ] Replace TODOs with confirmed values (fields/statuses/sig).
-   - [ ] Add SMS notifications (e.g., via Twilio/Africa's Talking or Supabase Edge).
-   - [ ] Test sig verification with sandbox payloads.
-   - [ ] Handle stock deduction (move from checkout if redirect happens first?).
-   - [ ] Idempotency: Check `transaction_id` in `orders` too.
+### 3. Wire up `/api/payments/initiate` (~30 min once sandbox confirmed)
+- [ ] Update endpoint URL, auth format, and payload shape
+- [ ] Test with sandbox: MTN success, MTN failure, Airtel success
 
-### 6. **Testing (Sandbox, 2-3 hours)**
-   - [ ] Local: `npm run dev`, manual checkout → redirect → simulate webhook (Postman).
-   - [ ] Sandbox payments: Test MTN/Airtel success/fail/cancel.
-   - [ ] Edge: Stock conflict mid-payment, duplicate webhook, invalid sig.
-   - [ ] DB: Verify orders `payment_status: 'paid'`, stock deducted.
+### 4. Webhook testing
+- [ ] Simulate webhook via Postman with sandbox payloads
+- [ ] Verify signature validation works
+- [ ] Confirm `payment_status` updates trigger polling UI transitions
 
-### 7. **Prod Rollout (~1 hour)**
-   - [ ] Switch `IREMBOPAY_BASE_URL`.
-   - [ ] Update webhook URL in IremboPay dashboard: `https://starlordgroup.rw/api/webhooks/irembopay`.
-   - [ ] Test live payment (small amount).
-   - [ ] Monitor Vercel logs first week.
+### 5. Prod rollout
+- [ ] Switch `IREMBOPAY_BASE_URL` to production
+- [ ] Update webhook URL in IremboPay dashboard: `https://starlordgroup.rw/api/webhooks/irembopay`
+- [ ] Live test with small amount
+- [ ] Monitor Vercel logs first week
 
-### 8. **Polish (Optional)**
-   - [ ] Payment status polling UI in confirmation/track.
-   - [ ] Admin: View `transaction_id`, refund button?
-   - [ ] Analytics: Payment success rate.
+### 6. Optional polish
+- [ ] Admin: show `irembopay_transaction_id` in order detail view
+- [ ] SMS notification on payment success/failure
+- [ ] Payment success rate in analytics dashboard
 
-## 🚨 Risks/Blockers
-- IremboPay docs/API access delay.
-- Phone prefix mapping (078/079=MTN, 072/073=Airtel).
-- Sandbox webhook simulation.
+## 🚨 Known risks
+- IremboPay sandbox access delay — only blocker remaining
+- Webhook URL must be publicly reachable for sandbox testing (use ngrok locally)
 
-## Progress Tracker
-- [ ] Research complete
-- [ ] Sandbox account
-- [ ] Frontend integration
-- [ ] Webhook fixed
-- [ ] Local testing
-- [ ] Deployed ✅
-
-**Time Est**: 8-10 hours. Start with sandbox signup/docs.
-
-
+## Progress
+- [x] Infrastructure & DB
+- [x] Frontend flow
+- [x] Webhook handler
+- [ ] Sandbox wired up
+- [ ] Tested end-to-end
+- [ ] Deployed to prod ✅
