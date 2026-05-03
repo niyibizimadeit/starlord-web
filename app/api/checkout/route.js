@@ -149,10 +149,11 @@ export async function POST(request) {
         delivery_fee:     DELIVERY_FEE,
         delivery_slot:    deliverySlot || null, 
         total,
-        payment_method:   paymentMethod,
-        idempotency_key:  idempotencyKey,
-        status:           'pending',
-        payment_status:   'pending',
+        payment_method:    paymentMethod,
+        idempotency_key:   idempotencyKey,
+        status:            'pending',
+        payment_status:    'pending',
+        payment_expires_at: new Date(Date.now() + 15 * 60 * 1000).toISOString(),
       })
       .select()
       .single();
@@ -198,6 +199,7 @@ export async function POST(request) {
     return Response.json({
       orderId:        order.id,
       reference:      order.reference,
+      total:          order.total,
       status:         'pending',
       accountCreated: createAccount && !!userId,
     });

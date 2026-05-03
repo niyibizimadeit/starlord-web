@@ -51,10 +51,6 @@ export async function POST(request) {
       return new Response('OK', { status: 200 });
     }
 
-    await supabase
-      .from('processed_webhooks')
-      .insert({ transaction_id });
-
     // Find the order
     const { data: order, error: orderError } = await supabase
       .from('orders')
@@ -66,6 +62,10 @@ export async function POST(request) {
       console.error('Order not found:', order_reference);
       return new Response('Order not found', { status: 404 });
     }
+
+    await supabase
+      .from('processed_webhooks')
+      .insert({ transaction_id, order_id: order.id, payload });
 
     // TODO: Replace 'SUCCESS' with IremboPay's actual success status string
     if (status === 'SUCCESS') {
@@ -79,37 +79,6 @@ export async function POST(request) {
         })
         .eq('id', order.id);
 
-      // Deduct stock
-      const { data: orderItems } = await supabase
-        .from('order_items')
-        .select('product_id, quantity')
-        .eq('order_id', order.id);
-
-      if (orderItems) {
-        for (const item of orderItems) {
-          const { data: product } = await supabase
-            .from('products')
-            .select('stock')
-            .eq('id', item.product_id)
-            .single();
-
-          if (!product) continue;
-
-          if (product.stock < item.quantity) {
-            await supabase
-              .from('orders')
-              .update({ status: 'stock_conflict' })
-              .eq('id', order.id);
-            break;
-          }
-
-          await supabase
-            .from('products')
-            .update({ stock: product.stock - item.quantity })
-            .eq('id', item.product_id);
-        }
-      }
-
       // TODO: Fire SMS / push notifications on successful payment
 
     // TODO: Replace 'FAILED'/'CANCELLED' with IremboPay's actual failure statuses
@@ -117,10 +86,25 @@ export async function POST(request) {
       await supabase
         .from('orders')
         .update({
-          status:         'pending',
+          status:         'payment_failed',
           payment_status: 'failed',
         })
         .eq('id', order.id);
+
+      // Restore reserved stock
+      const { data: orderItems } = await supabase
+        .from('order_items')
+        .select('product_id, quantity')
+        .eq('order_id', order.id);
+
+      if (orderItems) {
+        for (const item of orderItems) {
+          await supabase.rpc('restore_stock', {
+            p_product_id: item.product_id,
+            p_quantity:   item.quantity,
+          });
+        }
+      }
 
       // TODO: Send payment failed notification
     }

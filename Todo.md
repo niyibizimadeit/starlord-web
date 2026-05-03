@@ -90,5 +90,4 @@
 
 **Time Est**: 8-10 hours. Start with sandbox signup/docs.
 
-*Updated by BLACKBOXAI analysis.*
 

@@ -27,6 +27,7 @@ export default function CheckoutPage() {
   const [newAddress, setNewAddress] = useState({ label: '', address_line: '' });
   const [savingAddress, setSavingAddress] = useState(false);
   const [deliverySlot, setDeliverySlot] = useState('');
+  const [paymentStatus, setPaymentStatus] = useState('pending'); // 'pending' | 'paid' | 'failed' | 'expired'
   const [slots, setSlots] = useState([]);
   const [form, setForm] = useState({
     name: '', phone: '', address: '', paymentMethod: 'mtn',
@@ -91,6 +92,33 @@ export default function CheckoutPage() {
       }
     });
   }, []);
+
+   // ── Poll for payment status once on step 3 ────────────────────────
+   useEffect(() => {
+    if (step !== 3 || !order) return;
+    if (paymentStatus === 'paid' || paymentStatus === 'failed' || paymentStatus === 'expired') return;
+
+    const interval = setInterval(async () => {
+      try {
+        const res = await fetch(
+          `/api/orders/payment-status?ref=${order.reference}&phone=${encodeURIComponent(form.phone)}`
+        );
+        const data = await res.json();
+        if (data.paymentStatus === 'paid') {
+          setPaymentStatus('paid');
+          clearInterval(interval);
+        } else if (data.paymentStatus === 'failed') {
+          setPaymentStatus('failed');
+          clearInterval(interval);
+        } else if (data.expired) {
+          setPaymentStatus('expired');
+          clearInterval(interval);
+        }
+      } catch {}
+    }, 4000);
+
+    return () => clearInterval(interval);
+  }, [step, order, form.phone, paymentStatus]);
 
   const updateForm = (key, value) => {
     setForm(prev => ({ ...prev, [key]: value }));
@@ -171,6 +199,19 @@ export default function CheckoutPage() {
         setProcessing(false);
         return;
       }
+      // Initiate push payment
+      await fetch('/api/payments/initiate', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          orderId:   data.orderId,
+          reference: data.reference,
+          amount:    data.total,
+          phone:     form.phone,
+          method:    form.paymentMethod,
+        }),
+      });
+
       setOrder(data);
       clearCart();
       setStep(3);
@@ -598,46 +639,110 @@ export default function CheckoutPage() {
     );
   }
 
-  // ── STEP 3 — Confirmation ─────────────────────────────────────────
+  // ── STEP 3 — Payment Waiting / Confirmation ───────────────────────
   if (step === 3 && order) {
+    // Start polling once we hit step 3
+    
+
+    // Paid ✓
+    if (paymentStatus === 'paid') {
+      return (
+        <div style={{ maxWidth: 500, margin: '0 auto', padding: '60px 24px', textAlign: 'center' }}>
+          <div style={{ fontSize: 14, color: 'var(--green)', fontWeight: 800, marginBottom: 16 }}>
+            Payment Confirmed
+          </div>
+          <h1 style={{ fontSize: 26, fontWeight: 800, color: 'var(--text)', marginBottom: 8 }}>
+            Thank you, {form.name.split(' ')[0]}!
+          </h1>
+          <p style={{ color: 'var(--text-muted)', fontSize: 14, lineHeight: 1.6, marginBottom: 32 }}>
+            Your order is confirmed. Our courier will contact you at {form.phone}.
+          </p>
+          <div style={{
+            background: 'var(--surface)', border: '1px solid var(--border)',
+            borderRadius: 16, padding: 20, marginBottom: 32,
+          }}>
+            <div style={{ color: 'var(--text-muted)', fontSize: 12, marginBottom: 8 }}>Order Reference</div>
+            <div style={{ fontFamily: 'monospace', fontSize: 22, fontWeight: 800, color: 'var(--gold)', letterSpacing: 2 }}>
+              {order.reference}
+            </div>
+          </div>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+            <Link href={'/track?ref=' + order.reference + '&phone=' + form.phone} style={{
+              display: 'block', background: 'var(--surface)',
+              border: '1px solid var(--border)', borderRadius: 12,
+              padding: '14px', fontWeight: 700, fontSize: 14, color: 'var(--text)',
+            }}>Track Order</Link>
+            <Link href="/" style={{
+              display: 'block', background: 'var(--gold)',
+              borderRadius: 12, padding: '14px',
+              fontWeight: 800, fontSize: 14, color: '#000',
+            }}>Continue Shopping</Link>
+          </div>
+        </div>
+      );
+    }
+
+    // Failed or expired
+    if (paymentStatus === 'failed' || paymentStatus === 'expired') {
+      return (
+        <div style={{ maxWidth: 500, margin: '0 auto', padding: '60px 24px', textAlign: 'center' }}>
+          <div style={{ fontSize: 14, color: 'var(--red)', fontWeight: 800, marginBottom: 16 }}>
+            {paymentStatus === 'expired' ? 'Payment Timed Out' : 'Payment Failed'}
+          </div>
+          <h1 style={{ fontSize: 22, fontWeight: 800, color: 'var(--text)', marginBottom: 12 }}>
+            {paymentStatus === 'expired'
+              ? 'Your payment window expired'
+              : 'Payment was not completed'}
+          </h1>
+          <p style={{ color: 'var(--text-muted)', fontSize: 14, lineHeight: 1.6, marginBottom: 32 }}>
+            Your order has been cancelled and no stock was held. Please try again.
+          </p>
+          <Link href="/cart" style={{
+            display: 'block', background: 'var(--gold)',
+            borderRadius: 12, padding: '14px',
+            fontWeight: 800, fontSize: 14, color: '#000',
+          }}>Back to Cart</Link>
+        </div>
+      );
+    }
+
+    // Waiting (default)
     return (
       <div style={{ maxWidth: 500, margin: '0 auto', padding: '60px 24px', textAlign: 'center' }}>
-        <div style={{ fontSize: 14, color: 'var(--green)', fontWeight: 800, marginBottom: 16 }}>
-          Order Confirmed
-        </div>
-        <h1 style={{ fontSize: 26, fontWeight: 800, color: 'var(--text)', marginBottom: 8 }}>
-          Thank you, {form.name.split(' ')[0]}!
+        <div style={{ fontSize: 32, marginBottom: 20 }}>📱</div>
+        <h1 style={{ fontSize: 22, fontWeight: 800, color: 'var(--text)', marginBottom: 12 }}>
+          Check your phone
         </h1>
-        <p style={{ color: 'var(--text-muted)', fontSize: 14, lineHeight: 1.6, marginBottom: 32 }}>
-          Your order is being prepared. Our courier will contact you at {form.phone}.
+        <p style={{ color: 'var(--text-muted)', fontSize: 14, lineHeight: 1.6, marginBottom: 8 }}>
+          A payment prompt has been sent to <strong style={{ color: 'var(--text)' }}>{form.phone}</strong>.
+          Enter your {form.paymentMethod === 'mtn' ? 'MTN MoMo' : 'Airtel Money'} PIN to confirm.
         </p>
-
+        <p style={{ color: 'var(--text-faint)', fontSize: 12, marginBottom: 32 }}>
+          This page will update automatically. Do not close it.
+        </p>
         <div style={{
           background: 'var(--surface)', border: '1px solid var(--border)',
           borderRadius: 16, padding: 20, marginBottom: 32,
         }}>
           <div style={{ color: 'var(--text-muted)', fontSize: 12, marginBottom: 8 }}>Order Reference</div>
-          <div style={{
-            fontFamily: 'monospace', fontSize: 22,
-            fontWeight: 800, color: 'var(--gold)', letterSpacing: 2,
-          }}>{order.reference}</div>
-          <div style={{ color: 'var(--text-muted)', fontSize: 12, marginTop: 8 }}>
-            Save this reference to track your order
+          <div style={{ fontFamily: 'monospace', fontSize: 22, fontWeight: 800, color: 'var(--gold)', letterSpacing: 2 }}>
+            {order.reference}
+          </div>
+          <div style={{ color: 'var(--text-faint)', fontSize: 12, marginTop: 8 }}>
+            Amount: {formatRWF(order.total)}
           </div>
         </div>
-
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
-          <Link href={'/track?ref=' + order.reference + '&phone=' + form.phone} style={{
-            display: 'block', background: 'var(--surface)',
-            border: '1px solid var(--border)', borderRadius: 12,
-            padding: '14px', fontWeight: 700, fontSize: 14, color: 'var(--text)',
-          }}>Track Order</Link>
-          <Link href="/" style={{
-            display: 'block', background: 'var(--gold)',
-            borderRadius: 12, padding: '14px',
-            fontWeight: 800, fontSize: 14, color: '#000',
-          }}>Continue Shopping</Link>
+        {/* Animated waiting indicator */}
+        <div style={{ display: 'flex', justifyContent: 'center', gap: 6 }}>
+          {[0, 1, 2].map(i => (
+            <div key={i} style={{
+              width: 8, height: 8, borderRadius: '50%',
+              background: 'var(--gold)', opacity: 0.3,
+              animation: `pulse 1.2s ease-in-out ${i * 0.4}s infinite`,
+            }} />
+          ))}
         </div>
+        <style>{`@keyframes pulse { 0%,100%{opacity:0.3} 50%{opacity:1} }`}</style>
       </div>
     );
   }
