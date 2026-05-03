@@ -709,7 +709,6 @@ export default function CheckoutPage() {
     // Waiting (default)
     return (
       <div style={{ maxWidth: 500, margin: '0 auto', padding: '60px 24px', textAlign: 'center' }}>
-        <div style={{ fontSize: 32, marginBottom: 20 }}>📱</div>
         <h1 style={{ fontSize: 22, fontWeight: 800, color: 'var(--text)', marginBottom: 12 }}>
           Check your phone
         </h1>
