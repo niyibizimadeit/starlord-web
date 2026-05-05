@@ -1,3 +1,5 @@
+import { PutObjectCommand, DeleteObjectCommand } from '@aws-sdk/client-s3';
+import { r2Client, R2_BUCKET, R2_PUBLIC_URL } from '@/lib/r2/client';
 import { createServiceClient } from '@/lib/supabase/server';
 import { cookies } from 'next/headers';
 import { jwtVerify } from 'jose';
@@ -31,39 +33,32 @@ export async function POST(request) {
       return Response.json({ error: 'Missing file or productId' }, { status: 400 });
     }
 
-    // Validate file type
     const allowedTypes = ['image/jpeg', 'image/png', 'image/webp', 'image/gif'];
     if (!allowedTypes.includes(file.type)) {
       return Response.json({ error: 'Only JPG, PNG, WEBP and GIF images are allowed' }, { status: 400 });
     }
 
-    // Validate file size — max 2MB
     if (file.size > 2 * 1024 * 1024) {
       return Response.json({ error: 'File too large. Maximum size is 2MB' }, { status: 400 });
     }
 
-    const supabase  = createServiceClient();
-    const ext       = file.name.split('.').pop().toLowerCase();
-    const fileName = `${productId}/${crypto.randomUUID()}.${ext}`;
-    const buffer    = Buffer.from(await file.arrayBuffer());
+    const ext      = file.name.split('.').pop().toLowerCase();
+    const key      = `products/${productId}/${crypto.randomUUID()}.${ext}`;
+    const buffer   = Buffer.from(await file.arrayBuffer());
 
-    const { error: uploadError } = await supabase.storage
-      .from('products')
-      .upload(fileName, buffer, {
-        contentType:  file.type,
-        cacheControl: '3600',
-        upsert:       false,
-      });
+    // Upload to R2
+    await r2Client.send(new PutObjectCommand({
+      Bucket:      R2_BUCKET,
+      Key:         key,
+      Body:        buffer,
+      ContentType: file.type,
+    }));
 
-    if (uploadError) {
-      return Response.json({ error: uploadError.message }, { status: 500 });
-    }
+    const publicUrl = `${R2_PUBLIC_URL}/${key}`;
 
-    const { data: { publicUrl } } = supabase.storage
-      .from('products')
-      .getPublicUrl(fileName);
+    // Save to DB — same as before
+    const supabase = createServiceClient();
 
-    // Get current max sort_order for this product
     const { data: existing } = await supabase
       .from('product_images')
       .select('sort_order')
@@ -85,6 +80,7 @@ export async function POST(request) {
 
     return Response.json({ data });
   } catch (err) {
+    console.error('R2 upload error:', err);
     return Response.json({ error: 'Upload failed' }, { status: 500 });
   }
 }
@@ -96,14 +92,17 @@ export async function DELETE(request) {
 
   try {
     const { imageId, url } = await request.json();
+
+    // Extract R2 key from public URL
+    // e.g. https://images.starlordgroup.rw/products/123/uuid.jpg → products/123/uuid.jpg
+    const key = url.replace(`${R2_PUBLIC_URL}/`, '');
+
+    await r2Client.send(new DeleteObjectCommand({
+      Bucket: R2_BUCKET,
+      Key:    key,
+    }));
+
     const supabase = createServiceClient();
-
-    // Extract file path from URL to delete from storage
-    const urlParts  = url.split('/storage/v1/object/public/products/');
-    if (urlParts.length === 2) {
-      await supabase.storage.from('products').remove([urlParts[1]]);
-    }
-
     const { error } = await supabase
       .from('product_images')
       .delete()
@@ -112,6 +111,7 @@ export async function DELETE(request) {
     if (error) return Response.json({ error: error.message }, { status: 500 });
     return Response.json({ success: true });
   } catch (err) {
+    console.error('R2 delete error:', err);
     return Response.json({ error: 'Delete failed' }, { status: 500 });
   }
 }

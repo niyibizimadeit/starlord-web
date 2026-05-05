@@ -2,7 +2,14 @@ import type { NextConfig } from 'next';
 
 const nextConfig: NextConfig = {
   images: {
+    unoptimized: true,
     remotePatterns: [
+      {
+        protocol: 'https',
+        hostname: 'images.starlordgroup.rw',
+        pathname: '/**',
+      },
+      // Keep during migration — remove after all images are moved to R2
       {
         protocol: 'https',
         hostname: 'zphpfahgyerabtpvtwol.supabase.co',
