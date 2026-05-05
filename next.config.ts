@@ -9,12 +9,6 @@ const nextConfig: NextConfig = {
         hostname: 'images.starlordgroup.rw',
         pathname: '/**',
       },
-      // Keep during migration — remove after all images are moved to R2
-      {
-        protocol: 'https',
-        hostname: 'zphpfahgyerabtpvtwol.supabase.co',
-        pathname: '/storage/v1/object/public/**',
-      },
     ],
   },
   async headers() {
