@@ -27,7 +27,7 @@ export default function CheckoutPage() {
   const [newAddress, setNewAddress] = useState({ label: '', address_line: '' });
   const [savingAddress, setSavingAddress] = useState(false);
   const [deliverySlot, setDeliverySlot] = useState('');
-  const [paymentStatus, setPaymentStatus] = useState('pending'); // 'pending' | 'paid' | 'failed' | 'expired'
+  const [paymentStatus, setPaymentStatus] = useState('pending');
   const [slots, setSlots] = useState([]);
   const [form, setForm] = useState({
     name: '', phone: '', address: '', paymentMethod: 'mtn',
@@ -69,21 +69,18 @@ export default function CheckoutPage() {
       if (!session) { setIsLoggedIn(false); return; }
       setIsLoggedIn(true);
 
-      // Use the existing profile API which uses service client
       const res = await fetch('/api/account/profile');
       if (!res.ok) return;
       const data = await res.json();
 
       const { profile, addresses: addrs } = data;
 
-      // Prefill name + phone
       setForm(prev => ({
         ...prev,
         name:  profile?.fullName || prev.name,
         phone: profile?.phone    || prev.phone,
       }));
 
-      // Set addresses
       if (addrs?.length) {
         setAddresses(addrs);
         const defaultAddr = addrs.find(a => a.is_default) || addrs[0];
@@ -93,8 +90,8 @@ export default function CheckoutPage() {
     });
   }, []);
 
-   // ── Poll for payment status once on step 3 ────────────────────────
-   useEffect(() => {
+  // ── Poll for payment status once on step 3 ────────────────────────
+  useEffect(() => {
     if (step !== 3 || !order) return;
     if (paymentStatus === 'paid' || paymentStatus === 'failed' || paymentStatus === 'expired') return;
 
@@ -120,15 +117,16 @@ export default function CheckoutPage() {
     return () => clearInterval(interval);
   }, [step, order, form.phone, paymentStatus]);
 
+  // ── updateForm — single setForm call, detects phone prefix ────────
   const updateForm = (key, value) => {
-    setForm(prev => ({ ...prev, [key]: value }));
     if (key === 'phone') {
       const clean = value.replace(/\s/g, '');
-      if (clean.startsWith('078') || clean.startsWith('079')) {
-        setForm(prev => ({ ...prev, phone: value, paymentMethod: 'mtn' }));
-      } else if (clean.startsWith('072') || clean.startsWith('073')) {
-        setForm(prev => ({ ...prev, phone: value, paymentMethod: 'airtel' }));
-      }
+      let paymentMethod = form.paymentMethod;
+      if (clean.startsWith('078') || clean.startsWith('079')) paymentMethod = 'mtn';
+      else if (clean.startsWith('072') || clean.startsWith('073')) paymentMethod = 'airtel';
+      setForm(prev => ({ ...prev, phone: value, paymentMethod }));
+    } else {
+      setForm(prev => ({ ...prev, [key]: value }));
     }
   };
 
@@ -136,6 +134,7 @@ export default function CheckoutPage() {
     setSelectedAddressId(addr.id);
     setForm(prev => ({ ...prev, address: addr.address_line }));
   };
+
   const handleAddNewAddress = async () => {
     if (!newAddress.label || !newAddress.address_line) return;
     setSavingAddress(true);
@@ -157,6 +156,7 @@ export default function CheckoutPage() {
     } catch {}
     setSavingAddress(false);
   };
+
   const validateStep1 = () => {
     if (!form.name.trim())    { setError('Please enter your full name'); return false; }
     if (!form.phone.trim())   { setError('Please enter your phone number'); return false; }
@@ -304,6 +304,12 @@ export default function CheckoutPage() {
       marginBottom: 6, fontWeight: 700, letterSpacing: 0.5,
     };
 
+    // Derive lock flag from current phone prefix
+    const cleanPhone = form.phone.replace(/\s/g, '');
+    const paymentLocked =
+      cleanPhone.startsWith('078') || cleanPhone.startsWith('079') ||
+      cleanPhone.startsWith('072') || cleanPhone.startsWith('073');
+
     return (
       <div style={{ maxWidth: 500, margin: '0 auto', padding: '24px 20px 120px' }}>
         <h1 style={{ fontSize: 22, fontWeight: 800, color: 'var(--text)', marginBottom: 6 }}>
@@ -335,14 +341,12 @@ export default function CheckoutPage() {
             />
           </div>
 
-          {/* Address — selector if logged in with addresses, else text input */}
           {/* Address */}
           <div>
             <label style={labelStyle}>Delivery Address</label>
 
             {isLoggedIn && addresses.length > 0 ? (
               <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
-                {/* Dropdown selector */}
                 <select
                   value={selectedAddressId || ''}
                   onChange={e => {
@@ -366,7 +370,6 @@ export default function CheckoutPage() {
                   ))}
                 </select>
 
-                {/* Add new address inline */}
                 {!showAddressForm ? (
                   <button
                     onClick={() => setShowAddressForm(true)}
@@ -422,7 +425,6 @@ export default function CheckoutPage() {
                 )}
               </div>
             ) : (
-              // Guest or no saved addresses — plain text input
               <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
                 <input
                   type="text" placeholder="e.g. Kimironko, near Kimironko Market"
@@ -492,8 +494,9 @@ export default function CheckoutPage() {
               </div>
             )}
           </div>
-             {/* Delivery Slot — optional */}
-             {slots.length > 0 && (
+
+          {/* Delivery Slot — optional */}
+          {slots.length > 0 && (
             <div>
               <label style={labelStyle}>
                 Delivery Time{' '}
@@ -517,7 +520,6 @@ export default function CheckoutPage() {
                     {slot}
                   </button>
                 ))}
-                {/* Any time option */}
                 <button
                   onClick={() => setDeliverySlot(deliverySlot === 'Any time' ? '' : 'Any time')}
                   style={{
@@ -540,6 +542,7 @@ export default function CheckoutPage() {
               )}
             </div>
           )}
+
           {/* Payment Method */}
           <div>
             <label style={labelStyle}>Pay With</label>
@@ -547,23 +550,39 @@ export default function CheckoutPage() {
               {[
                 { key: 'mtn',    label: 'MTN MoMo',    sub: '078 / 079' },
                 { key: 'airtel', label: 'Airtel Money', sub: '072 / 073' },
-              ].map(p => (
-                <button key={p.key} onClick={() => updateForm('paymentMethod', p.key)} style={{
-                  flex: 1,
-                  background: form.paymentMethod === p.key ? 'var(--surface-2)' : 'var(--surface)',
-                  border: `2px solid ${form.paymentMethod === p.key ? 'var(--gold)' : 'var(--border)'}`,
-                  borderRadius: 12, padding: '14px 10px',
-                  display: 'flex', flexDirection: 'column',
-                  alignItems: 'center', gap: 4, transition: 'all 0.2s',
-                }}>
-                  <span style={{
-                    fontSize: 13, fontWeight: 700,
-                    color: form.paymentMethod === p.key ? 'var(--gold)' : 'var(--text-muted)',
-                  }}>{p.label}</span>
-                  <span style={{ fontSize: 11, color: 'var(--text-faint)' }}>{p.sub}</span>
-                </button>
-              ))}
+              ].map(p => {
+                const isSelected = form.paymentMethod === p.key;
+                const isDisabled = paymentLocked && !isSelected;
+                return (
+                  <button
+                    key={p.key}
+                    onClick={() => !paymentLocked && updateForm('paymentMethod', p.key)}
+                    disabled={isDisabled}
+                    style={{
+                      flex: 1,
+                      background: isSelected ? 'var(--surface-2)' : 'var(--surface)',
+                      border: `2px solid ${isSelected ? 'var(--gold)' : 'var(--border)'}`,
+                      borderRadius: 12, padding: '14px 10px',
+                      display: 'flex', flexDirection: 'column',
+                      alignItems: 'center', gap: 4, transition: 'all 0.2s',
+                      opacity: isDisabled ? 0.35 : 1,
+                      cursor: isDisabled ? 'not-allowed' : 'pointer',
+                    }}
+                  >
+                    <span style={{
+                      fontSize: 13, fontWeight: 700,
+                      color: isSelected ? 'var(--gold)' : 'var(--text-muted)',
+                    }}>{p.label}</span>
+                    <span style={{ fontSize: 11, color: 'var(--text-faint)' }}>{p.sub}</span>
+                  </button>
+                );
+              })}
             </div>
+            {paymentLocked && (
+              <div style={{ fontSize: 11, color: 'var(--text-faint)', marginTop: 6 }}>
+                ✓ Payment method matched to your number
+              </div>
+            )}
           </div>
 
           {/* Save account checkbox — hidden for logged-in users */}
@@ -641,8 +660,6 @@ export default function CheckoutPage() {
 
   // ── STEP 3 — Payment Waiting / Confirmation ───────────────────────
   if (step === 3 && order) {
-    // Start polling once we hit step 3
-    
 
     // Paid ✓
     if (paymentStatus === 'paid') {
@@ -731,7 +748,6 @@ export default function CheckoutPage() {
             Amount: {formatRWF(order.total)}
           </div>
         </div>
-        {/* Animated waiting indicator */}
         <div style={{ display: 'flex', justifyContent: 'center', gap: 6 }}>
           {[0, 1, 2].map(i => (
             <div key={i} style={{
