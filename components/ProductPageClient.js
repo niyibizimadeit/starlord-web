@@ -10,7 +10,11 @@ export default function ProductPageClient({ product, images, variations }) {
   const [variationOverrideUrl, setVariationOverrideUrl] = useState(null);
 
   const handleOptionSelect = (variationId, option, optionImages) => {
-    setVariationOverrideUrl(optionImages?.[option] || null);
+    const imageUrl = optionImages?.[option];
+    if (imageUrl) {
+      setVariationOverrideUrl(imageUrl);
+    }
+    // No image assigned to this option — leaves the current override untouched
   };
 
   const handleImageInteract = () => {
