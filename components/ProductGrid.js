@@ -242,22 +242,40 @@ export default function ProductGrid({
               ...categories
                 .map(c => typeof c === 'string' ? { name: c, slug: c } : c)
                 .filter(c => c.slug !== 'All')
-            ].map(cat => (
-              <button
-                key={cat.slug}
-                onClick={() => handleCategoryChange(cat.slug)}
-                className={`${styles.categoryPill} ${category === cat.slug ? styles.categoryPillActive : ''}`}
-              >
-                {cat.name}
-              </button>
-            ))}
+            ].map(cat => {
+              if (cat.slug === 'on-sale') {
+                return (
+                  <Link
+                    key={cat.slug}
+                    href="/category/on-sale"
+                    className={styles.categoryPill}
+                  >
+                    {cat.name}
+                  </Link>
+                );
+              }
+              return (
+                <button
+                  key={cat.slug}
+                  onClick={() => handleCategoryChange(cat.slug)}
+                  className={`${styles.categoryPill} ${category === cat.slug ? styles.categoryPillActive : ''}`}
+                >
+                  {cat.name}
+                </button>
+              );
+            })}
           </div>
           <button
             type="button"
             onClick={toggleSaleOnly}
             className={`${styles.saleToggle} ${saleOnly ? styles.saleToggleActive : ''}`}
           >
-            On Sale
+            <Link
+              href="/category/on-sale"
+              className={styles.saleToggle}
+            >
+              ON SALE
+            </Link>
           </button>
         </div>
 
