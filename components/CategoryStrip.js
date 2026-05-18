@@ -7,7 +7,7 @@ const CATS = [
   { label: 'All Products', href: '/',                  desc: 'Browse everything'      },
   { label: 'Tech',         href: '/?category=Tech',    desc: 'Cases and accessories'  },
   { label: 'Fashion',      href: '/?category=Fashion', desc: 'Belts and eyewear'      },
-  { label: 'On Sale',      href: '/?badge=SALE',       desc: 'Limited time offers'    },
+  { label: 'On Sale', href: '/category/on-sale', desc: 'Limited time offers' },
 ];
 
 function CategoryCard({ cat, index, total }) {

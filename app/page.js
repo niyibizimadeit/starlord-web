@@ -25,14 +25,19 @@ async function getProducts() {
     .eq('is_active', true)
     .order('created_at', { ascending: false });
 
-  return (data || []).map(product => {
-    // If no image_url, use the first image from product_images as thumbnail
-    if (!product.image_url && product.product_images?.length > 0) {
-      const sorted = [...product.product_images].sort((a, b) => a.sort_order - b.sort_order);
-      product.image_url = sorted[0].url;
-    }
-    return product;
-  });
+  return (data || [])
+    .map(product => {
+      if (!product.image_url && product.product_images?.length > 0) {
+        const sorted = [...product.product_images].sort((a, b) => a.sort_order - b.sort_order);
+        product.image_url = sorted[0].url;
+      }
+      return product;
+    })
+    .sort((a, b) => {
+      const aNew = a.category === 'new-arrivals' ? 0 : 1;
+      const bNew = b.category === 'new-arrivals' ? 0 : 1;
+      return aNew - bNew;
+    });
 }
 
 export default async function HomePage({ searchParams }) {

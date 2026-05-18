@@ -81,7 +81,7 @@ export default function Header() {
           {navCategories.map(cat => (
             <Link
               key={cat.id}
-              href={`/products?category=${encodeURIComponent(cat.slug)}`}
+              href={cat.slug === 'on-sale' ? '/category/on-sale' : `/products?category=${encodeURIComponent(cat.slug)}`}
               style={{
                 fontSize: 13, fontWeight: 700,
                 color: 'var(--text-muted)', letterSpacing: 1,
