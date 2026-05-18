@@ -49,11 +49,9 @@ export default function AddToCartButton({ product, compact = false }) {
           alignItems: 'center',
           justifyContent: 'center',
           cursor: 'pointer',
-          background: 'rgba(255,255,255,0.5)',
-          backdropFilter: 'blur(12px)',
-          WebkitBackdropFilter: 'blur(12px)',
-          border: '1px solid rgba(255,255,255,0.6)',
-          boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.85), 0 2px 10px rgba(0,0,0,0.08)',
+          background: 'var(--surface)',
+          border: '1px solid var(--border)',
+          boxShadow: '0 2px 8px rgba(0,0,0,0.10)',
           color: 'var(--text-muted)',
           transition: 'background 0.22s, box-shadow 0.22s, color 0.22s, transform 0.18s',
         }}
@@ -61,14 +59,14 @@ export default function AddToCartButton({ product, compact = false }) {
           e.currentTarget.style.background = 'var(--gold)';
           e.currentTarget.style.borderColor = 'transparent';
           e.currentTarget.style.color = '#000';
-          e.currentTarget.style.boxShadow = '0 6px 18px rgba(184,134,11,0.38), inset 0 1px 0 rgba(255,255,255,0.35)';
+          e.currentTarget.style.boxShadow = '0 6px 18px rgba(184,134,11,0.38)';
           e.currentTarget.style.transform = 'scale(1.1)';
         }}
         onMouseLeave={e => {
-          e.currentTarget.style.background = 'rgba(255,255,255,0.5)';
-          e.currentTarget.style.borderColor = 'rgba(255,255,255,0.6)';
+          e.currentTarget.style.background = 'var(--surface)';
+          e.currentTarget.style.borderColor = 'var(--border)';
           e.currentTarget.style.color = 'var(--text-muted)';
-          e.currentTarget.style.boxShadow = 'inset 0 1px 0 rgba(255,255,255,0.85), 0 2px 10px rgba(0,0,0,0.08)';
+          e.currentTarget.style.boxShadow = '0 2px 8px rgba(0,0,0,0.10)';
           e.currentTarget.style.transform = 'scale(1)';
         }}
         aria-label="Add to cart"
