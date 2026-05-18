@@ -40,7 +40,6 @@ export default async function ProductPage({ params }) {
     .eq('product_id', resolvedParams.id)
     .order('sort_order', { ascending: true });
 
-  // option_images added to query
   const { data: variations } = await supabase
     .from('product_variations')
     .select('id, name, options, is_required, sort_order, option_images')
@@ -78,6 +77,39 @@ export default async function ProductPage({ params }) {
     }
   } catch {}
 
+  // Check for active promotions on this product
+  const now = new Date().toISOString();
+  let salePrice = null;
+  let saleEndsAt = null;
+
+  const { data: promoLinks } = await supabase
+    .from('promotion_products')
+    .select('promotion_id')
+    .eq('product_id', resolvedParams.id);
+
+  if (promoLinks?.length > 0) {
+    const { data: activePromos } = await supabase
+      .from('promotions')
+      .select('discount_type, discount_value, ends_at')
+      .in('id', promoLinks.map(l => l.promotion_id))
+      .eq('is_active', true)
+      .lte('starts_at', now)
+      .gte('ends_at', now);
+
+    if (activePromos?.length > 0) {
+      let bestDiscount = 0;
+      let bestPromo = null;
+      activePromos.forEach(promo => {
+        const discount = promo.discount_type === 'percent'
+          ? product.price * promo.discount_value / 100
+          : promo.discount_value;
+        if (discount > bestDiscount) { bestDiscount = discount; bestPromo = promo; }
+      });
+      salePrice = Math.max(0, Math.round(product.price - bestDiscount));
+      saleEndsAt = bestPromo.ends_at;
+    }
+  }
+
   const images =
     productImages?.length > 0
       ? productImages
@@ -88,14 +120,14 @@ export default async function ProductPage({ params }) {
   return (
     <div style={{ maxWidth: 500, margin: '0 auto', paddingBottom: 120 }}>
 
-      {/* Gallery + product info + variations — client component for shared state */}
       <ProductPageClient
         product={product}
         images={images}
         variations={variations || []}
+        salePrice={salePrice}
+        saleEndsAt={saleEndsAt}
       />
 
-      {/* Related products */}
       {related.length > 0 && (
         <div style={{ padding: '0 16px', marginTop: 16 }}>
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 16 }}>
@@ -110,12 +142,18 @@ export default async function ProductPage({ params }) {
             </Link>
           </div>
 
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10 }}>
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10, alignItems: 'start' }}>
             {related.slice(0, 2).map(p => {
               const relDiscount = p.old_price ? Math.round((1 - p.price / p.old_price) * 100) : null;
               return (
                 <Link key={p.id} href={`/products/${p.id}`} style={{ display: 'block', textDecoration: 'none', color: 'inherit' }}>
-                  <article style={{ background: 'var(--surface)', borderRadius: 20, overflow: 'hidden', border: '1px solid var(--border-subtle)', display: 'flex', flexDirection: 'column', boxShadow: '0 1px 3px rgba(0,0,0,0.06), 0 4px 16px rgba(0,0,0,0.05)' }}>
+                  <article style={{
+                    background: 'var(--surface)', borderRadius: 20,
+                    overflow: 'hidden', border: '1px solid var(--border-subtle)',
+                    display: 'flex', flexDirection: 'column',
+                    height: '100%',
+                    boxShadow: '0 1px 3px rgba(0,0,0,0.06), 0 4px 16px rgba(0,0,0,0.05)',
+                  }}>
                     <div style={{ position: 'relative', paddingTop: '95%', background: 'var(--surface-2)', overflow: 'hidden' }}>
                       {p.image_url ? (
                         <img src={p.image_url} alt={p.name} style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover' }} />

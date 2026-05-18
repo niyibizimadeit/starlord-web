@@ -3,26 +3,24 @@
 import { useState } from 'react';
 import ImageGallery from './ImageGallery';
 import VariationSelector from './VariationSelector';
+import SaleCountdown from './SaleCountdown';
 
 function formatRWF(n) { return `${Number(n).toLocaleString()} RWF`; }
 
-export default function ProductPageClient({ product, images, variations }) {
+export default function ProductPageClient({ product, images, variations, salePrice, saleEndsAt }) {
   const [variationOverrideUrl, setVariationOverrideUrl] = useState(null);
 
   const handleOptionSelect = (variationId, option, optionImages) => {
     const imageUrl = optionImages?.[option];
-    if (imageUrl) {
-      setVariationOverrideUrl(imageUrl);
-    }
-    // No image assigned to this option — leaves the current override untouched
+    if (imageUrl) setVariationOverrideUrl(imageUrl);
   };
 
-  const handleImageInteract = () => {
-    setVariationOverrideUrl(null);
-  };
+  const handleImageInteract = () => setVariationOverrideUrl(null);
 
-  const discount = product.old_price
-    ? Math.round((1 - product.price / product.old_price) * 100)
+  const displayPrice    = salePrice ?? product.price;
+  const displayOldPrice = salePrice ? product.price : product.old_price;
+  const discount        = displayOldPrice
+    ? Math.round((1 - displayPrice / displayOldPrice) * 100)
     : null;
 
   return (
@@ -69,12 +67,16 @@ export default function ProductPageClient({ product, images, variations }) {
         </h1>
 
         <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 16, flexWrap: 'wrap' }}>
-          <span style={{ fontSize: 28, fontWeight: 800, color: 'var(--price-color)', fontFamily: 'Lato, sans-serif' }}>
-            {formatRWF(product.price)}
+          <span style={{
+            fontSize: 28, fontWeight: 800,
+            color: salePrice ? '#e05555' : 'var(--price-color)',
+            fontFamily: 'Lato, sans-serif',
+          }}>
+            {formatRWF(displayPrice)}
           </span>
-          {product.old_price && (
+          {displayOldPrice && (
             <span style={{ fontSize: 16, color: 'var(--text-faint)', textDecoration: 'line-through' }}>
-              {formatRWF(product.old_price)}
+              {formatRWF(displayOldPrice)}
             </span>
           )}
           {discount && (
@@ -86,6 +88,12 @@ export default function ProductPageClient({ product, images, variations }) {
               -{discount}%
             </span>
           )}
+          {saleEndsAt && (
+            <SaleCountdown
+              endsAt={saleEndsAt}
+              style={{ fontSize: 11, color: '#e05555', fontWeight: 700 }}
+            />
+          )}
         </div>
 
         {product.description && (
@@ -95,7 +103,7 @@ export default function ProductPageClient({ product, images, variations }) {
         )}
 
         <VariationSelector
-          product={product}
+          product={{ ...product, price: displayPrice }}
           variations={variations}
           onOptionSelect={handleOptionSelect}
         />
