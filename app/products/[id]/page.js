@@ -1,12 +1,10 @@
 import { createServiceClient } from '@/lib/supabase/server';
 import { notFound } from 'next/navigation';
 import AddToCartButton from '@/components/AddToCartButton';
-import ImageGallery from '@/components/ImageGallery';
 import Link from 'next/link';
-import Image from 'next/image';
 import ProductReviews from '@/components/ProductReviews';
 import { createServerSupabaseClient } from '@/lib/supabase/server';
-import VariationSelector from '@/components/VariationSelector';
+import ProductPageClient from '@/components/ProductPageClient';
 
 export async function generateMetadata({ params }) {
   const resolvedParams = await params;
@@ -16,16 +14,13 @@ export async function generateMetadata({ params }) {
     .select('name, description')
     .eq('id', resolvedParams.id)
     .single();
-
   return {
     title: data ? `${data.name} — STARLORD GROUP` : 'Product',
     description: data?.description,
   };
 }
 
-function formatRWF(amount) {
-  return `${Number(amount).toLocaleString()} RWF`;
-}
+function formatRWF(amount) { return `${Number(amount).toLocaleString()} RWF`; }
 
 export default async function ProductPage({ params }) {
   const resolvedParams = await params;
@@ -37,7 +32,6 @@ export default async function ProductPage({ params }) {
     .eq('id', resolvedParams.id)
     .eq('is_active', true)
     .single();
-
   if (error || !product) notFound();
 
   const { data: productImages } = await supabase
@@ -46,9 +40,10 @@ export default async function ProductPage({ params }) {
     .eq('product_id', resolvedParams.id)
     .order('sort_order', { ascending: true });
 
+  // option_images added to query
   const { data: variations } = await supabase
     .from('product_variations')
-    .select('id, name, options, is_required, sort_order')
+    .select('id, name, options, is_required, sort_order, option_images')
     .eq('product_id', resolvedParams.id)
     .order('sort_order', { ascending: true });
 
@@ -84,272 +79,72 @@ export default async function ProductPage({ params }) {
   } catch {}
 
   const images =
-    productImages && productImages.length > 0
+    productImages?.length > 0
       ? productImages
       : product.image_url
       ? [{ id: 'main', url: product.image_url }]
       : [];
 
-  const discount = product.old_price
-    ? Math.round((1 - product.price / product.old_price) * 100)
-    : null;
-
   return (
     <div style={{ maxWidth: 500, margin: '0 auto', paddingBottom: 120 }}>
 
-      {/* ── Gallery ──────────────────────────────────────────── */}
-      <div style={{ position: 'relative', padding: '16px 16px 0' }}>
-        <ImageGallery images={images} productName={product.name} />
+      {/* Gallery + product info + variations — client component for shared state */}
+      <ProductPageClient
+        product={product}
+        images={images}
+        variations={variations || []}
+      />
 
-        {product.badge && (
-          <span style={{
-            position: 'absolute', top: 28, left: 28, zIndex: 10,
-            padding: '4px 12px', borderRadius: 20,
-            fontSize: 10, fontWeight: 800, letterSpacing: 1.2,
-            textTransform: 'uppercase',
-            background: product.badge === 'SALE' ? 'var(--gold)' :
-                        product.badge === 'NEW'  ? 'var(--green)' : 'var(--red)',
-            color: product.badge === 'SALE' ? '#000' : '#fff',
-            boxShadow: '0 2px 8px rgba(0,0,0,0.18)',
-          }}>
-            {product.badge}
-          </span>
-        )}
-      </div>
-
-      {/* ── Product info ─────────────────────────────────────── */}
-      <div style={{ padding: '24px 20px' }}>
-        <div style={{
-          fontSize: 10, color: 'var(--text-faint)',
-          textTransform: 'uppercase', letterSpacing: 1.8,
-          fontWeight: 700, marginBottom: 8,
-        }}>
-          {product.category}
-        </div>
-
-        <h1 style={{
-          fontSize: 26, fontWeight: 800,
-          color: 'var(--text)', marginBottom: 14,
-          fontFamily: 'var(--font-playfair, serif)',
-          lineHeight: 1.25,
-        }}>
-          {product.name}
-        </h1>
-
-        {/* Price row */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 16, flexWrap: 'wrap' }}>
-          <span style={{ fontSize: 28, fontWeight: 800, color: 'var(--price-color)', fontFamily: 'Lato, sans-serif' }}>
-            {formatRWF(product.price)}
-          </span>
-          {product.old_price && (
-            <span style={{ fontSize: 16, color: 'var(--text-faint)', textDecoration: 'line-through' }}>
-              {formatRWF(product.old_price)}
-            </span>
-          )}
-          {discount && (
-            <span style={{
-              padding: '4px 10px', borderRadius: 20,
-              fontSize: 11, fontWeight: 800,
-              background: 'var(--badge-sale-bg)', color: '#fff',
-              boxShadow: '0 2px 8px rgba(0,0,0,0.15)',
-            }}>
-              -{discount}%
-            </span>
-          )}
-        </div>
-
-
-        {product.description && (
-          <p style={{
-            color: 'var(--text-muted)',
-            fontSize: 14, lineHeight: 1.75, marginBottom: 32,
-          }}>
-            {product.description}
-          </p>
-        )}
-
-        <VariationSelector
-          product={product}
-          variations={variations || []}
-        />
-      </div>
-
-      {/* ── Related Products ─────────────────────────────────── */}
+      {/* Related products */}
       {related.length > 0 && (
         <div style={{ padding: '0 16px', marginTop: 16 }}>
-
-          {/* Section header */}
-          <div style={{
-            display: 'flex', alignItems: 'center',
-            justifyContent: 'space-between', marginBottom: 16,
-          }}>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 16 }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
               <div style={{ width: 3, height: 20, background: 'var(--gold)', borderRadius: 2 }} />
-              <h2 style={{
-                fontSize: 12, fontWeight: 800,
-                color: 'var(--text)', letterSpacing: 1.5,
-                textTransform: 'uppercase', margin: 0,
-              }}>
+              <h2 style={{ fontSize: 12, fontWeight: 800, color: 'var(--text)', letterSpacing: 1.5, textTransform: 'uppercase', margin: 0 }}>
                 More in {product.category}
               </h2>
             </div>
-            <Link href={`/products?category=${product.category}`} style={{
-              fontSize: 12, color: 'var(--gold)', fontWeight: 700,
-            }}>
+            <Link href={`/products?category=${product.category}`} style={{ fontSize: 12, color: 'var(--gold)', fontWeight: 700 }}>
               View all →
             </Link>
           </div>
 
-
-          {/* 2-column grid — matches homepage ProductCard exactly */}
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10 }}>
             {related.slice(0, 2).map(p => {
-              const relDiscount = p.old_price
-                ? Math.round((1 - p.price / p.old_price) * 100)
-                : null;
+              const relDiscount = p.old_price ? Math.round((1 - p.price / p.old_price) * 100) : null;
               return (
-                <Link
-                  key={p.id}
-                  href={`/products/${p.id}`}
-                  style={{ display: 'block', textDecoration: 'none', color: 'inherit' }}
-                >
-                  <article style={{
-                    background: 'var(--surface)',
-                    borderRadius: 20,
-                    overflow: 'hidden',
-                    border: '1px solid var(--border-subtle)',
-                    display: 'flex',
-                    flexDirection: 'column',
-                    boxShadow: '0 1px 3px rgba(0,0,0,0.06), 0 4px 16px rgba(0,0,0,0.05)',
-                    transition: 'transform 0.28s ease, box-shadow 0.28s ease',
-                  }}>
-
-                    {/* Image container */}
+                <Link key={p.id} href={`/products/${p.id}`} style={{ display: 'block', textDecoration: 'none', color: 'inherit' }}>
+                  <article style={{ background: 'var(--surface)', borderRadius: 20, overflow: 'hidden', border: '1px solid var(--border-subtle)', display: 'flex', flexDirection: 'column', boxShadow: '0 1px 3px rgba(0,0,0,0.06), 0 4px 16px rgba(0,0,0,0.05)' }}>
                     <div style={{ position: 'relative', paddingTop: '95%', background: 'var(--surface-2)', overflow: 'hidden' }}>
                       {p.image_url ? (
-                        <img
-                          src={p.image_url}
-                          alt={p.name}
-                          style={{
-                            position: 'absolute', inset: 0,
-                            width: '100%', height: '100%',
-                            objectFit: 'cover',
-                            transition: 'transform 0.45s ease',
-                          }}
-                        />
+                        <img src={p.image_url} alt={p.name} style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover' }} />
                       ) : (
-                        <div style={{
-                          position: 'absolute', inset: 0,
-                          display: 'flex', flexDirection: 'column',
-                          alignItems: 'center', justifyContent: 'center', gap: 10,
-                          color: 'var(--text-faint)',
-                        }}>
-                          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round" style={{ opacity: 0.4 }}>
-                            <rect x="3" y="3" width="18" height="18" rx="3" />
-                            <circle cx="8.5" cy="8.5" r="1.5" />
-                            <polyline points="21 15 16 10 5 21" />
-                          </svg>
-                          <span style={{ fontSize: 9, fontWeight: 700, letterSpacing: 2, textTransform: 'uppercase', opacity: 0.5 }}>NO IMAGE</span>
+                        <div style={{ position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                          <span style={{ fontSize: 9, fontWeight: 700, letterSpacing: 2, textTransform: 'uppercase', color: 'var(--text-faint)', opacity: 0.5 }}>NO IMAGE</span>
                         </div>
                       )}
-
-                      {/* Category chip — glass pill */}
                       {p.category && (
-                        <span style={{
-                          position: 'absolute', top: 8, left: 8, zIndex: 2,
-                          padding: '3px 8px', borderRadius: 20,
-                          fontSize: 9, fontWeight: 700, letterSpacing: 1.2,
-                          textTransform: 'uppercase', color: '#333',
-                          background: 'rgba(255,255,255,0.72)',
-                          backdropFilter: 'blur(12px)',
-                          WebkitBackdropFilter: 'blur(12px)',
-                          border: '1px solid rgba(255,255,255,0.55)',
-                          boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.9), 0 2px 8px rgba(0,0,0,0.1)',
-                        }}>
-                          {p.category}
-                        </span>
+                        <span style={{ position: 'absolute', top: 8, left: 8, zIndex: 2, padding: '3px 8px', borderRadius: 20, fontSize: 9, fontWeight: 700, letterSpacing: 1.2, textTransform: 'uppercase', color: '#333', background: 'rgba(255,255,255,0.72)', backdropFilter: 'blur(12px)', WebkitBackdropFilter: 'blur(12px)', border: '1px solid rgba(255,255,255,0.55)', boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.9), 0 2px 8px rgba(0,0,0,0.1)' }}>{p.category}</span>
                       )}
-
-                      {/* Discount badge */}
                       {relDiscount && (
-                        <span style={{
-                          position: 'absolute', top: 8, right: 8, zIndex: 2,
-                          padding: '3px 7px', borderRadius: 20,
-                          fontSize: 9, fontWeight: 800, color: '#fff',
-                          background: 'var(--badge-sale-bg)',
-                          boxShadow: '0 2px 8px rgba(0,0,0,0.18)',
-                        }}>
-                          -{relDiscount}%
-                        </span>
+                        <span style={{ position: 'absolute', top: 8, right: 8, zIndex: 2, padding: '3px 7px', borderRadius: 20, fontSize: 9, fontWeight: 800, color: '#fff', background: 'var(--badge-sale-bg)', boxShadow: '0 2px 8px rgba(0,0,0,0.18)' }}>-{relDiscount}%</span>
                       )}
-
-                      {/* Low stock */}
                       {p.stock !== undefined && p.stock <= 5 && p.stock > 0 && (
-                        <div style={{
-                          position: 'absolute', bottom: 8, right: 8, zIndex: 2,
-                          background: 'rgba(0,0,0,0.55)',
-                          backdropFilter: 'blur(8px)',
-                          WebkitBackdropFilter: 'blur(8px)',
-                          border: '1px solid rgba(255,255,255,0.12)',
-                          color: 'var(--gold)',
-                          fontSize: 9, fontWeight: 700,
-                          padding: '3px 8px', borderRadius: 20,
-                        }}>
-                          {p.stock} left
-                        </div>
+                        <div style={{ position: 'absolute', bottom: 8, right: 8, zIndex: 2, background: 'rgba(0,0,0,0.55)', backdropFilter: 'blur(8px)', WebkitBackdropFilter: 'blur(8px)', border: '1px solid rgba(255,255,255,0.12)', color: 'var(--gold)', fontSize: 9, fontWeight: 700, padding: '3px 8px', borderRadius: 20 }}>{p.stock} left</div>
                       )}
-
-                      {/* Sold out overlay */}
                       {p.stock === 0 && (
-                        <div style={{
-                          position: 'absolute', inset: 0,
-                          background: 'var(--overlay)',
-                          display: 'flex', alignItems: 'center', justifyContent: 'center',
-                          zIndex: 3,
-                        }}>
-                          <span style={{
-                            background: 'rgba(255,255,255,0.18)',
-                            backdropFilter: 'blur(12px)',
-                            WebkitBackdropFilter: 'blur(12px)',
-                            border: '1px solid rgba(255,255,255,0.3)',
-                            boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.35)',
-                            color: '#fff',
-                            fontSize: 10, fontWeight: 800,
-                            padding: '7px 16px', borderRadius: 8,
-                            letterSpacing: 2, textTransform: 'uppercase',
-                          }}>
-                            Sold Out
-                          </span>
+                        <div style={{ position: 'absolute', inset: 0, background: 'var(--overlay)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 3 }}>
+                          <span style={{ background: 'rgba(255,255,255,0.18)', backdropFilter: 'blur(12px)', WebkitBackdropFilter: 'blur(12px)', border: '1px solid rgba(255,255,255,0.3)', color: '#fff', fontSize: 10, fontWeight: 800, padding: '7px 16px', borderRadius: 8, letterSpacing: 2, textTransform: 'uppercase' }}>Sold Out</span>
                         </div>
                       )}
                     </div>
-
-                    
-                    {/* Info */}
                     <div style={{ padding: '10px 10px 12px', flex: 1, display: 'flex', flexDirection: 'column', gap: 6 }}>
-                      <h3 style={{
-                        fontFamily: 'var(--font-playfair, serif)',
-                        fontSize: 12, fontWeight: 700,
-                        color: 'var(--text)', lineHeight: 1.35, margin: 0,
-                        display: '-webkit-box',
-                        WebkitLineClamp: 2,
-                        WebkitBoxOrient: 'vertical',
-                        overflow: 'hidden',
-                      }}>
-                        {p.name}
-                      </h3>
-
-                      {/* Price row + glass cart icon */}
+                      <h3 style={{ fontFamily: 'var(--font-playfair, serif)', fontSize: 12, fontWeight: 700, color: 'var(--text)', lineHeight: 1.35, margin: 0, display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>{p.name}</h3>
                       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 8, marginTop: 'auto' }}>
                         <div style={{ display: 'flex', alignItems: 'baseline', gap: 4, flex: 1, minWidth: 0, flexWrap: 'wrap' }}>
-                          <span style={{ fontSize: 13, fontWeight: 800, color: 'var(--price-color)', fontFamily: 'Lato, sans-serif', whiteSpace: 'nowrap' }}>
-                            {formatRWF(p.price)}
-                          </span>
-                          {p.old_price && (
-                            <span style={{ fontSize: 10, color: 'var(--text-faint)', textDecoration: 'line-through', whiteSpace: 'nowrap' }}>
-                              {formatRWF(p.old_price)}
-                            </span>
-                          )}
+                          <span style={{ fontSize: 13, fontWeight: 800, color: 'var(--price-color)', fontFamily: 'Lato, sans-serif', whiteSpace: 'nowrap' }}>{formatRWF(p.price)}</span>
+                          {p.old_price && <span style={{ fontSize: 10, color: 'var(--text-faint)', textDecoration: 'line-through', whiteSpace: 'nowrap' }}>{formatRWF(p.old_price)}</span>}
                         </div>
                         <AddToCartButton product={p} compact />
                       </div>
@@ -362,11 +157,7 @@ export default async function ProductPage({ params }) {
         </div>
       )}
 
-      {/* ── Reviews ──────────────────────────────────────────── */}
-      <ProductReviews
-        productId={product.id}
-        deliveredOrders={deliveredOrders}
-      />
+      <ProductReviews productId={product.id} deliveredOrders={deliveredOrders} />
     </div>
   );
 }

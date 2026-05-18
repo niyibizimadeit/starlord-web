@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useRef } from 'react';
+import { useState, useRef, useEffect } from 'react';
 
 // Admin secret is no longer exposed to client - auth is via httpOnly cookie
 // These helpers now rely on the admin_auth cookie set by /api/admin/auth
@@ -244,12 +244,13 @@ export function VariationsEditor({ productId, variations, onVariationsChange }) 
   const [saving, setSaving]         = useState(false);
   const [error, setError]           = useState('');
 
-  // Edit state
-  const [editingId, setEditingId]     = useState(null);
-  const [editName, setEditName]       = useState('');
-  const [editOptions, setEditOptions] = useState('');
-  const [editSaving, setEditSaving]   = useState(false);
-  const [editError, setEditError]     = useState('');
+  const [editingId, setEditingId]         = useState(null);
+  const [editName, setEditName]           = useState('');
+  const [editOptions, setEditOptions]     = useState('');
+  const [editOptionImages, setEditOptionImages] = useState({});
+  const [editSaving, setEditSaving]       = useState(false);
+  const [editError, setEditError]         = useState('');
+  const fileRefs = useRef({});
 
   const handleAdd = async () => {
     setError('');
@@ -275,6 +276,7 @@ export function VariationsEditor({ productId, variations, onVariationsChange }) 
     setEditingId(v.id);
     setEditName(v.name);
     setEditOptions(v.options.join(', '));
+    setEditOptionImages(v.option_images || {});
     setEditError('');
   };
 
@@ -282,6 +284,7 @@ export function VariationsEditor({ productId, variations, onVariationsChange }) 
     setEditingId(null);
     setEditName('');
     setEditOptions('');
+    setEditOptionImages({});
     setEditError('');
   };
 
@@ -291,6 +294,7 @@ export function VariationsEditor({ productId, variations, onVariationsChange }) 
     const options = editOptions.split(',').map(o => o.trim()).filter(Boolean);
     if (options.length < 2) { setEditError('At least 2 options required'); return; }
     setEditSaving(true);
+
     const res = await fetch('/api/admin/dashboard', {
       method: 'PATCH',
       headers: { 'Content-Type': 'application/json' },
@@ -298,9 +302,22 @@ export function VariationsEditor({ productId, variations, onVariationsChange }) 
       credentials: 'include',
     });
     const data = await res.json();
+
+    // Save option_images separately via the dedicated route
+    if (!data.error) {
+      await fetch(`/api/admin/variations/${id}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ option_images: editOptionImages }),
+        credentials: 'include',
+      });
+    }
+
     setEditSaving(false);
     if (data.error) { setEditError(data.error); return; }
-    onVariationsChange(variations.map(v => v.id === id ? { ...v, name: editName.trim(), options } : v));
+    onVariationsChange(variations.map(v =>
+      v.id === id ? { ...v, name: editName.trim(), options, option_images: editOptionImages } : v
+    ));
     handleCancelEdit();
   };
 
@@ -315,6 +332,16 @@ export function VariationsEditor({ productId, variations, onVariationsChange }) 
     onVariationsChange(variations.filter(v => v.id !== id));
   };
 
+  const handleOptionImageUpload = async (option, file) => {
+    if (!productId || !file) return;
+    const form = new FormData();
+    form.append('file', file);
+    form.append('productId', productId);
+    const res  = await fetch('/api/admin/upload', { method: 'POST', credentials: 'include', body: form });
+    const data = await res.json();
+    if (data.data?.url) setEditOptionImages(p => ({ ...p, [option]: data.data.url }));
+  };
+
   return (
     <div>
       <label style={S.label}>Product Variations</label>
@@ -322,50 +349,73 @@ export function VariationsEditor({ productId, variations, onVariationsChange }) 
         e.g. Name: "Color", Options: "Red, Blue, Black"
       </div>
 
-      {/* Existing variations */}
       {variations.map(v => (
         <div key={v.id} style={{ background: '#0a0a0a', borderRadius: 8, padding: '10px 12px', marginBottom: 8 }}>
           {editingId === v.id ? (
-            /* ── Edit mode ── */
             <div>
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 2fr', gap: 8, marginBottom: 8 }}>
                 <div>
                   <label style={S.label}>Name</label>
-                  <input
-                    style={S.input} value={editName}
-                    onChange={e => setEditName(e.target.value)}
-                    placeholder="e.g. Color"
-                    autoFocus
-                  />
+                  <input style={S.input} value={editName} onChange={e => setEditName(e.target.value)} placeholder="e.g. Color" autoFocus />
                 </div>
                 <div>
                   <label style={S.label}>Options (comma separated)</label>
-                  <input
-                    style={S.input} value={editOptions}
-                    onChange={e => setEditOptions(e.target.value)}
-                    placeholder="e.g. Red, Blue, Black"
-                  />
+                  <input style={S.input} value={editOptions} onChange={e => setEditOptions(e.target.value)} placeholder="e.g. Red, Blue, Black" />
                 </div>
               </div>
+
+              {/* Option images */}
+              {editOptions.split(',').map(o => o.trim()).filter(Boolean).length > 0 && (
+                <div style={{ background: '#141414', borderRadius: 6, padding: 10, marginBottom: 10 }}>
+                  <div style={{ fontSize: 10, color: '#555', fontWeight: 700, letterSpacing: 1, textTransform: 'uppercase', marginBottom: 8 }}>
+                    Option Images (optional) — shown when customer selects that option
+                  </div>
+                  {editOptions.split(',').map(o => o.trim()).filter(Boolean).map(option => (
+                    <div key={option} style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 6 }}>
+                      <div style={{ fontSize: 11, color: '#C9A84C', fontWeight: 700, minWidth: 72, flexShrink: 0 }}>{option}</div>
+                      <input
+                        style={{ ...S.input, flex: 1 }}
+                        value={editOptionImages[option] || ''}
+                        onChange={e => setEditOptionImages(p => ({ ...p, [option]: e.target.value }))}
+                        placeholder="Paste image URL or upload →"
+                      />
+                      {editOptionImages[option] && (
+                        <img src={editOptionImages[option]} style={{ width: 30, height: 30, objectFit: 'cover', borderRadius: 4, flexShrink: 0, border: '1px solid #2a2a2a' }} alt="" />
+                      )}
+                      <input
+                        ref={el => fileRefs.current[option] = el}
+                        type="file" accept="image/*"
+                        style={{ display: 'none' }}
+                        onChange={e => handleOptionImageUpload(option, e.target.files?.[0])}
+                      />
+                      <button
+                        type="button"
+                        onClick={() => fileRefs.current[option]?.click()}
+                        style={{ ...S.btn, background: '#1c1c1c', color: '#888', border: '1px solid #2a2a2a', padding: '5px 8px', flexShrink: 0, fontSize: 10 }}
+                      >
+                        Upload
+                      </button>
+                      {editOptionImages[option] && (
+                        <button
+                          type="button"
+                          onClick={() => setEditOptionImages(p => { const n = { ...p }; delete n[option]; return n; })}
+                          style={{ ...S.btn, background: '#2e1a1a', color: '#e05555', border: '1px solid #e0555533', padding: '5px 8px', flexShrink: 0, fontSize: 10 }}
+                        >✕</button>
+                      )}
+                    </div>
+                  ))}
+                </div>
+              )}
+
               {editError && <div style={{ fontSize: 11, color: '#e05555', marginBottom: 8 }}>{editError}</div>}
               <div style={{ display: 'flex', gap: 8 }}>
-                <button
-                  onClick={() => handleSaveEdit(v.id)}
-                  disabled={editSaving}
-                  style={{ ...S.btn, background: editSaving ? '#555' : '#C9A84C', color: '#000' }}
-                >
+                <button onClick={() => handleSaveEdit(v.id)} disabled={editSaving} style={{ ...S.btn, background: editSaving ? '#555' : '#C9A84C', color: '#000' }}>
                   {editSaving ? 'Saving...' : '✓ Save'}
                 </button>
-                <button
-                  onClick={handleCancelEdit}
-                  style={{ ...S.btn, background: '#1c1c1c', color: '#888', border: '1px solid #2a2a2a' }}
-                >
-                  Cancel
-                </button>
+                <button onClick={handleCancelEdit} style={{ ...S.btn, background: '#1c1c1c', color: '#888', border: '1px solid #2a2a2a' }}>Cancel</button>
               </div>
             </div>
           ) : (
-            /* ── Display mode ── */
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
               <div>
                 <div style={{ fontSize: 13, fontWeight: 700, color: '#C9A84C', marginBottom: 4 }}>
@@ -373,32 +423,25 @@ export function VariationsEditor({ productId, variations, onVariationsChange }) 
                 </div>
                 <div style={{ display: 'flex', gap: 4, flexWrap: 'wrap' }}>
                   {v.options.map(opt => (
-                    <span key={opt} style={{ background: '#1c1c1c', border: '1px solid #2a2a2a', borderRadius: 4, padding: '2px 8px', fontSize: 11, color: '#ccc' }}>
+                    <span key={opt} style={{ background: '#1c1c1c', border: '1px solid #2a2a2a', borderRadius: 4, padding: '2px 8px', fontSize: 11, color: '#ccc', display: 'inline-flex', alignItems: 'center', gap: 3 }}>
                       {opt}
+                      {/* Dot indicates an image is assigned to this option */}
+                      {v.option_images?.[opt] && (
+                        <span style={{ width: 5, height: 5, borderRadius: '50%', background: '#C9A84C', flexShrink: 0 }} />
+                      )}
                     </span>
                   ))}
                 </div>
               </div>
               <div style={{ display: 'flex', gap: 6, flexShrink: 0, marginLeft: 8 }}>
-                <button
-                  onClick={() => handleStartEdit(v)}
-                  style={{ ...S.btn, background: '#1c1c1c', color: '#C9A84C', border: '1px solid #C9A84C33', padding: '4px 10px', fontSize: 11 }}
-                >
-                  ✎ Edit
-                </button>
-                <button
-                  onClick={() => handleDelete(v.id)}
-                  style={{ ...S.btn, background: '#2e1a1a', color: '#e05555', border: '1px solid #e0555533', padding: '4px 8px', fontSize: 11 }}
-                >
-                  ✕
-                </button>
+                <button onClick={() => handleStartEdit(v)} style={{ ...S.btn, background: '#1c1c1c', color: '#C9A84C', border: '1px solid #C9A84C33', padding: '4px 10px', fontSize: 11 }}>✎ Edit</button>
+                <button onClick={() => handleDelete(v.id)} style={{ ...S.btn, background: '#2e1a1a', color: '#e05555', border: '1px solid #e0555533', padding: '4px 8px', fontSize: 11 }}>✕</button>
               </div>
             </div>
           )}
         </div>
       ))}
 
-      {/* Add new variation */}
       <div style={{ background: '#0a0a0a', borderRadius: 8, padding: 12, border: '1px dashed #333' }}>
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 2fr', gap: 8, marginBottom: 8 }}>
           <div>
@@ -508,6 +551,156 @@ export function CategoryModal({ category, onClose, onSave }) {
         </div>
         <div style={{ display: 'flex', gap: 8, marginTop: 20 }}>
           <button onClick={handleSave} disabled={saving} style={{ ...S.btn, background: saving ? '#555' : '#C9A84C', color: '#000', opacity: saving ? 0.6 : 1 }}>{saving ? 'Saving...' : isNew ? 'Create' : 'Save'}</button>
+          <button onClick={onClose} style={{ ...S.btn, background: '#1c1c1c', color: '#888', border: '1px solid #2a2a2a' }}>Cancel</button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+export function PromotionModal({ promotion, onClose, onSave }) {
+  const isNew = !promotion;
+  const [saving, setSaving]   = useState(false);
+  const [error, setError]     = useState('');
+  const [products, setProducts] = useState([]);
+  const [selectedIds, setSelectedIds] = useState(
+    promotion?.promotion_products?.map(pp => pp.product_id) || []
+  );
+
+  function toLocalDT(iso) {
+    if (!iso) return '';
+    const d = new Date(iso);
+    const pad = n => String(n).padStart(2, '0');
+    return `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}`;
+  }
+
+  const [form, setForm] = useState({
+    name: promotion?.name || '',
+    discount_type: promotion?.discount_type || 'percent',
+    discount_value: promotion?.discount_value ? String(promotion.discount_value) : '',
+    starts_at: toLocalDT(promotion?.starts_at),
+    ends_at: toLocalDT(promotion?.ends_at),
+    is_active: promotion?.is_active ?? true,
+  });
+  const f = (k, v) => setForm(p => ({ ...p, [k]: v }));
+
+  useEffect(() => {
+    fetch('/api/admin/dashboard?type=products', { credentials: 'include' })
+      .then(r => r.json())
+      .then(({ data }) => setProducts(data || []));
+  }, []);
+
+  const toggleProduct = (id) => {
+    setSelectedIds(prev => prev.includes(id) ? prev.filter(x => x !== id) : [...prev, id]);
+  };
+
+  const handleSave = async () => {
+    if (!form.name || !form.discount_value || !form.starts_at || !form.ends_at)
+      { setError('All fields required'); return; }
+    setSaving(true);
+    const body = {
+      ...form,
+      discount_value: parseFloat(form.discount_value),
+      product_ids: selectedIds,
+    };
+    if (!isNew) body.id = promotion.id;
+    const res = await fetch('/api/admin/promotions', {
+      method: isNew ? 'POST' : 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      credentials: 'include',
+      body: JSON.stringify(body),
+    });
+    const data = await res.json();
+    setSaving(false);
+    if (data.error) { setError(data.error); return; }
+    await onSave();
+    onClose();
+  };
+
+  const previewPrice = (productPrice) => {
+    if (!form.discount_value || !productPrice) return null;
+    const val = parseFloat(form.discount_value);
+    return form.discount_type === 'percent'
+      ? Math.round(productPrice * (1 - val / 100))
+      : Math.max(0, productPrice - val);
+  };
+
+  return (
+    <div style={S.modal} onClick={e => e.target === e.currentTarget && onClose()}>
+      <div style={S.modalBox}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 20 }}>
+          <div style={{ fontSize: 14, fontWeight: 800, color: '#C9A84C', letterSpacing: 1 }}>
+            {isNew ? 'NEW PROMOTION' : 'EDIT PROMOTION'}
+          </div>
+          <button onClick={onClose} style={{ ...S.btn, background: '#1c1c1c', color: '#888', border: '1px solid #2a2a2a', fontSize: 16, padding: '6px 12px' }}>✕</button>
+        </div>
+
+        {error && <div style={{ background: '#2e1a1a', border: '1px solid #e05555', borderRadius: 8, padding: '10px 14px', marginBottom: 16, fontSize: 13, color: '#e05555' }}>{error}</div>}
+
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 14, marginBottom: 20 }}>
+          <div style={{ gridColumn: '1 / -1' }}>
+            <label style={S.label}>Promotion Name *</label>
+            <input style={S.input} value={form.name} onChange={e => f('name', e.target.value)} placeholder="e.g. Weekend Flash Sale" />
+          </div>
+          <div>
+            <label style={S.label}>Discount Type</label>
+            <select style={{ ...S.input, cursor: 'pointer' }} value={form.discount_type} onChange={e => f('discount_type', e.target.value)}>
+              <option value="percent">Percentage (%)</option>
+              <option value="fixed">Fixed Amount (RWF)</option>
+            </select>
+          </div>
+          <div>
+            <label style={S.label}>Discount Value *</label>
+            <input style={S.input} type="number" min="0" value={form.discount_value} onChange={e => f('discount_value', e.target.value)} placeholder={form.discount_type === 'percent' ? 'e.g. 20' : 'e.g. 1000'} />
+            <div style={{ fontSize: 11, color: '#444', marginTop: 4 }}>
+              {form.discount_type === 'percent' ? '20 = 20% off the price' : 'Amount deducted in RWF'}
+            </div>
+          </div>
+          <div>
+            <label style={S.label}>Starts At *</label>
+            <input style={S.input} type="datetime-local" value={form.starts_at} onChange={e => f('starts_at', e.target.value)} />
+          </div>
+          <div>
+            <label style={S.label}>Ends At *</label>
+            <input style={S.input} type="datetime-local" value={form.ends_at} onChange={e => f('ends_at', e.target.value)} />
+          </div>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 10, paddingTop: 16 }}>
+            <input type="checkbox" id="promo_active_chk" checked={form.is_active} onChange={e => f('is_active', e.target.checked)} />
+            <label htmlFor="promo_active_chk" style={{ fontSize: 13, color: '#888', cursor: 'pointer' }}>Active</label>
+          </div>
+        </div>
+
+        <div style={{ marginBottom: 20 }}>
+          <label style={S.label}>Assign Products ({selectedIds.length} selected)</label>
+          <div style={{ background: '#0a0a0a', borderRadius: 8, padding: 10, maxHeight: 260, overflowY: 'auto' }}>
+            {products.length === 0 && <div style={{ color: '#555', fontSize: 13 }}>Loading...</div>}
+            {products.map(p => {
+              const checked = selectedIds.includes(p.id);
+              const sale = previewPrice(p.price);
+              return (
+                <div key={p.id} onClick={() => toggleProduct(p.id)} style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '8px 10px', borderRadius: 6, cursor: 'pointer', background: checked ? '#1c2a1a' : 'transparent', marginBottom: 2 }}>
+                  <div style={{ width: 16, height: 16, borderRadius: 4, border: `2px solid ${checked ? '#4caf7d' : '#333'}`, background: checked ? '#4caf7d' : 'transparent', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                    {checked && <span style={{ color: '#000', fontSize: 10, fontWeight: 800 }}>✓</span>}
+                  </div>
+                  <div style={{ flex: 1 }}>
+                    <div style={{ fontSize: 12, color: '#fff', fontWeight: 600 }}>{p.name}</div>
+                    <div style={{ fontSize: 11, color: '#555' }}>{p.category} · {formatRWF(p.price)}</div>
+                  </div>
+                  {sale !== null && (
+                    <div style={{ fontSize: 11, color: '#4caf7d', fontWeight: 700, flexShrink: 0 }}>
+                      → {formatRWF(sale)}
+                    </div>
+                  )}
+                </div>
+              );
+            })}
+          </div>
+        </div>
+
+        <div style={{ display: 'flex', gap: 8 }}>
+          <button onClick={handleSave} disabled={saving} style={{ ...S.btn, background: saving ? '#555' : '#C9A84C', color: '#000', opacity: saving ? 0.6 : 1 }}>
+            {saving ? 'Saving...' : isNew ? 'Create Promotion' : 'Save Changes'}
+          </button>
           <button onClick={onClose} style={{ ...S.btn, background: '#1c1c1c', color: '#888', border: '1px solid #2a2a2a' }}>Cancel</button>
         </div>
       </div>

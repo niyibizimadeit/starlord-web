@@ -6,7 +6,7 @@ import {
   S, formatRWF, formatDate, timeAgo, toSlug,
   STATUS_COLOR, NEXT_STATUS, LOG_ICONS,
   apiFetch, apiMutate, adminLogin, downloadCSV, printRevenueReport, printShippingLabel,
-  StatCard, BarChart, ImageUploader, StockModal, CategoryModal, VariationsEditor,
+  StatCard, BarChart, ImageUploader, StockModal, CategoryModal, VariationsEditor, PromotionModal,
 } from './AdminHelpers';
 
 // ─── Order Modal ──────────────────────────────────────────────────────────────
@@ -253,6 +253,8 @@ export default function AdminPage() {
   const [banners, setBanners] = useState([]);
   const [bannerForm, setBannerForm] = useState(null); // null = closed, {} = new, {id,...} = edit
   const [bannerUploading, setBannerUploading] = useState(false);
+  const [promotions, setPromotions] = useState([]);
+  const [editPromotion, setEditPromotion] = useState(undefined);
 
   const [orderSearch,  setOrderSearch]  = useState('');
   const [orderFilter,  setOrderFilter]  = useState('all');
@@ -314,6 +316,12 @@ export default function AdminPage() {
     setBanners(data.data || []);
   }, []);
 
+  const fetchPromotions = useCallback(async () => {
+    const res = await fetch('/api/admin/promotions', { credentials: 'include' });
+    const data = await res.json();
+    setPromotions(data.data || []);
+  }, []);
+
   const loadTab = async () => {
     setLoading(true);
     if      (tab === 'dashboard')  await Promise.all([fetchOrders('', 'pending'), fetchAlerts(), fetchAnalytics()]);
@@ -329,6 +337,7 @@ export default function AdminPage() {
     else if (tab === 'returns')    await fetchReturns();
     else if (tab === 'reviews') await fetchAdminReviews();
     else if (tab === 'banners') await fetchBanners();
+    else if (tab === 'promotions') await fetchPromotions();
     setLoading(false);
   };
 
@@ -439,6 +448,7 @@ export default function AdminPage() {
             { id: 'dashboard',  label: 'Dashboard'    },
             { id: 'orders',     label: 'Orders'       },
             { id: 'products',   label: 'Products'     },
+            { id: 'promotions', label: 'Promotions' },
             { id: 'categories', label: 'Categories'   },
             { id: 'returns',    label: 'Returns'      },
             { id: 'banners',    label: 'Banners'      },
@@ -585,6 +595,94 @@ export default function AdminPage() {
                 );
               })}
             </div>
+          </div>
+        )}
+
+        {/* PROMOTIONS */}
+        {!loading && tab === 'promotions' && (
+          <div style={{ padding: '0 4px' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 20 }}>
+              <div style={S.label}>{promotions.length} promotion{promotions.length !== 1 ? 's' : ''}</div>
+              <button onClick={() => setEditPromotion(null)} style={{ ...S.btn, background: '#C9A84C', color: '#000' }}>+ New Promotion</button>
+            </div>
+
+            {promotions.length === 0 && (
+              <div style={{ color: '#555', textAlign: 'center', padding: 60 }}>No promotions yet — create one to set up an ON SALE event</div>
+            )}
+
+            {promotions.map(promo => {
+              const now = Date.now();
+              const start = new Date(promo.starts_at).getTime();
+              const end   = new Date(promo.ends_at).getTime();
+              const isActive    = promo.is_active && now >= start && now <= end;
+              const isScheduled = promo.is_active && now < start;
+              const isExpired   = now > end;
+              const productCount = promo.promotion_products?.length || 0;
+
+              return (
+                <div key={promo.id} style={S.card}>
+                  <div style={{ padding: '16px 18px' }}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 12 }}>
+                      <div>
+                        <div style={{ fontSize: 15, fontWeight: 800, color: '#fff', marginBottom: 6 }}>{promo.name}</div>
+                        <div style={{ display: 'flex', gap: 8, alignItems: 'center', flexWrap: 'wrap' }}>
+                          <span style={{ ...S.badge, background: isActive ? '#4caf7d22' : isScheduled ? '#C9A84C22' : '#1c1c1c', color: isActive ? '#4caf7d' : isScheduled ? '#C9A84C' : '#555' }}>
+                            {isActive ? 'LIVE' : isScheduled ? 'SCHEDULED' : isExpired ? 'EXPIRED' : 'PAUSED'}
+                          </span>
+                          <span style={{ ...S.badge, background: '#C9A84C22', color: '#C9A84C' }}>
+                            {promo.discount_type === 'percent'
+                              ? `${promo.discount_value}% OFF`
+                              : `RWF ${Number(promo.discount_value).toLocaleString()} OFF`
+                            }
+                          </span>
+                          <span style={{ fontSize: 11, color: '#555' }}>
+                            {productCount} product{productCount !== 1 ? 's' : ''}
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10, marginBottom: 14 }}>
+                      <div>
+                        <div style={S.label}>Starts</div>
+                        <div style={{ fontSize: 12, color: '#ccc' }}>{formatDate(promo.starts_at)}</div>
+                      </div>
+                      <div>
+                        <div style={S.label}>Ends</div>
+                        <div style={{ fontSize: 12, color: isActive ? '#C9A84C' : '#ccc' }}>{formatDate(promo.ends_at)}</div>
+                      </div>
+                    </div>
+
+                    <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
+                      <button onClick={() => setEditPromotion(promo)} style={{ ...S.btn, background: '#1c1c1c', color: '#888', border: '1px solid #2a2a2a', flex: 1, justifyContent: 'center' }}>Edit</button>
+                      <button
+                        onClick={async () => {
+                          await fetch('/api/admin/promotions', {
+                            method: 'PATCH', headers: { 'Content-Type': 'application/json' }, credentials: 'include',
+                            body: JSON.stringify({ id: promo.id, is_active: !promo.is_active }),
+                          });
+                          await fetchPromotions();
+                        }}
+                        style={{ ...S.btn, background: '#1c1c1c', color: '#888', border: '1px solid #2a2a2a' }}
+                      >
+                        {promo.is_active ? 'Pause' : 'Activate'}
+                      </button>
+                      <button
+                        onClick={async () => {
+                          if (!confirm(`Delete "${promo.name}"?`)) return;
+                          await fetch('/api/admin/promotions', {
+                            method: 'DELETE', headers: { 'Content-Type': 'application/json' }, credentials: 'include',
+                            body: JSON.stringify({ id: promo.id }),
+                          });
+                          await fetchPromotions();
+                        }}
+                        style={{ ...S.btn, background: '#2e1a1a', color: '#e05555', border: '1px solid #e0555533' }}
+                      >Delete</button>
+                    </div>
+                  </div>
+                </div>
+              );
+            })}
           </div>
         )}
 
@@ -1216,6 +1314,13 @@ export default function AdminPage() {
       {editProduct !== undefined && <ProductModal product={editProduct} categories={categories} onClose={() => setEditProduct(undefined)} onSave={fetchProducts} />}
       {stockProduct && <StockModal product={stockProduct} onClose={() => setStockProduct(null)} onSave={fetchProducts} />}
       {editCategory !== undefined && <CategoryModal category={editCategory} onClose={() => setEditCategory(undefined)} onSave={fetchCategories} />}
+      {editPromotion !== undefined && (
+        <PromotionModal
+          promotion={editPromotion}
+          onClose={() => setEditPromotion(undefined)}
+          onSave={fetchPromotions}
+        />
+      )}
       {selectedUserId && <UserModal userId={selectedUserId} onClose={() => setSelectedUserId(null)} />}
     </div>
   );
