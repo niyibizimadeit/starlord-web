@@ -598,12 +598,18 @@ export function PromotionModal({ promotion, onClose, onSave }) {
     if (!form.name || !form.discount_value || !form.starts_at || !form.ends_at)
       { setError('All fields required'); return; }
     setSaving(true);
+  
+    const toUTC = (localDT) => localDT ? new Date(localDT).toISOString() : localDT;
+  
     const body = {
       ...form,
+      starts_at: toUTC(form.starts_at),
+      ends_at: toUTC(form.ends_at),
       discount_value: parseFloat(form.discount_value),
       product_ids: selectedIds,
     };
     if (!isNew) body.id = promotion.id;
+  
     const res = await fetch('/api/admin/promotions', {
       method: isNew ? 'POST' : 'PATCH',
       headers: { 'Content-Type': 'application/json' },
