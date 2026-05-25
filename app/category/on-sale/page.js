@@ -3,6 +3,8 @@ import Link from 'next/link';
 import AddToCartButton from '@/components/AddToCartButton';
 import SaleCountdown from '@/components/SaleCountdown';
 
+export const dynamic = 'force-dynamic';
+
 export const metadata = {
   title: 'On Sale — STARLORD GROUP',
   description: 'Limited-time deals on selected products.',
