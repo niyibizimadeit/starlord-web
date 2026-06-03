@@ -16,7 +16,8 @@ export async function POST(request) {
     });
 
     if (error) {
-      return Response.json({ error: error.message }, { status: 400 });
+      // Log internally but never reveal whether the email exists
+      console.error('[ForgotPassword]', error.message);
     }
 
     // Always return success (don't reveal if email exists)

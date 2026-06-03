@@ -64,6 +64,4 @@ export default async function HomePage({ searchParams }) {
       <TrustBar className="mobile-trustbar-below-products mobile-only-trustbar" />
     </main>
   );
-
-
 }

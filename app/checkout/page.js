@@ -200,7 +200,7 @@ export default function CheckoutPage() {
         return;
       }
       // Initiate push payment
-      await fetch('/api/payments/initiate', {
+      const paymentRes = await fetch('/api/payments/initiate', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -211,6 +211,14 @@ export default function CheckoutPage() {
           method:    form.paymentMethod,
         }),
       });
+
+      if (!paymentRes.ok) {
+        setError('Payment initiation failed. Your order is saved — contact support with reference: ' + data.reference);
+        setProcessing(false);
+        setOrder(data);
+        setStep(3);
+        return;
+      }
 
       setOrder(data);
       clearCart();

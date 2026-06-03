@@ -3,7 +3,6 @@ import { Playfair_Display, Lato } from 'next/font/google';
 import { ThemeProvider } from '@/components/ThemeProvider';
 import { CartProvider } from '@/components/CartContext';
 import ConditionalLayout from '@/components/ConditionalLayout';
-import { Analytics } from '@vercel/analytics/react';
 import { SpeedInsights } from '@vercel/speed-insights/next';
 
 const playfair = Playfair_Display({
@@ -37,7 +36,7 @@ export default function RootLayout({ children }) {
             </ConditionalLayout>
           </CartProvider>
         </ThemeProvider>
-        <Analytics />
+        <SpeedInsights />
       </body>
     </html>
   );

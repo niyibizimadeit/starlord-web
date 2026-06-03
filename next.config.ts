@@ -40,8 +40,10 @@ const nextConfig: NextConfig = {
             value: 'camera=(), microphone=(), geolocation=()',
           },
           {
-            key: 'X-XSS-Protection',
-            value: '1; mode=block',
+            key: 'Content-Security-Policy',
+            value: process.env.NODE_ENV === 'production'
+              ? "default-src 'self'; script-src 'self' 'unsafe-inline' https://www.googletagmanager.com; style-src 'self' 'unsafe-inline'; img-src 'self' https://images.starlordgroup.rw data:; connect-src 'self' https://zphpfahgyerabtpvtwol.supabase.co; frame-ancestors 'none';"
+              : "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://www.googletagmanager.com; style-src 'self' 'unsafe-inline'; img-src 'self' https://images.starlordgroup.rw data:; connect-src 'self' https://zphpfahgyerabtpvtwol.supabase.co https://*.vercel.live; frame-ancestors 'none';",
           },
         ],
       },

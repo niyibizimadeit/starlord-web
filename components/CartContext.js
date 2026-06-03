@@ -1,6 +1,6 @@
 'use client';
 
-import { createContext, useContext, useState } from 'react';
+import { createContext, useContext, useState, useEffect } from 'react';
 
 const CartContext = createContext(null);
 
@@ -14,6 +14,27 @@ function cartKey(product) {
 
 export function CartProvider({ children }) {
   const [cart, setCart] = useState([]);
+  const [hydrated, setHydrated] = useState(false);
+
+  // Load persisted cart from localStorage after mount (client only — avoids hydration mismatch)
+  useEffect(() => {
+    try {
+      const stored = localStorage.getItem('starlord-cart');
+      if (stored) {
+        const parsed = JSON.parse(stored);
+        if (Array.isArray(parsed) && parsed.length > 0) setCart(parsed);
+      }
+    } catch {}
+    setHydrated(true);
+  }, []);
+
+  // Persist cart to localStorage on every change (skip initial empty write before hydration)
+  useEffect(() => {
+    if (!hydrated) return;
+    try {
+      localStorage.setItem('starlord-cart', JSON.stringify(cart));
+    } catch {}
+  }, [cart, hydrated]);
 
   const addToCart = (product, quantity = 1) => {
     const key = cartKey(product);

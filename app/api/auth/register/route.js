@@ -1,5 +1,4 @@
 import { createServerSupabaseClient } from '@/lib/supabase/server';
-import { createServiceClient } from '@/lib/supabase/server';
 
 export async function POST(request) {
   try {
@@ -20,7 +19,8 @@ export async function POST(request) {
       return Response.json({ error: 'Registration failed. Please try again.' }, { status: 400 });
     }
 
-    // Supabase returns empty identities array for already-registered emails
+    // Note: Supabase's signUp returns { data.session: null } for already-registered emails.
+    // We intentionally don't reveal whether the email exists — see forgot-password for the same pattern.
 
     return Response.json({
       success: true,

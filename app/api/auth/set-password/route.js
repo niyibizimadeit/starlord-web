@@ -1,6 +1,6 @@
 import { createServerClient } from '@supabase/ssr';
+import { createServiceClient } from '@/lib/supabase/server';
 import { cookies } from 'next/headers';
-import { NextResponse } from 'next/server';
 
 export async function POST(request) {
   try {
@@ -30,7 +30,7 @@ export async function POST(request) {
 
     // Check auth
     const { data: { user }, error: authError } = await supabase.auth.getUser();
-    
+
     if (authError || !user) {
       return Response.json({ error: 'Unauthorized' }, { status: 401 });
     }
@@ -45,8 +45,9 @@ export async function POST(request) {
       return Response.json({ error: 'Failed to set password' }, { status: 500 });
     }
 
-    // Update password_set flag in users table
-    await supabase
+    // Update password_set flag in users table using service client
+    const serviceClient = createServiceClient();
+    await serviceClient
       .from('users')
       .update({ password_set: true })
       .eq('id', user.id);

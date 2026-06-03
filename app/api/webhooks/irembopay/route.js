@@ -16,6 +16,12 @@ export async function POST(request) {
   try {
     const rawBody = await request.text();
 
+    // Guard: skip verification if webhook secret isn't configured yet (pre-launch)
+    if (!process.env.IREMBOPAY_WEBHOOK_SECRET) {
+      console.warn('[IremboPay] IREMBOPAY_WEBHOOK_SECRET not set — skipping signature verification');
+      return new Response('OK', { status: 200 });
+    }
+
     // TODO: Confirm signature header name with IremboPay docs
     const signature = request.headers.get('x-irembopay-signature');
 

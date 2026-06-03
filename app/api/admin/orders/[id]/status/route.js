@@ -5,6 +5,19 @@ import { cookies } from 'next/headers';
 // Valid status transitions
 const VALID_STATUSES = ['pending', 'confirmed', 'preparing', 'dispatched', 'delivered', 'cancelled'];
 
+const VALID_TRANSITIONS = {
+  pending:    ['confirmed', 'cancelled'],
+  confirmed:  ['preparing', 'cancelled'],
+  preparing:  ['dispatched', 'cancelled'],
+  dispatched: ['delivered'],
+  delivered:  [],
+  cancelled:  [],
+  stock_conflict: [],
+  return_requested: ['return_approved', 'return_rejected'],
+  return_approved: [],
+  return_rejected: [],
+};
+
 // Helper to check admin role
 async function getAdminUser(supabase) {
   const { data: { user }, error } = await supabase.auth.getUser();

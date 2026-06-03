@@ -10,7 +10,10 @@ export async function POST(request) {
     }
 
     const cleanPhone = phone.replace(/\s/g, '');
-    const intlPhone  = '+250' + cleanPhone.slice(1);
+    // Match request-otp behaviour: respect + prefix, default Rwanda
+    const intlPhone = cleanPhone.startsWith('+')
+      ? cleanPhone
+      : '+250' + cleanPhone.slice(1);
 
     const supabase = await createServerSupabaseClient();
 

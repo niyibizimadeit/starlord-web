@@ -117,7 +117,7 @@ export async function GET(request) {
     const categorySplit = Object.entries(categoryCounts)
       .map(([category, quantity]) => ({ category, quantity }));
 
-    // Set cache headers (VULN-18)
+    // Apply appropriate cache duration based on period
     const response = Response.json({
       analytics: {
         period,
@@ -130,8 +130,8 @@ export async function GET(request) {
       }
     });
 
-    response.headers.set('Cache-Control', 'private, no-store');
-    
+    response.headers.set('Cache-Control', `private, s-maxage=${cacheSeconds}, stale-while-revalidate=60`);
+
     return response;
   } catch (err) {
     console.error('Analytics error:', err);
