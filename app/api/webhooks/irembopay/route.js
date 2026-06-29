@@ -72,40 +72,48 @@ export async function POST(request) {
 
     const supabase = createServiceClient();
 
-    const { data: existing } = await supabase
+    // Check for duplicate webhook
+    const { data: existing, error: dupCheckError } = await supabase
       .from('processed_webhooks')
       .select('id')
       .eq('transaction_id', invoiceNumber)
       .maybeSingle();
+
+    if (dupCheckError) {
+      console.error('[Webhook] Duplicate check error:', JSON.stringify(dupCheckError));
+      return new Response('OK', { status: 200 });
+    }
 
     if (existing) {
       console.log('[Webhook] Already processed:', invoiceNumber);
       return new Response('OK', { status: 200 });
     }
 
+    // Find the order by reference (IremboPay's transactionId = our order reference)
+    console.log('[Webhook] Looking up order by reference:', transactionId);
     const { data: order, error: orderError } = await supabase
       .from('orders')
       .select('*')
       .eq('reference', transactionId)
       .single();
 
-    if (orderError || !order) {
-      console.error('[IremboPay] Order not found for reference:', transactionId, orderError);
-      return new Response('Order not found', { status: 404 });
+    if (orderError) {
+      console.error('[Webhook] Order lookup error:', JSON.stringify(orderError));
+      return new Response('OK', { status: 200 });
     }
 
-    console.log('[Webhook] Found order:', order.id, 'reference:', order.reference);
+    if (!order) {
+      console.error('[IremboPay] Order not found for reference:', transactionId);
+      return new Response('OK', { status: 200 });
+    }
 
-    console.log('[Webhook] Inserting processed_webhook for:', invoiceNumber);
-    const insertResult = await supabase
-      .from('processed_webhooks')
-      .insert({ transaction_id: invoiceNumber, order_id: order.id, payload });
-    console.log('[Webhook] Insert result:', JSON.stringify(insertResult));
+    console.log('[Webhook] Found order:', order.id, 'status:', order.status, 'payment_status:', order.payment_status);
 
+    // Apply the payment result
     if (paymentStatus === 'PAID') {
-      console.log('[Webhook] Attempting order update for order id:', order.id);
+      console.log('[Webhook] Updating order to confirmed/paid...');
 
-      const { data: updateData, error: updateError } = await supabase
+      const { error: updateError } = await supabase
         .from('orders')
         .update({
           status:                   'confirmed',
@@ -113,11 +121,16 @@ export async function POST(request) {
           payment_method:           paymentMethod || order.payment_method,
           irembopay_transaction_id: invoiceNumber,
         })
-        .eq('id', order.id);
+        .eq('id', order.id)
+        .select('id');
 
-      console.log('[Webhook] Update result:', JSON.stringify(updateData), 'Error:', JSON.stringify(updateError));
-
+      if (updateError) {
+        console.error('[Webhook] Order update FAILED:', JSON.stringify(updateError));
+      } else {
+        console.log('[Webhook] Order updated successfully to confirmed/paid');
+      }
     } else {
+      console.log('[Webhook] Payment not PAID — status:', paymentStatus);
       await supabase
         .from('orders')
         .update({
@@ -126,6 +139,7 @@ export async function POST(request) {
         })
         .eq('id', order.id);
 
+      // Restore stock
       const { data: orderItems } = await supabase
         .from('order_items')
         .select('product_id, quantity')
@@ -141,11 +155,25 @@ export async function POST(request) {
       }
     }
 
+    // Record the webhook AFTER processing (so replay protection works)
+    // If the table doesn't exist yet, log the error but don't crash
+    const { error: insertError } = await supabase
+      .from('processed_webhooks')
+      .insert({ transaction_id: invoiceNumber, order_id: order.id, payload });
+
+    if (insertError) {
+      console.error('[Webhook] Failed to record processed_webhook:', JSON.stringify(insertError));
+      console.error('[Webhook] Error code:', insertError.code, 'message:', insertError.message);
+      // If table doesn't exist, that's a setup issue — log but don't block payment processing
+    } else {
+      console.log('[Webhook] Recorded in processed_webhooks');
+    }
+
     console.log('[Webhook] Done processing:', invoiceNumber);
     return new Response('OK', { status: 200 });
 
   } catch (err) {
-    console.error('[IremboPay] Webhook error:', err.message, err.stack);
+    console.error('[IremboPay] Webhook CRASH:', err.message, err.stack);
     return new Response('OK', { status: 200 });
   }
 }
