@@ -69,7 +69,6 @@ export async function POST(request) {
     }
 
     const invoiceNumber = invoiceResult.data.invoiceNumber;
-    const paymentLinkUrl = invoiceResult.data.paymentLinkUrl;
 
     // Store IremboPay invoice number on the order (both card and push flows need this)
     await supabase
@@ -77,13 +76,9 @@ export async function POST(request) {
       .update({ irembopay_transaction_id: invoiceNumber })
       .eq('id', orderId);
 
-    // ── Card flow: return paymentLinkUrl, skip push payment ────────────
+    // ── Card flow: return invoiceNumber for inline widget, skip push ────
     if (method === 'card') {
-      if (!paymentLinkUrl) {
-        console.error('[IremboPay] Invoice missing paymentLinkUrl:', invoiceResult);
-        return Response.json({ error: 'Payment link unavailable' }, { status: 502 });
-      }
-      return Response.json({ paymentLinkUrl });
+      return Response.json({ success: true, invoiceNumber });
     }
 
     // ── Mobile money flow: initiate push payment ──────────────────────

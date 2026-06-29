@@ -33,28 +33,19 @@ export default function CheckoutPage() {
     name: '', phone: '', address: '', paymentMethod: 'mtn',
   });
 
+  // ── Load IremboPay inline widget script ───────────────────────────
   useEffect(() => {
-    const stored = sessionStorage.getItem('card_return');
-    if (cart.length === 0 && !order && !stored) router.push('/');
-  }, [cart, order, router]);
-
-  // ── Restore state when returning from IremboPay card checkout ──────
-  useEffect(() => {
-    const stored = sessionStorage.getItem('card_return');
-    if (stored) {
-      try {
-        const { order: savedOrder, phone: savedPhone, name: savedName } = JSON.parse(stored);
-        setOrder(savedOrder);
-        setForm(prev => ({ ...prev, phone: savedPhone || prev.phone, name: savedName || prev.name }));
-        setPaymentStatus('paid');
-        setStep(3);
-      } catch (e) {
-        console.error('Failed to restore card return state:', e);
-      }
-      sessionStorage.removeItem('card_return');
-      window.history.replaceState({}, '', '/checkout');
+    if (typeof window !== 'undefined' && !window.IremboPay) {
+      const script = document.createElement('script');
+      script.src = 'https://dashboard.sandbox.irembopay.com/assets/payment/inline.js';
+      script.async = true;
+      document.head.appendChild(script);
     }
   }, []);
+
+  useEffect(() => {
+    if (cart.length === 0 && !order) router.push('/');
+  }, [cart, order, router]);
 
   // ── Fetch session, profile, addresses + delivery fee ──────────────
   useEffect(() => {
@@ -246,14 +237,26 @@ export default function CheckoutPage() {
       setOrder(data);
       clearCart();
 
-      if (paymentData.paymentLinkUrl) {
-        // Card payment: redirect to IremboPay hosted checkout
-        sessionStorage.setItem('card_return', JSON.stringify({
-          order: data,
-          phone: form.phone,
-          name:  form.name,
-        }));
-        window.location.href = paymentData.paymentLinkUrl;
+      if (paymentData.invoiceNumber) {
+        // Card payment: launch IremboPay inline widget
+        setProcessing(false);
+        if (typeof window !== 'undefined' && window.IremboPay) {
+          window.IremboPay.initiate({
+            invoiceNumber: paymentData.invoiceNumber,
+            publicKey: process.env.NEXT_PUBLIC_IREMBOPAY_PUBLIC_KEY,
+            callback: function (response) {
+              if (response.status === 'PAID') {
+                setPaymentStatus('paid');
+                setStep(3);
+              } else {
+                setPaymentStatus('failed');
+                setStep(3);
+              }
+            },
+          });
+        } else {
+          setError('Payment widget failed to load. Please refresh and try again.');
+        }
       } else {
         // Mobile money: show "Check your phone" waiting screen
         setStep(3);
