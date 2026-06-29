@@ -1,7 +1,6 @@
 import { createServiceClient } from '@/lib/supabase/server';
 import crypto from 'crypto';
 
-
 export async function POST(request) {
   try {
     const rawBody = await request.text();
@@ -24,8 +23,12 @@ export async function POST(request) {
       const receivedSig = parts['s'];
 
       if (!timestamp || !receivedSig) {
+        console.error('[Webhook] Missing timestamp or signature');
         return new Response('Unauthorized', { status: 401 });
       }
+
+      console.log('[Webhook] Timestamp:', timestamp, 'Current:', Date.now());
+      console.log('[Webhook] Time diff ms:', Math.abs(Date.now() - parseInt(timestamp, 10)));
 
       if (Math.abs(Date.now() - parseInt(timestamp, 10)) > 5 * 60 * 1000) {
         console.error('[IremboPay] Webhook timestamp too old');
@@ -49,10 +52,12 @@ export async function POST(request) {
       }
     }
 
+    console.log('[Webhook] Signature verified, proceeding...');
+
     const payload = JSON.parse(rawBody);
     const data = payload.data;
+
     console.log('[Webhook] Full payload:', JSON.stringify(payload, null, 2));
-    console.log('[Webhook] data:', JSON.stringify(data, null, 2));
     console.log('[Webhook] transactionId:', data?.transactionId);
     console.log('[Webhook] paymentStatus:', data?.paymentStatus);
 
@@ -74,6 +79,7 @@ export async function POST(request) {
       .maybeSingle();
 
     if (existing) {
+      console.log('[Webhook] Already processed:', invoiceNumber);
       return new Response('OK', { status: 200 });
     }
 
@@ -84,16 +90,22 @@ export async function POST(request) {
       .single();
 
     if (orderError || !order) {
-      console.error('[IremboPay] Order not found for reference:', transactionId);
+      console.error('[IremboPay] Order not found for reference:', transactionId, orderError);
       return new Response('Order not found', { status: 404 });
     }
 
-    await supabase
+    console.log('[Webhook] Found order:', order.id, 'reference:', order.reference);
+
+    console.log('[Webhook] Inserting processed_webhook for:', invoiceNumber);
+    const insertResult = await supabase
       .from('processed_webhooks')
       .insert({ transaction_id: invoiceNumber, order_id: order.id, payload });
+    console.log('[Webhook] Insert result:', JSON.stringify(insertResult));
 
     if (paymentStatus === 'PAID') {
-      await supabase
+      console.log('[Webhook] Attempting order update for order id:', order.id);
+
+      const { data: updateData, error: updateError } = await supabase
         .from('orders')
         .update({
           status:                   'confirmed',
@@ -102,6 +114,8 @@ export async function POST(request) {
           irembopay_transaction_id: invoiceNumber,
         })
         .eq('id', order.id);
+
+      console.log('[Webhook] Update result:', JSON.stringify(updateData), 'Error:', JSON.stringify(updateError));
 
     } else {
       await supabase
@@ -127,10 +141,11 @@ export async function POST(request) {
       }
     }
 
+    console.log('[Webhook] Done processing:', invoiceNumber);
     return new Response('OK', { status: 200 });
 
   } catch (err) {
-    console.error('[IremboPay] Webhook error:', err);
+    console.error('[IremboPay] Webhook error:', err.message, err.stack);
     return new Response('OK', { status: 200 });
   }
 }
