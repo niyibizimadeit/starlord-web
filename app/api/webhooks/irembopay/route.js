@@ -109,6 +109,15 @@ export async function POST(request) {
 
     console.log('[Webhook] Found order:', order.id, 'status:', order.status, 'payment_status:', order.payment_status);
 
+    // Map IremboPay payment method to our internal values (CHECK constraint requires 'mtn' or 'airtel')
+    function normalizePaymentMethod(method) {
+      if (!method) return 'mtn';
+      const m = method.toLowerCase();
+      if (m.includes('mtn') || m.includes('momo')) return 'mtn';
+      if (m.includes('airtel')) return 'airtel';
+      return 'mtn'; // default
+    }
+
     // Apply the payment result
     if (paymentStatus === 'PAID') {
       console.log('[Webhook] Updating order to confirmed/paid...');
@@ -118,7 +127,7 @@ export async function POST(request) {
         .update({
           status:                   'confirmed',
           payment_status:           'paid',
-          payment_method:           paymentMethod || order.payment_method,
+          payment_method:           normalizePaymentMethod(paymentMethod) || order.payment_method,
           irembopay_transaction_id: invoiceNumber,
         })
         .eq('id', order.id)
