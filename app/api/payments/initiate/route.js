@@ -69,8 +69,24 @@ export async function POST(request) {
     }
 
     const invoiceNumber = invoiceResult.data.invoiceNumber;
+    const paymentLinkUrl = invoiceResult.data.paymentLinkUrl;
 
-    // Step 2: Initiate push payment
+    // Store IremboPay invoice number on the order (both card and push flows need this)
+    await supabase
+      .from('orders')
+      .update({ irembopay_transaction_id: invoiceNumber })
+      .eq('id', orderId);
+
+    // ── Card flow: return paymentLinkUrl, skip push payment ────────────
+    if (method === 'card') {
+      if (!paymentLinkUrl) {
+        console.error('[IremboPay] Invoice missing paymentLinkUrl:', invoiceResult);
+        return Response.json({ error: 'Payment link unavailable' }, { status: 502 });
+      }
+      return Response.json({ paymentLinkUrl });
+    }
+
+    // ── Mobile money flow: initiate push payment ──────────────────────
     const pushRes = await fetch(`${BASE_URL}/payments/transactions/initiate`, {
       method: 'POST',
       headers: irembopayHeaders(),
@@ -87,11 +103,6 @@ export async function POST(request) {
       console.error('IremboPay push payment error:', pushResult);
       return Response.json({ error: 'Failed to initiate push payment' }, { status: 502 });
     }
-
-    await supabase
-      .from('orders')
-      .update({ irembopay_transaction_id: invoiceNumber })
-      .eq('id', orderId);
 
     return Response.json({ success: true });
 

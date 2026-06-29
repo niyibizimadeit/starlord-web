@@ -97,7 +97,7 @@ CREATE TABLE orders (
   "delivery_fee" integer, -- e.g. 0
   "total" integer, -- e.g. 25000
   "status" text, -- e.g. "cancelled"
-  "payment_method" text, -- e.g. "mtn"
+  "payment_method" text CHECK (payment_method IN ('mtn', 'airtel', 'card')), -- e.g. "mtn"
   "payment_status" text, -- e.g. "pending"
   "idempotency_key" text, -- e.g. "01912681-39b4-4105-8071-91b67721fafa"
   "created_at" timestamp with time zone, -- e.g. "2026-05-12T11:36:26.511676+00:00"
@@ -267,4 +267,21 @@ CREATE TABLE processed_webhooks (
 --   promotion_products: 2 columns, 15 rows
 --   settings: 2 columns, 2 rows
 --   admin_logs: 7 columns, 345 rows
---   processed_webhooks: 0 columns, 0 rows
+--   processed_webhooks: 4 columns, 0 rows
+
+-- =============================================================
+-- KNOWN CHECK CONSTRAINTS (from runtime errors)
+-- =============================================================
+-- orders.payment_method: CHECK (payment_method IN ('mtn', 'airtel', 'card'))
+--   ⚠️ The IremboPay webhook normalizes payment methods:
+--      MOMO_PUSH / MTN_MOMO → 'mtn'
+--      AIRTEL_MONEY          → 'airtel'
+--      ONLINE_CARD / CARD     → 'card'
+-- =============================================================
+
+-- =============================================================
+-- RPC FUNCTIONS (inferred from code)
+-- =============================================================
+-- deduct_stock(p_product_id UUID, p_quantity INT)
+-- restore_stock(p_product_id UUID, p_quantity INT)
+-- =============================================================

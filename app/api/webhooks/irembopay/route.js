@@ -109,12 +109,13 @@ export async function POST(request) {
 
     console.log('[Webhook] Found order:', order.id, 'status:', order.status, 'payment_status:', order.payment_status);
 
-    // Map IremboPay payment method to our internal values (CHECK constraint requires 'mtn' or 'airtel')
+    // Map IremboPay payment method to internal values (CHECK constraint allows 'mtn', 'airtel', 'card')
     function normalizePaymentMethod(method) {
       if (!method) return 'mtn';
       const m = method.toLowerCase();
       if (m.includes('mtn') || m.includes('momo')) return 'mtn';
       if (m.includes('airtel')) return 'airtel';
+      if (m.includes('online_card') || m.includes('card')) return 'card';
       return 'mtn'; // default
     }
 

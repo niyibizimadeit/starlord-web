@@ -34,8 +34,27 @@ export default function CheckoutPage() {
   });
 
   useEffect(() => {
-    if (cart.length === 0 && !order) router.push('/');
+    const stored = sessionStorage.getItem('card_return');
+    if (cart.length === 0 && !order && !stored) router.push('/');
   }, [cart, order, router]);
+
+  // ── Restore state when returning from IremboPay card checkout ──────
+  useEffect(() => {
+    const stored = sessionStorage.getItem('card_return');
+    if (stored) {
+      try {
+        const { order: savedOrder, phone: savedPhone, name: savedName } = JSON.parse(stored);
+        setOrder(savedOrder);
+        setForm(prev => ({ ...prev, phone: savedPhone || prev.phone, name: savedName || prev.name }));
+        setPaymentStatus('paid');
+        setStep(3);
+      } catch (e) {
+        console.error('Failed to restore card return state:', e);
+      }
+      sessionStorage.removeItem('card_return');
+      window.history.replaceState({}, '', '/checkout');
+    }
+  }, []);
 
   // ── Fetch session, profile, addresses + delivery fee ──────────────
   useEffect(() => {
@@ -122,8 +141,11 @@ export default function CheckoutPage() {
     if (key === 'phone') {
       const clean = value.replace(/\s/g, '');
       let paymentMethod = form.paymentMethod;
-      if (clean.startsWith('078') || clean.startsWith('079')) paymentMethod = 'mtn';
-      else if (clean.startsWith('072') || clean.startsWith('073')) paymentMethod = 'airtel';
+      // Only auto-match phone prefix when card is NOT selected
+      if (form.paymentMethod !== 'card') {
+        if (clean.startsWith('078') || clean.startsWith('079')) paymentMethod = 'mtn';
+        else if (clean.startsWith('072') || clean.startsWith('073')) paymentMethod = 'airtel';
+      }
       setForm(prev => ({ ...prev, phone: value, paymentMethod }));
     } else {
       setForm(prev => ({ ...prev, [key]: value }));
@@ -199,7 +221,7 @@ export default function CheckoutPage() {
         setProcessing(false);
         return;
       }
-      // Initiate push payment
+      // Initiate payment
       const paymentRes = await fetch('/api/payments/initiate', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -220,9 +242,22 @@ export default function CheckoutPage() {
         return;
       }
 
+      const paymentData = await paymentRes.json();
       setOrder(data);
       clearCart();
-      setStep(3);
+
+      if (paymentData.paymentLinkUrl) {
+        // Card payment: redirect to IremboPay hosted checkout
+        sessionStorage.setItem('card_return', JSON.stringify({
+          order: data,
+          phone: form.phone,
+          name:  form.name,
+        }));
+        window.location.href = paymentData.paymentLinkUrl;
+      } else {
+        // Mobile money: show "Check your phone" waiting screen
+        setStep(3);
+      }
     } catch {
       setError('Connection error. Please check your internet and try again.');
       setProcessing(false);
@@ -312,11 +347,12 @@ export default function CheckoutPage() {
       marginBottom: 6, fontWeight: 700, letterSpacing: 0.5,
     };
 
-    // Derive lock flag from current phone prefix
+    // Derive lock flag from current phone prefix (card can freely switch)
     const cleanPhone = form.phone.replace(/\s/g, '');
-    const paymentLocked =
+    const paymentLocked = form.paymentMethod !== 'card' && (
       cleanPhone.startsWith('078') || cleanPhone.startsWith('079') ||
-      cleanPhone.startsWith('072') || cleanPhone.startsWith('073');
+      cleanPhone.startsWith('072') || cleanPhone.startsWith('073')
+    );
 
     return (
       <div style={{ maxWidth: 500, margin: '0 auto', padding: '24px 20px 120px' }}>
@@ -556,8 +592,9 @@ export default function CheckoutPage() {
             <label style={labelStyle}>Pay With</label>
             <div style={{ display: 'flex', gap: 10 }}>
               {[
-                { key: 'mtn',    label: 'MTN MoMo',    sub: '078 / 079' },
-                { key: 'airtel', label: 'Airtel Money', sub: '072 / 073' },
+                { key: 'mtn',    label: 'MTN MoMo',              sub: '078 / 079' },
+                { key: 'airtel', label: 'Airtel Money',          sub: '072 / 073' },
+                { key: 'card',   label: 'Card (Visa / Mastercard)', sub: 'Pay online' },
               ].map(p => {
                 const isSelected = form.paymentMethod === p.key;
                 const isDisabled = paymentLocked && !isSelected;
