@@ -1,6 +1,7 @@
 import { createServiceClient } from '@/lib/supabase/server';
 import crypto from 'crypto';
 
+
 export async function POST(request) {
   try {
     const rawBody = await request.text();
@@ -50,6 +51,10 @@ export async function POST(request) {
 
     const payload = JSON.parse(rawBody);
     const data = payload.data;
+    console.log('[Webhook] Full payload:', JSON.stringify(payload, null, 2));
+    console.log('[Webhook] data:', JSON.stringify(data, null, 2));
+    console.log('[Webhook] transactionId:', data?.transactionId);
+    console.log('[Webhook] paymentStatus:', data?.paymentStatus);
 
     if (!data) {
       return new Response('Bad Request', { status: 400 });
