@@ -36,8 +36,12 @@ export default function CheckoutPage() {
   // ── Load IremboPay inline widget script ───────────────────────────
   useEffect(() => {
     if (typeof window !== 'undefined' && !window.IremboPay) {
+      const isSandbox = (process.env.NEXT_PUBLIC_IREMBOPAY_BASE_URL || '').includes('sandbox');
+      const widgetSrc = isSandbox
+        ? 'https://dashboard.sandbox.irembopay.com/assets/payment/inline.js'
+        : 'https://dashboard.irembopay.com/assets/payment/inline.js';
       const script = document.createElement('script');
-      script.src = 'https://dashboard.sandbox.irembopay.com/assets/payment/inline.js';
+      script.src = widgetSrc;
       script.async = true;
       document.head.appendChild(script);
     }
