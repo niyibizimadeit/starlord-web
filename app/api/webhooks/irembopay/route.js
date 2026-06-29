@@ -1,94 +1,104 @@
 import { createServiceClient } from '@/lib/supabase/server';
 import crypto from 'crypto';
 
-// ─── TODO: Confirm these with IremboPay sandbox docs next week ────────────────
-// Expected env vars to add to Vercel:
-//   IREMBOPAY_WEBHOOK_SECRET — used to verify HMAC signature
-// Expected webhook payload shape (update once you have sandbox access):
-//   { transaction_id, status, order_reference, payment_method, ... }
-// Expected status values (update once confirmed):
-//   SUCCESS / FAILED / CANCELLED
-// Expected signature header name (update once confirmed):
-//   x-irembopay-signature
-// ─────────────────────────────────────────────────────────────────────────────
-
 export async function POST(request) {
   try {
     const rawBody = await request.text();
+    const signatureHeader = request.headers.get('irembopay-signature');
+    const secretKey = process.env.IREMBOPAY_SECRET_KEY;
 
-    // Guard: skip verification if webhook secret isn't configured yet (pre-launch)
-    if (!process.env.IREMBOPAY_WEBHOOK_SECRET) {
-      console.warn('[IremboPay] IREMBOPAY_WEBHOOK_SECRET not set — skipping signature verification');
-      return new Response('OK', { status: 200 });
-    }
-
-    // TODO: Confirm signature header name with IremboPay docs
-    const signature = request.headers.get('x-irembopay-signature');
-
-    // TODO: Confirm HMAC algorithm with IremboPay docs (SHA256 assumed)
-    const expectedSignature = crypto
-      .createHmac('sha256', process.env.IREMBOPAY_WEBHOOK_SECRET)
-      .update(rawBody)
-      .digest('hex');
-
-    if (signature !== expectedSignature) {
-      console.error('Invalid IremboPay webhook signature');
+    if (!secretKey) {
+      console.warn('[IremboPay] IREMBOPAY_SECRET_KEY not set — skipping signature verification');
+    } else if (!signatureHeader) {
+      console.error('[IremboPay] Missing irembopay-signature header');
       return new Response('Unauthorized', { status: 401 });
+    } else {
+      const parts = signatureHeader.split(',').reduce((acc, part) => {
+        const [key, val] = part.trim().split('=');
+        acc[key.trim()] = val.trim();
+        return acc;
+      }, {});
+
+      const timestamp = parts['t'];
+      const receivedSig = parts['s'];
+
+      if (!timestamp || !receivedSig) {
+        return new Response('Unauthorized', { status: 401 });
+      }
+
+      if (Math.abs(Date.now() - parseInt(timestamp, 10)) > 5 * 60 * 1000) {
+        console.error('[IremboPay] Webhook timestamp too old');
+        return new Response('Unauthorized', { status: 401 });
+      }
+
+      const signedPayload = `${timestamp}#${rawBody}`;
+      const expectedSig = crypto
+        .createHmac('sha256', secretKey)
+        .update(signedPayload)
+        .digest('hex');
+
+      const signaturesMatch = crypto.timingSafeEqual(
+        Buffer.from(expectedSig, 'hex'),
+        Buffer.from(receivedSig, 'hex')
+      );
+
+      if (!signaturesMatch) {
+        console.error('[IremboPay] Invalid webhook signature');
+        return new Response('Unauthorized', { status: 401 });
+      }
     }
 
     const payload = JSON.parse(rawBody);
+    const data = payload.data;
 
-    // TODO: Update these field names to match IremboPay's actual payload
-    const transaction_id    = payload.transaction_id;   // IremboPay's unique ID
-    const status            = payload.status;           // e.g. SUCCESS / FAILED
-    const order_reference   = payload.order_reference;  // our order reference e.g. SL-XXXXXX
-    const payment_method    = payload.payment_method;   // e.g. mtn_momo / airtel_money
+    if (!data) {
+      return new Response('Bad Request', { status: 400 });
+    }
+
+    const invoiceNumber = data.invoiceNumber;
+    const paymentStatus = data.paymentStatus;
+    const transactionId = data.transactionId;
+    const paymentMethod = data.paymentMethod;
 
     const supabase = createServiceClient();
 
-    // Replay protection — prevent double-processing
-    const { data: existingWebhook } = await supabase
+    const { data: existing } = await supabase
       .from('processed_webhooks')
       .select('id')
-      .eq('transaction_id', transaction_id)
-      .single();
+      .eq('transaction_id', invoiceNumber)
+      .maybeSingle();
 
-    if (existingWebhook) {
+    if (existing) {
       return new Response('OK', { status: 200 });
     }
 
-    // Find the order
     const { data: order, error: orderError } = await supabase
       .from('orders')
       .select('*')
-      .eq('reference', order_reference)
+      .eq('reference', transactionId)
       .single();
 
     if (orderError || !order) {
-      console.error('Order not found:', order_reference);
+      console.error('[IremboPay] Order not found for reference:', transactionId);
       return new Response('Order not found', { status: 404 });
     }
 
     await supabase
       .from('processed_webhooks')
-      .insert({ transaction_id, order_id: order.id, payload });
+      .insert({ transaction_id: invoiceNumber, order_id: order.id, payload });
 
-    // TODO: Replace 'SUCCESS' with IremboPay's actual success status string
-    if (status === 'SUCCESS') {
+    if (paymentStatus === 'PAID') {
       await supabase
         .from('orders')
         .update({
-          status:          'confirmed',
-          payment_status:  'paid',
-          payment_method:  payment_method || order.payment_method,
-          transaction_id,
+          status:                   'confirmed',
+          payment_status:           'paid',
+          payment_method:           paymentMethod || order.payment_method,
+          irembopay_transaction_id: invoiceNumber,
         })
         .eq('id', order.id);
 
-      // TODO: Fire SMS / push notifications on successful payment
-
-    // TODO: Replace 'FAILED'/'CANCELLED' with IremboPay's actual failure statuses
-    } else if (status === 'FAILED' || status === 'CANCELLED') {
+    } else {
       await supabase
         .from('orders')
         .update({
@@ -97,13 +107,12 @@ export async function POST(request) {
         })
         .eq('id', order.id);
 
-      // Restore reserved stock
       const { data: orderItems } = await supabase
         .from('order_items')
         .select('product_id, quantity')
         .eq('order_id', order.id);
 
-      if (orderItems) {
+      if (orderItems?.length) {
         for (const item of orderItems) {
           await supabase.rpc('restore_stock', {
             p_product_id: item.product_id,
@@ -111,13 +120,12 @@ export async function POST(request) {
           });
         }
       }
-
-      // TODO: Send payment failed notification
     }
 
     return new Response('OK', { status: 200 });
+
   } catch (err) {
-    console.error('IremboPay webhook error:', err);
+    console.error('[IremboPay] Webhook error:', err);
     return new Response('OK', { status: 200 });
   }
 }

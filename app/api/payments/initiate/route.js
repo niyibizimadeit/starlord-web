@@ -1,5 +1,15 @@
 import { createServiceClient } from '@/lib/supabase/server';
 
+const BASE_URL = process.env.IREMBOPAY_BASE_URL || 'https://api.sandbox.irembopay.com';
+
+function irembopayHeaders() {
+  return {
+    'Content-Type': 'application/json',
+    'irembopay-secretkey': process.env.IREMBOPAY_SECRET_KEY,
+    'X-API-Version': '2',
+  };
+}
+
 export async function POST(request) {
   try {
     const { orderId, reference, amount, phone, method } = await request.json();
@@ -10,53 +20,78 @@ export async function POST(request) {
 
     const supabase = createServiceClient();
 
-    // Verify order is still pending
     const { data: order, error: orderError } = await supabase
       .from('orders')
-      .select('id, payment_status')
+      .select('id, payment_status, customer_name, customer_phone')
       .eq('id', orderId)
       .eq('reference', reference)
       .single();
 
     if (orderError || !order) {
+      console.error('Order lookup error:', orderError);
       return Response.json({ error: 'Order not found' }, { status: 404 });
     }
     if (order.payment_status !== 'pending') {
       return Response.json({ error: 'Order already processed' }, { status: 409 });
     }
 
-    // TODO: Confirm endpoint, auth format, and payload shape with IremboPay sandbox docs
-    const response = await fetch(`${process.env.IREMBOPAY_BASE_URL}/payments/initiate`, {
+    // Step 1: Create invoice
+    const expiryAt = new Date(Date.now() + 15 * 60 * 1000).toISOString();
+
+    const invoiceRes = await fetch(`${BASE_URL}/payments/invoices`, {
       method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${process.env.IREMBOPAY_SECRET_KEY}`,
-      },
+      headers: irembopayHeaders(),
       body: JSON.stringify({
-        amount,
-        phone,
-        reference,
-        payment_method: method,
-        callback_url: `${process.env.NEXT_PUBLIC_SITE_URL}/api/webhooks/irembopay`,
+        transactionId: reference,
+        paymentAccountIdentifier: process.env.IREMBOPAY_PAYMENT_ACCOUNT_ID,
+        paymentItems: [
+          {
+            code: process.env.IREMBOPAY_PRODUCT_CODE,
+            quantity: 1,
+            unitAmount: amount,
+          },
+        ],
+        expiryAt,
+        description: `Order ${reference} - Starlord Group`,
+        language: 'EN',
+        customer: {
+          name: order.customer_name,
+          phoneNumber: order.customer_phone,
+        },
       }),
     });
 
-    const result = await response.json();
+    const invoiceResult = await invoiceRes.json();
 
-    if (!response.ok) {
-      console.error('IremboPay initiate error:', result);
-      return Response.json({ error: 'Payment initiation failed' }, { status: 502 });
+    if (!invoiceRes.ok || !invoiceResult.success) {
+      console.error('IremboPay create invoice error:', invoiceResult);
+      return Response.json({ error: 'Failed to create invoice' }, { status: 502 });
     }
 
-    // TODO: Confirm transaction ID field name in IremboPay's response
-    const transactionId = result.transaction_id || result.transactionId || result.id;
+    const invoiceNumber = invoiceResult.data.invoiceNumber;
 
-    if (transactionId) {
-      await supabase
-        .from('orders')
-        .update({ irembopay_transaction_id: transactionId })
-        .eq('id', orderId);
+    // Step 2: Initiate push payment
+    const pushRes = await fetch(`${BASE_URL}/payments/transactions/initiate`, {
+      method: 'POST',
+      headers: irembopayHeaders(),
+      body: JSON.stringify({
+        invoiceNumber,
+        accountIdentifier: phone.replace(/\s+/g, ''),
+        paymentProvider: method.toUpperCase(),
+      }),
+    });
+
+    const pushResult = await pushRes.json();
+
+    if (!pushRes.ok || !pushResult.success) {
+      console.error('IremboPay push payment error:', pushResult);
+      return Response.json({ error: 'Failed to initiate push payment' }, { status: 502 });
     }
+
+    await supabase
+      .from('orders')
+      .update({ irembopay_transaction_id: invoiceNumber })
+      .eq('id', orderId);
 
     return Response.json({ success: true });
 
