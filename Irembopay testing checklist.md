@@ -33,10 +33,10 @@
 ## 2. Airtel Money (Push Payment)
 
 ### 2.1 Successful Payment
-- [ ] Place an order, select Airtel as payment method
-- [ ] Enter sandbox success number: `0731234567`
-- [ ] Confirm status updates to `confirmed` / `paid` via webhook
-- [ ] Verify in IremboPay dashboard: webhook **Successful: True**, response **200**
+- [x] Place an order, select Airtel as payment method
+- [x] Enter sandbox success number: `0731234567`
+- [x] Confirm status updates to `confirmed` / `paid` via webhook
+- [x] Verify in IremboPay dashboard: webhook **Successful: True**, response **200**
 
 ### 2.2 Failed Payment
 - [ ] Enter sandbox fail number: `0730123456`
