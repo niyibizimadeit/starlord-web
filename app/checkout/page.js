@@ -30,21 +30,23 @@ export default function CheckoutPage() {
   const [paymentStatus, setPaymentStatus] = useState('pending');
   const [slots, setSlots] = useState([]);
   const [form, setForm] = useState({
-    name: '', phone: '', address: '', paymentMethod: 'mtn',
+    name: '', phone: '', address: '', paymentMethod: 'mtn', paymentPhone: '',
   });
 
   // ── Load IremboPay inline widget script ───────────────────────────
   useEffect(() => {
-    if (typeof window !== 'undefined' && !window.IremboPay) {
-      const isSandbox = (process.env.NEXT_PUBLIC_IREMBOPAY_BASE_URL || '').includes('sandbox');
-      const widgetSrc = isSandbox
-        ? 'https://dashboard.sandbox.irembopay.com/assets/payment/inline.js'
-        : 'https://dashboard.irembopay.com/assets/payment/inline.js';
-      const script = document.createElement('script');
-      script.src = widgetSrc;
-      script.async = true;
-      document.head.appendChild(script);
-    }
+    if (typeof window === 'undefined') return;
+    // Already loaded by a previous mount (e.g. hot reload)
+    if (window.IremboPay) return;
+
+    const isSandbox = (process.env.NEXT_PUBLIC_IREMBOPAY_BASE_URL || '').includes('sandbox');
+    const widgetSrc = isSandbox
+      ? 'https://dashboard.sandbox.irembopay.com/assets/payment/inline.js'
+      : 'https://dashboard.irembopay.com/assets/payment/inline.js';
+    const script = document.createElement('script');
+    script.src = widgetSrc;
+    script.async = true;
+    document.head.appendChild(script);
   }, []);
 
   useEffect(() => {
@@ -131,20 +133,9 @@ export default function CheckoutPage() {
     return () => clearInterval(interval);
   }, [step, order, form.phone, paymentStatus]);
 
-  // ── updateForm — single setForm call, detects phone prefix ────────
+  // ── updateForm — simple setter, no auto-detection ─────────────────
   const updateForm = (key, value) => {
-    if (key === 'phone') {
-      const clean = value.replace(/\s/g, '');
-      let paymentMethod = form.paymentMethod;
-      // Only auto-match phone prefix when card is NOT selected
-      if (form.paymentMethod !== 'card') {
-        if (clean.startsWith('078') || clean.startsWith('079')) paymentMethod = 'mtn';
-        else if (clean.startsWith('072') || clean.startsWith('073')) paymentMethod = 'airtel';
-      }
-      setForm(prev => ({ ...prev, phone: value, paymentMethod }));
-    } else {
-      setForm(prev => ({ ...prev, [key]: value }));
-    }
+    setForm(prev => ({ ...prev, [key]: value }));
   };
 
   const handleAddressSelect = (addr) => {
@@ -183,6 +174,27 @@ export default function CheckoutPage() {
       setError('Please enter a valid Rwandan phone number (078, 079, 072, or 073)');
       return false;
     }
+    // Validate payment phone for mobile money methods
+    if (form.paymentMethod === 'mtn') {
+      if (!form.paymentPhone.trim()) {
+        setError('Please enter the MTN MoMo number to charge');
+        return false;
+      }
+      if (!/^(078|079)\d{7}$/.test(form.paymentPhone.replace(/\s/g, ''))) {
+        setError('Please enter a valid MTN MoMo number (starts with 078 or 079)');
+        return false;
+      }
+    }
+    if (form.paymentMethod === 'airtel') {
+      if (!form.paymentPhone.trim()) {
+        setError('Please enter the Airtel Money number to charge');
+        return false;
+      }
+      if (!/^(072|073)\d{7}$/.test(form.paymentPhone.replace(/\s/g, ''))) {
+        setError('Please enter a valid Airtel Money number (starts with 072 or 073)');
+        return false;
+      }
+    }
     return true;
   };
 
@@ -216,7 +228,8 @@ export default function CheckoutPage() {
         setProcessing(false);
         return;
       }
-      // Initiate payment
+      // Initiate payment — use paymentPhone for mobile money, contact phone for card
+      const paymentPhone = form.paymentMethod === 'card' ? form.phone : form.paymentPhone;
       const paymentRes = await fetch('/api/payments/initiate', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -224,7 +237,7 @@ export default function CheckoutPage() {
           orderId:   data.orderId,
           reference: data.reference,
           amount:    data.total,
-          phone:     form.phone,
+          phone:     paymentPhone,
           method:    form.paymentMethod,
         }),
       });
@@ -239,12 +252,33 @@ export default function CheckoutPage() {
 
       const paymentData = await paymentRes.json();
       setOrder(data);
-      clearCart();
 
       if (paymentData.invoiceNumber) {
         // Card payment: launch IremboPay inline widget
         setProcessing(false);
-        if (typeof window !== 'undefined' && window.IremboPay) {
+
+        // Wait for IremboPay widget script to load (with timeout)
+        const waitForIremboPay = () => {
+          return new Promise((resolve) => {
+            if (typeof window !== 'undefined' && window.IremboPay) return resolve(true);
+            let attempts = 0;
+            const maxAttempts = 50; // 5 seconds max
+            const interval = setInterval(() => {
+              attempts++;
+              if (typeof window !== 'undefined' && window.IremboPay) {
+                clearInterval(interval);
+                resolve(true);
+              } else if (attempts >= maxAttempts) {
+                clearInterval(interval);
+                resolve(false);
+              }
+            }, 100);
+          });
+        };
+
+        const ready = await waitForIremboPay();
+        if (ready) {
+          clearCart();
           window.IremboPay.initiate({
             invoiceNumber: paymentData.invoiceNumber,
             publicKey: process.env.NEXT_PUBLIC_IREMBOPAY_PUBLIC_KEY,
@@ -263,6 +297,7 @@ export default function CheckoutPage() {
         }
       } else {
         // Mobile money: show "Check your phone" waiting screen
+        clearCart();
         setStep(3);
       }
     } catch {
@@ -354,13 +389,6 @@ export default function CheckoutPage() {
       marginBottom: 6, fontWeight: 700, letterSpacing: 0.5,
     };
 
-    // Derive lock flag from current phone prefix (card can freely switch)
-    const cleanPhone = form.phone.replace(/\s/g, '');
-    const paymentLocked = form.paymentMethod !== 'card' && (
-      cleanPhone.startsWith('078') || cleanPhone.startsWith('079') ||
-      cleanPhone.startsWith('072') || cleanPhone.startsWith('073')
-    );
-
     return (
       <div style={{ maxWidth: 500, margin: '0 auto', padding: '24px 20px 120px' }}>
         <h1 style={{ fontSize: 22, fontWeight: 800, color: 'var(--text)', marginBottom: 6 }}>
@@ -384,7 +412,10 @@ export default function CheckoutPage() {
 
           {/* Phone */}
           <div>
-            <label style={labelStyle}>Phone Number</label>
+            <label style={labelStyle}>Contact Phone Number</label>
+            <div style={{ fontSize: 11, color: 'var(--text-faint)', marginBottom: 2 }}>
+              For delivery coordination — can be different from your payment number
+            </div>
             <input
               type="tel" placeholder="e.g. 0788 123 456"
               value={form.phone} onChange={e => updateForm('phone', e.target.value)}
@@ -604,12 +635,10 @@ export default function CheckoutPage() {
                 { key: 'card',   label: 'Card (Visa / Mastercard)', sub: 'Pay online' },
               ].map(p => {
                 const isSelected = form.paymentMethod === p.key;
-                const isDisabled = paymentLocked && !isSelected;
                 return (
                   <button
                     key={p.key}
-                    onClick={() => !paymentLocked && updateForm('paymentMethod', p.key)}
-                    disabled={isDisabled}
+                    onClick={() => updateForm('paymentMethod', p.key)}
                     style={{
                       flex: 1,
                       background: isSelected ? 'var(--surface-2)' : 'var(--surface)',
@@ -617,8 +646,7 @@ export default function CheckoutPage() {
                       borderRadius: 12, padding: '14px 10px',
                       display: 'flex', flexDirection: 'column',
                       alignItems: 'center', gap: 4, transition: 'all 0.2s',
-                      opacity: isDisabled ? 0.35 : 1,
-                      cursor: isDisabled ? 'not-allowed' : 'pointer',
+                      cursor: 'pointer',
                     }}
                   >
                     <span style={{
@@ -630,12 +658,49 @@ export default function CheckoutPage() {
                 );
               })}
             </div>
-            {paymentLocked && (
-              <div style={{ fontSize: 11, color: 'var(--text-faint)', marginTop: 6 }}>
-                ✓ Payment method matched to your number
-              </div>
-            )}
           </div>
+
+          {/* Conditional Payment Detail — based on selected method */}
+          {form.paymentMethod === 'mtn' && (
+            <div>
+              <label style={labelStyle}>MoMo Phone Number</label>
+              <input
+                type="tel" placeholder="e.g. 0788 123 456"
+                value={form.paymentPhone}
+                onChange={e => updateForm('paymentPhone', e.target.value)}
+                style={inputStyle(form.paymentPhone)}
+              />
+              <div style={{ fontSize: 11, color: 'var(--text-faint)', marginTop: 4 }}>
+                The MTN MoMo number to charge (must start with 078 or 079)
+              </div>
+            </div>
+          )}
+
+          {form.paymentMethod === 'airtel' && (
+            <div>
+              <label style={labelStyle}>Airtel Money Phone Number</label>
+              <input
+                type="tel" placeholder="e.g. 0728 123 456"
+                value={form.paymentPhone}
+                onChange={e => updateForm('paymentPhone', e.target.value)}
+                style={inputStyle(form.paymentPhone)}
+              />
+              <div style={{ fontSize: 11, color: 'var(--text-faint)', marginTop: 4 }}>
+                The Airtel Money number to charge (must start with 072 or 073)
+              </div>
+            </div>
+          )}
+
+          {form.paymentMethod === 'card' && (
+            <div style={{
+              background: 'var(--surface)', border: '1px solid var(--border)',
+              borderRadius: 10, padding: '12px 14px',
+            }}>
+              <div style={{ fontSize: 13, color: 'var(--text-muted)', lineHeight: 1.5 }}>
+                You will enter your card details securely on the next step via IremboPay.
+              </div>
+            </div>
+          )}
 
           {/* Save account checkbox — hidden for logged-in users */}
           {!isLoggedIn && (
@@ -776,15 +841,24 @@ export default function CheckoutPage() {
     }
 
     // Waiting (default)
+    const isCardPayment = form.paymentMethod === 'card';
+    const displayPhone = isCardPayment ? form.phone : form.paymentPhone;
+    const providerName = form.paymentMethod === 'mtn' ? 'MTN MoMo' : form.paymentMethod === 'airtel' ? 'Airtel Money' : '';
     return (
       <div style={{ maxWidth: 500, margin: '0 auto', padding: '60px 24px', textAlign: 'center' }}>
         <h1 style={{ fontSize: 22, fontWeight: 800, color: 'var(--text)', marginBottom: 12 }}>
-          Check your phone
+          {isCardPayment ? 'Processing your payment' : 'Check your phone'}
         </h1>
-        <p style={{ color: 'var(--text-muted)', fontSize: 14, lineHeight: 1.6, marginBottom: 8 }}>
-          A payment prompt has been sent to <strong style={{ color: 'var(--text)' }}>{form.phone}</strong>.
-          Enter your {form.paymentMethod === 'mtn' ? 'MTN MoMo' : 'Airtel Money'} PIN to confirm.
-        </p>
+        {isCardPayment ? (
+          <p style={{ color: 'var(--text-muted)', fontSize: 14, lineHeight: 1.6, marginBottom: 8 }}>
+            Your card payment is being processed securely via IremboPay.
+          </p>
+        ) : (
+          <p style={{ color: 'var(--text-muted)', fontSize: 14, lineHeight: 1.6, marginBottom: 8 }}>
+            A payment prompt has been sent to <strong style={{ color: 'var(--text)' }}>{displayPhone}</strong>.
+            Enter your {providerName} PIN to confirm.
+          </p>
+        )}
         <p style={{ color: 'var(--text-faint)', fontSize: 12, marginBottom: 32 }}>
           This page will update automatically. Do not close it.
         </p>
