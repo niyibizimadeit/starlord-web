@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useCart } from '@/components/CartContext';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
@@ -33,20 +33,50 @@ export default function CheckoutPage() {
     name: '', phone: '', address: '', paymentMethod: 'mtn', paymentPhone: '',
   });
 
+  // ── Track IremboPay script readiness ──────────────────────────────
+  const iremboPayReadyRef = useRef(false);
+  const iremboPayFailedRef = useRef(false);
+
   // ── Load IremboPay inline widget script ───────────────────────────
   useEffect(() => {
     if (typeof window === 'undefined') return;
-    // Already loaded by a previous mount (e.g. hot reload)
-    if (window.IremboPay) return;
 
-    const isSandbox = (process.env.NEXT_PUBLIC_IREMBOPAY_BASE_URL || '').includes('sandbox');
-    const widgetSrc = isSandbox
-      ? 'https://dashboard.sandbox.irembopay.com/assets/payment/inline.js'
-      : 'https://dashboard.irembopay.com/assets/payment/inline.js';
+    // Pre-initialise the command queue so we can push commands before
+    // the script finishes downloading. The widget processes this queue
+    // synchronously once it loads.
+    window.IremboPayQueue = window.IremboPayQueue || [];
+
+    // Already loaded (e.g. from a previous hot-reload mount)
+    if (window.IremboPay) {
+      iremboPayReadyRef.current = true;
+      return;
+    }
+
+    // Don't inject the same <script> tag twice
+    if (document.getElementById('irembopay-widget')) return;
+
+    // Load the IremboPay widget through our own proxy route.
+    // The browser cannot reach IremboPay's private IPs (198.18.0.x)
+    // directly, but the Next.js server can — so we proxy everything
+    // through /api/irembopay-* routes.
+    const widgetSrc = '/api/irembopay-widget';
+
     const script = document.createElement('script');
+    script.id = 'irembopay-widget';
     script.src = widgetSrc;
     script.async = true;
+    script.onload = () => {
+      iremboPayReadyRef.current = true;
+    };
+    script.onerror = () => {
+      iremboPayFailedRef.current = true;
+      console.error('[IremboPay] Widget script failed to load from', widgetSrc);
+    };
     document.head.appendChild(script);
+
+    // No cleanup — the id guard above prevents duplicate injection,
+    // and removing the tag on Strict Mode's simulated unmount would
+    // cancel an in-flight download, losing precious loading time.
   }, []);
 
   useEffect(() => {
@@ -257,18 +287,40 @@ export default function CheckoutPage() {
         // Card payment: launch IremboPay inline widget
         setProcessing(false);
 
-        // Wait for IremboPay widget script to load (with timeout)
-        const waitForIremboPay = () => {
+        // Build the widget payload once
+        const widgetPayload = {
+          invoiceNumber: paymentData.invoiceNumber,
+          publicKey: process.env.NEXT_PUBLIC_IREMBOPAY_PUBLIC_KEY,
+          locale: 'en',
+          callback: function (response) {
+            if (response.status === 'PAID') {
+              setPaymentStatus('paid');
+              setStep(3);
+            } else if (response.code) {
+              console.error('[IremboPay] Widget error:', response);
+              setError('Payment widget error: ' + response.message);
+              setProcessing(false);
+            } else {
+              setPaymentStatus('failed');
+              setStep(3);
+            }
+          },
+        };
+
+        // Helper: wait for the widget global to appear (with generous timeout)
+        const waitForIremboPay = (timeoutMs = 15000) => {
           return new Promise((resolve) => {
             if (typeof window !== 'undefined' && window.IremboPay) return resolve(true);
-            let attempts = 0;
-            const maxAttempts = 50; // 5 seconds max
+            if (iremboPayFailedRef.current) return resolve(false);
+            if (iremboPayReadyRef.current && !window.IremboPay) {
+              // Script onload fired but global still missing — unusual, keep polling
+            }
+            const started = Date.now();
             const interval = setInterval(() => {
-              attempts++;
               if (typeof window !== 'undefined' && window.IremboPay) {
                 clearInterval(interval);
                 resolve(true);
-              } else if (attempts >= maxAttempts) {
+              } else if (iremboPayFailedRef.current || Date.now() - started > timeoutMs) {
                 clearInterval(interval);
                 resolve(false);
               }
@@ -276,24 +328,26 @@ export default function CheckoutPage() {
           });
         };
 
-        const ready = await waitForIremboPay();
-        if (ready) {
+        // Strategy:
+        //   1. If the widget is already loaded → call initiate() directly.
+        //   2. Otherwise push to the queue (the script processes it on load)
+        //      AND poll until the global appears.
+        if (typeof window !== 'undefined' && window.IremboPay) {
+          // Fast path — script already loaded
           clearCart();
-          window.IremboPay.initiate({
-            invoiceNumber: paymentData.invoiceNumber,
-            publicKey: process.env.NEXT_PUBLIC_IREMBOPAY_PUBLIC_KEY,
-            callback: function (response) {
-              if (response.status === 'PAID') {
-                setPaymentStatus('paid');
-                setStep(3);
-              } else {
-                setPaymentStatus('failed');
-                setStep(3);
-              }
-            },
-          });
+          window.IremboPay.initiate(widgetPayload);
         } else {
-          setError('Payment widget failed to load. Please refresh and try again.');
+          // Slow path — script still downloading; queue the command
+          window.IremboPayQueue = window.IremboPayQueue || [];
+          window.IremboPayQueue.push(['initiate', widgetPayload]);
+          clearCart();
+
+          const ready = await waitForIremboPay();
+          if (!ready) {
+            setError('Payment widget failed to load. Please refresh and try again.');
+          }
+          // If ready === true the queue was already processed by the script
+          // on load, so the widget is now showing — nothing more to do.
         }
       } else {
         // Mobile money: show "Check your phone" waiting screen

@@ -42,8 +42,8 @@ const nextConfig: NextConfig = {
           {
             key: 'Content-Security-Policy',
             value: process.env.NODE_ENV === 'production'
-              ? "default-src 'self'; script-src 'self' 'unsafe-inline' https://www.googletagmanager.com; style-src 'self' 'unsafe-inline'; img-src 'self' https://images.starlordgroup.rw data:; connect-src 'self' https://zphpfahgyerabtpvtwol.supabase.co; frame-ancestors 'none';"
-              : "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://www.googletagmanager.com; style-src 'self' 'unsafe-inline'; img-src 'self' https://images.starlordgroup.rw data:; connect-src 'self' https://zphpfahgyerabtpvtwol.supabase.co https://*.vercel.live; frame-ancestors 'none';",
+              ? "default-src 'self'; script-src 'self' 'unsafe-inline' https://www.googletagmanager.com; style-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com; font-src 'self' https://cdnjs.cloudflare.com; img-src 'self' https://images.starlordgroup.rw data:; connect-src 'self' https://zphpfahgyerabtpvtwol.supabase.co; frame-ancestors 'none';"
+              : "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://www.googletagmanager.com; style-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com; font-src 'self' https://cdnjs.cloudflare.com; img-src 'self' https://images.starlordgroup.rw data:; connect-src 'self' https://zphpfahgyerabtpvtwol.supabase.co https://*.vercel.live; frame-ancestors 'none';",
           },
         ],
       },
