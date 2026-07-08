@@ -17,7 +17,10 @@ const nextConfig: NextConfig = {
   async headers() {
     return [
       {
-        source: '/(.*)',
+        // Exclude IremboPay proxy routes — the widget loads its popup
+        // in an iframe which needs X-Frame-Options and frame-ancestors
+        // relaxed, and the proxy injects its own CSP.
+        source: '/((?!api/irembopay).*)',
         headers: [
           {
             key: 'Strict-Transport-Security',
@@ -44,6 +47,21 @@ const nextConfig: NextConfig = {
             value: process.env.NODE_ENV === 'production'
               ? "default-src 'self'; script-src 'self' 'unsafe-inline' https://www.googletagmanager.com; style-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com; font-src 'self' https://cdnjs.cloudflare.com; img-src 'self' https://images.starlordgroup.rw data:; connect-src 'self' https://zphpfahgyerabtpvtwol.supabase.co; frame-ancestors 'none';"
               : "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://www.googletagmanager.com; style-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com; font-src 'self' https://cdnjs.cloudflare.com; img-src 'self' https://images.starlordgroup.rw data:; connect-src 'self' https://zphpfahgyerabtpvtwol.supabase.co https://*.vercel.live; frame-ancestors 'none';",
+          },
+        ],
+      },
+      // IremboPay proxy routes — omit framing restrictions so the
+      // widget's popup can load inside its iframe.
+      {
+        source: '/api/irembopay-dashboard/(.*)',
+        headers: [
+          {
+            key: 'Strict-Transport-Security',
+            value: 'max-age=63072000; includeSubDomains; preload',
+          },
+          {
+            key: 'X-Content-Type-Options',
+            value: 'nosniff',
           },
         ],
       },

@@ -37,14 +37,13 @@ export default function CheckoutPage() {
   const iremboPayReadyRef = useRef(false);
   const iremboPayFailedRef = useRef(false);
 
+  // ── Guards ─────────────────────────────────────────────────────────
+  const submittingRef = useRef(false);  // prevents double-submit
+  const initiatedRef  = useRef(false);  // prevents double-initiate
+
   // ── Load IremboPay inline widget script ───────────────────────────
   useEffect(() => {
     if (typeof window === 'undefined') return;
-
-    // Pre-initialise the command queue so we can push commands before
-    // the script finishes downloading. The widget processes this queue
-    // synchronously once it loads.
-    window.IremboPayQueue = window.IremboPayQueue || [];
 
     // Already loaded (e.g. from a previous hot-reload mount)
     if (window.IremboPay) {
@@ -229,6 +228,10 @@ export default function CheckoutPage() {
   };
 
   const handleSubmit = async () => {
+    // Prevent double-submission (double-click, etc.)
+    if (submittingRef.current) return;
+    submittingRef.current = true;
+
     setError('');
     setProcessing(true);
     const idempotencyKey = crypto.randomUUID();
@@ -251,11 +254,13 @@ export default function CheckoutPage() {
         if (data.code === 'STOCK_CONFLICT') {
           setError(data.error);
           setProcessing(false);
+          submittingRef.current = false;
           setTimeout(() => router.push('/cart'), 3000);
           return;
         }
         setError(data.error || 'Something went wrong. Please try again.');
         setProcessing(false);
+        submittingRef.current = false;
         return;
       }
       // Initiate payment — use paymentPhone for mobile money, contact phone for card
@@ -275,6 +280,7 @@ export default function CheckoutPage() {
       if (!paymentRes.ok) {
         setError('Payment initiation failed. Your order is saved — contact support with reference: ' + data.reference);
         setProcessing(false);
+        submittingRef.current = false;
         setOrder(data);
         setStep(3);
         return;
@@ -293,61 +299,40 @@ export default function CheckoutPage() {
           publicKey: process.env.NEXT_PUBLIC_IREMBOPAY_PUBLIC_KEY,
           locale: 'en',
           callback: function (response) {
-            if (response.status === 'PAID') {
+            console.log('[IremboPay] Callback fired:', JSON.stringify(response));
+            if (response && response.status === 'PAID') {
+              clearCart();
               setPaymentStatus('paid');
               setStep(3);
-            } else if (response.code) {
-              console.error('[IremboPay] Widget error:', response);
-              setError('Payment widget error: ' + response.message);
+            } else if (response && response.code) {
+              console.error('[IremboPay] Widget error:', JSON.stringify(response));
+              setError('Payment widget error: ' + (response.message || 'Unknown error'));
               setProcessing(false);
+              submittingRef.current = false;
             } else {
+              console.log('[IremboPay] Non-PAID status, transitioning to failed:', response);
               setPaymentStatus('failed');
               setStep(3);
             }
           },
         };
 
-        // Helper: wait for the widget global to appear (with generous timeout)
-        const waitForIremboPay = (timeoutMs = 15000) => {
-          return new Promise((resolve) => {
-            if (typeof window !== 'undefined' && window.IremboPay) return resolve(true);
-            if (iremboPayFailedRef.current) return resolve(false);
-            if (iremboPayReadyRef.current && !window.IremboPay) {
-              // Script onload fired but global still missing — unusual, keep polling
-            }
-            const started = Date.now();
-            const interval = setInterval(() => {
-              if (typeof window !== 'undefined' && window.IremboPay) {
-                clearInterval(interval);
-                resolve(true);
-              } else if (iremboPayFailedRef.current || Date.now() - started > timeoutMs) {
-                clearInterval(interval);
-                resolve(false);
-              }
-            }, 100);
-          });
-        };
+        // Guard against double-initiate (e.g. double-click, re-render)
+        if (initiatedRef.current) return;
+        initiatedRef.current = true;
 
-        // Strategy:
-        //   1. If the widget is already loaded → call initiate() directly.
-        //   2. Otherwise push to the queue (the script processes it on load)
-        //      AND poll until the global appears.
-        if (typeof window !== 'undefined' && window.IremboPay) {
-          // Fast path — script already loaded
-          clearCart();
+        // The widget script always loads before the user reaches this
+        // point (10-15s to fill the form).  Call initiate() directly —
+        // no queue needed, which avoids accidental double-fires.
+        console.log('[IremboPay] Calling initiate with invoice:', widgetPayload.invoiceNumber);
+        try {
           window.IremboPay.initiate(widgetPayload);
-        } else {
-          // Slow path — script still downloading; queue the command
-          window.IremboPayQueue = window.IremboPayQueue || [];
-          window.IremboPayQueue.push(['initiate', widgetPayload]);
-          clearCart();
-
-          const ready = await waitForIremboPay();
-          if (!ready) {
-            setError('Payment widget failed to load. Please refresh and try again.');
-          }
-          // If ready === true the queue was already processed by the script
-          // on load, so the widget is now showing — nothing more to do.
+        } catch (initErr) {
+          console.error('[IremboPay] initiate() threw:', initErr);
+          setError('Payment widget failed to initialize. Please try again.');
+          setProcessing(false);
+          submittingRef.current = false;
+          initiatedRef.current = false;
         }
       } else {
         // Mobile money: show "Check your phone" waiting screen
@@ -357,6 +342,7 @@ export default function CheckoutPage() {
     } catch {
       setError('Connection error. Please check your internet and try again.');
       setProcessing(false);
+      submittingRef.current = false;
     }
   };
 

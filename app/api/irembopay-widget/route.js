@@ -31,11 +31,32 @@ export async function GET() {
       '/api/irembopay-dashboard',
     );
 
+    // Fix webpack chunk loading: the widget auto-detects its public
+    // path from document.currentScript.src, which resolves to /api/
+    // (because the script is at /api/irembopay-widget).  But chunks
+    // live under /api/irembopay-dashboard/assets/payment/.  Override
+    // the auto-detected value so webpack loads chunks from the right
+    // location.
+    js = js.replace(
+      '__webpack_require__.p=e',
+      '__webpack_require__.p="/api/irembopay-dashboard/assets/payment/"',
+    );
+
+    // Fix postMessage target origin: the widget uses the popup URL
+    // as the target origin for window.postMessage(), but after our
+    // URL rewrites that URL is a relative path like /api/irembopay-...
+    // postMessage requires an absolute origin (protocol://host:port).
+    // Replace with "*" (wildcard) — the popup is same-origin anyway.
+    js = js.replace(
+      'postMessage({form:r,formAction:t.formAction,details:{name:d,number:o,expiryDate:s,cvv:l}},c)',
+      'postMessage({form:r,formAction:t.formAction,details:{name:d,number:o,expiryDate:s,cvv:l}},"*")',
+    );
+
     return new Response(js, {
       status: 200,
       headers: {
         'Content-Type': 'application/javascript; charset=utf-8',
-        'Cache-Control': 'public, s-maxage=300, stale-while-revalidate=600',
+        'Cache-Control': 'no-cache, no-store, must-revalidate',
       },
     });
   } catch (err) {
