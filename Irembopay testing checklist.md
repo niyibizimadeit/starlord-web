@@ -47,23 +47,23 @@
 ## 3. Card Payment — Visa / Mastercard (JS Widget)
 
 ### 3.1 Successful Visa Payment
-- [ ] Place an order, select Card as payment method
-- [ ] Confirm the IremboPay JS widget loads inline on the page (no redirect)
-- [ ] Enter sandbox Visa details:
+- [x] Place an order, select Card as payment method
+- [x] Confirm the IremboPay JS widget loads inline on the page (no redirect)
+- [x] Enter sandbox Visa details:
   - Card Number: `4242 4242 4242 4242`
   - Expiry: `01/35`
   - CVV: `123`
   - Name: any
-- [ ] Confirm widget closes and checkout transitions to success state
-- [ ] Verify in Supabase: `status = confirmed`, `payment_status = paid`
+- [x] Confirm widget closes and checkout transitions to success state
+- [x] Verify in Supabase: `status = confirmed`, `payment_status = paid`
 
 ### 3.2 Successful Mastercard Payment
-- [ ] Enter sandbox Mastercard details:
+- [x] Enter sandbox Mastercard details:
   - Card Number: `5555 5555 5555 4444`
   - Expiry: `01/35`
   - CVV: `123`
   - Name: any
-- [ ] Confirm status updates correctly
+- [x] Confirm status updates correctly
 
 ### 3.3 Failed Card Payment
 - [ ] Enter sandbox fail card:
