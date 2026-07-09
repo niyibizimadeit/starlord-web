@@ -40,10 +40,6 @@ export default function CheckoutPage() {
   // retry in the loading effect below has been exhausted. handleSubmit
   // awaits this instead of checking window.IremboPay once and giving up.
   const widgetLoadPromiseRef = useRef(null);
-  // Surfaced to the UI so the waiting screen can show a warning when
-  // the card form never appeared and the poll is the only hope.
-  const [widgetLoadFailed, setWidgetLoadFailed] = useState(false);
-
   // ── Guards ─────────────────────────────────────────────────────────
   const submittingRef = useRef(false);  // prevents double-submit
   const initiatedRef  = useRef(false);  // prevents double-initiate
@@ -208,6 +204,40 @@ export default function CheckoutPage() {
         if (data.paymentStatus === 'paid') {
           setPaymentStatus('paid');
           clearInterval(interval);
+
+          // The IremboPay widget's own notification channel has proven
+          // unreliable in this environment — it can leave the customer
+          // staring at a stale "not received" message even though the
+          // payment succeeded, which we already know for a fact via our
+          // own webhook-confirmed poll (this very check). Don't wait on
+          // the widget to figure that out on its own; drive it to a
+          // success state ourselves.
+          try {
+            const alertBox = document.getElementById('irembopay-alertBox');
+            const successBox = document.getElementById('irembopay-successBox');
+            const modalContainer = document.getElementById('irembopay-iremboPayModalContainer');
+
+            if (successBox && alertBox) {
+              // Swap to the widget's own built-in success screen so it
+              // looks like the widget completed normally, not like we
+              // reached in and broke it.
+              alertBox.style.display = 'none';
+              successBox.style.display = 'block';
+              // Give the customer a moment to see "Payment Successful"
+              // before dismissing the modal entirely.
+              setTimeout(() => {
+                if (modalContainer) modalContainer.remove();
+              }, 1800);
+            } else if (modalContainer) {
+              // Fallback: couldn't find the success box for some reason
+              // (widget markup changed) — just remove the whole modal
+              // rather than leave a stale failure message on screen.
+              modalContainer.remove();
+            }
+          } catch (e) {
+            console.warn('[IremboPay] Could not update widget modal on success:', e.message);
+          }
+
         } else if (data.paymentStatus === 'failed') {
           setPaymentStatus('failed');
           clearInterval(interval);
@@ -228,8 +258,6 @@ export default function CheckoutPage() {
     if (paymentStatus === 'failed' || paymentStatus === 'expired') {
       initiatedRef.current = false;
     }
-    // widgetLoadFailed state doesn't need resetting here — the step-3
-    // render reads it ephemerally, and the component remounts on re-entry.
   }, [paymentStatus]);
 
   // ── updateForm — simple setter, no auto-detection ─────────────────
@@ -1002,21 +1030,9 @@ export default function CheckoutPage() {
           {isCardPayment ? 'Processing your payment' : 'Check your phone'}
         </h1>
         {isCardPayment ? (
-          <>
             <p style={{ color: 'var(--text-muted)', fontSize: 14, lineHeight: 1.6, marginBottom: 8 }}>
               Your card payment is being processed securely via IremboPay.
             </p>
-            {widgetLoadFailed && (
-              <div style={{
-                background: '#2e1a1a', border: '1px solid var(--red)',
-                borderRadius: 10, padding: '12px 14px', marginBottom: 16,
-                color: 'var(--red)', fontSize: 13, lineHeight: 1.5,
-              }}>
-                The card payment form could not be loaded. This may be a temporary issue —
-                please go back and try again, or use MTN MoMo or Airtel Money instead.
-              </div>
-            )}
-          </>
         ) : (
           <p style={{ color: 'var(--text-muted)', fontSize: 14, lineHeight: 1.6, marginBottom: 8 }}>
             A payment prompt has been sent to <strong style={{ color: 'var(--text)' }}>{displayPhone}</strong>.
