@@ -21,7 +21,8 @@ export async function GET() {
 
     // Rewrite IremboPay hostnames → our proxy routes so the
     // browser reaches them through the Next.js server (which
-    // CAN route to the 198.18.0.x private IPs).
+    // CAN route to the 198.18.0.x private IPs). These are literal
+    // domain strings, stable across widget builds.
     js = js.replace(
       /https:\/\/api\.sandbox\.irembopay\.com/g,
       '/api/irembopay-api',
@@ -31,26 +32,67 @@ export async function GET() {
       '/api/irembopay-dashboard',
     );
 
-    // Fix webpack chunk loading: the widget auto-detects its public
-    // path from document.currentScript.src, which resolves to /api/
-    // (because the script is at /api/irembopay-widget).  But chunks
-    // live under /api/irembopay-dashboard/assets/payment/.  Override
+    // ── Fix webpack chunk loading ─────────────────────────────────
+    // The widget auto-detects its public path from
+    // document.currentScript.src, which resolves to /api/ (because
+    // the script is served from /api/irembopay-widget). But chunks
+    // live under /api/irembopay-dashboard/assets/payment/. Override
     // the auto-detected value so webpack loads chunks from the right
     // location.
-    js = js.replace(
-      '__webpack_require__.p=e',
-      '__webpack_require__.p="/api/irembopay-dashboard/assets/payment/"',
-    );
+    //
+    // Previous version matched the exact minified variable name
+    // ("__webpack_require__.p=e"), which silently no-ops if Irembo
+    // ships a build where that variable isn't named "e". This regex
+    // matches the general shape of the assignment instead, so it
+    // survives variable renaming across builds.
+    const publicPathPattern = /__webpack_require__\.p\s*=\s*[^,;]+/;
+    if (publicPathPattern.test(js)) {
+      js = js.replace(
+        publicPathPattern,
+        '__webpack_require__.p="/api/irembopay-dashboard/assets/payment/"',
+      );
+    } else {
+      console.warn(
+        '[IremboPay Proxy] Could not find __webpack_require__.p assignment — ' +
+        'chunk loading may 404 if the widget build changed its bootstrap format.',
+      );
+    }
 
-    // Fix postMessage target origin: the widget uses the popup URL
-    // as the target origin for window.postMessage(), but after our
-    // URL rewrites that URL is a relative path like /api/irembopay-...
-    // postMessage requires an absolute origin (protocol://host:port).
-    // Replace with "*" (wildcard) — the popup is same-origin anyway.
-    js = js.replace(
-      'postMessage({form:r,formAction:t.formAction,details:{name:d,number:o,expiryDate:s,cvv:l}},c)',
-      'postMessage({form:r,formAction:t.formAction,details:{name:d,number:o,expiryDate:s,cvv:l}},"*")',
-    );
+    // ── Fix postMessage target origin ─────────────────────────────
+    // The widget uses the popup URL as the target origin for
+    // window.postMessage(). After our URL rewrites, that URL is a
+    // relative path like /api/irembopay-dashboard/..., and
+    // postMessage requires an absolute origin (protocol://host:port)
+    // or the literal string "*". A relative path throws a
+    // DOMException, which some widget builds treat as fatal and
+    // close the modal.
+    //
+    // Previous version string-replaced one exact minified call
+    // signature, which silently no-ops if the widget's minifier
+    // renames any of the variables involved. Instead, patch
+    // Window.prototype.postMessage globally: try the call as-is,
+    // and if it throws (e.g. invalid origin), retry with "*". This
+    // works regardless of variable names or how many places in the
+    // widget call postMessage.
+    const postMessagePatch = `
+(function() {
+  if (window.__irembopayPostMessagePatched) return;
+  window.__irembopayPostMessagePatched = true;
+  var _originalPostMessage = Window.prototype.postMessage;
+  Window.prototype.postMessage = function(message, targetOrigin, transfer) {
+    try {
+      return _originalPostMessage.call(this, message, targetOrigin, transfer);
+    } catch (err) {
+      try {
+        return _originalPostMessage.call(this, message, '*', transfer);
+      } catch (err2) {
+        console.error('[IremboPay Proxy] postMessage failed with wildcard origin too:', err2);
+      }
+    }
+  };
+})();
+`;
+    js = postMessagePatch + js;
 
     return new Response(js, {
       status: 200,
