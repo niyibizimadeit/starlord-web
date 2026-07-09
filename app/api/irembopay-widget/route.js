@@ -6,9 +6,21 @@
  * hardcoded IremboPay URLs to our own proxy paths so the browser
  * never needs to connect to the private IPs directly.
  */
-export async function GET() {
+export async function GET(request) {
   const SANDBOX_WIDGET_URL =
     'https://dashboard.sandbox.irembopay.com/assets/payment/inline.js';
+
+  // IMPORTANT: rewrite to an ABSOLUTE url (scheme + host), not a bare
+  // relative path. The widget reuses these same hardcoded strings in
+  // more places than just fetch() calls — including as the
+  // `targetOrigin` argument to postMessage(), which throws a
+  // SyntaxError if given anything other than a real absolute origin
+  // or the literal "*". A relative path like "/api/irembopay-dashboard"
+  // is never valid there, even though it works fine for normal
+  // fetch/navigation. Deriving the origin from the incoming request
+  // (rather than hardcoding localhost) also means this works
+  // correctly in production on starlordgroup.rw.
+  const origin = new URL(request.url).origin;
 
   try {
     const res = await fetch(SANDBOX_WIDGET_URL);
@@ -25,11 +37,11 @@ export async function GET() {
     // domain strings, stable across widget builds.
     js = js.replace(
       /https:\/\/api\.sandbox\.irembopay\.com/g,
-      '/api/irembopay-api',
+      `${origin}/api/irembopay-api`,
     );
     js = js.replace(
       /https:\/\/dashboard\.sandbox\.irembopay\.com/g,
-      '/api/irembopay-dashboard',
+      `${origin}/api/irembopay-dashboard`,
     );
 
     // ── Fix webpack chunk loading ─────────────────────────────────
@@ -45,11 +57,11 @@ export async function GET() {
     // ships a build where that variable isn't named "e". This regex
     // matches the general shape of the assignment instead, so it
     // survives variable renaming across builds.
-    const publicPathPattern = /__webpack_require__\.p\s*=\s*[^,;]+/;
+    const publicPathPattern = /__webpack_require__\.p\s*=\s*\w+/;
     if (publicPathPattern.test(js)) {
       js = js.replace(
         publicPathPattern,
-        '__webpack_require__.p="/api/irembopay-dashboard/assets/payment/"',
+        `__webpack_require__.p="${origin}/api/irembopay-dashboard/assets/payment/"`,
       );
     } else {
       console.warn(
@@ -58,22 +70,21 @@ export async function GET() {
       );
     }
 
-    // ── Fix postMessage target origin ─────────────────────────────
-    // The widget uses the popup URL as the target origin for
-    // window.postMessage(). After our URL rewrites, that URL is a
-    // relative path like /api/irembopay-dashboard/..., and
-    // postMessage requires an absolute origin (protocol://host:port)
-    // or the literal string "*". A relative path throws a
-    // DOMException, which some widget builds treat as fatal and
-    // close the modal.
+    // ── Fix postMessage target origin (belt-and-braces) ───────────
+    // Even with the absolute-origin rewrite above, keep this patch as
+    // a safety net for any postMessage call whose target origin comes
+    // from somewhere we didn't anticipate (e.g. a value read back from
+    // document.referrer, or a future widget build that computes it
+    // differently). Try the call as-is, and if it throws (e.g.
+    // invalid origin), retry with "*". This works regardless of
+    // variable names or how many places in the widget call
+    // postMessage.
     //
-    // Previous version string-replaced one exact minified call
-    // signature, which silently no-ops if the widget's minifier
-    // renames any of the variables involved. Instead, patch
-    // Window.prototype.postMessage globally: try the call as-is,
-    // and if it throws (e.g. invalid origin), retry with "*". This
-    // works regardless of variable names or how many places in the
-    // widget call postMessage.
+    // NOTE: this only patches postMessage in the window this script
+    // runs in (the main tab hosting the widget). The IremboPay popup
+    // window (served via /api/irembopay-dashboard/...) is a SEPARATE
+    // JS context and needs the same patch injected there — see the
+    // irembopay-dashboard proxy route.
     const postMessagePatch = `
 (function() {
   if (window.__irembopayPostMessagePatched) return;

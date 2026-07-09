@@ -36,46 +36,101 @@ export default function CheckoutPage() {
   // ── Track IremboPay script readiness ──────────────────────────────
   const iremboPayReadyRef = useRef(false);
   const iremboPayFailedRef = useRef(false);
+  // Resolves once window.IremboPay is usable, rejects only after every
+  // retry in the loading effect below has been exhausted. handleSubmit
+  // awaits this instead of checking window.IremboPay once and giving up.
+  const widgetLoadPromiseRef = useRef(null);
+  // Surfaced to the UI so the waiting screen can show a warning when
+  // the card form never appeared and the poll is the only hope.
+  const [widgetLoadFailed, setWidgetLoadFailed] = useState(false);
 
   // ── Guards ─────────────────────────────────────────────────────────
   const submittingRef = useRef(false);  // prevents double-submit
   const initiatedRef  = useRef(false);  // prevents double-initiate
 
   // ── Load IremboPay inline widget script ───────────────────────────
+  // The sandbox occasionally drops the connection for this script the
+  // same way it drops the /notification long-poll — so a single
+  // failed fetch retries with a short backoff instead of giving up
+  // and leaving the customer with a payment method that can't load.
   useEffect(() => {
     if (typeof window === 'undefined') return;
 
     // Already loaded (e.g. from a previous hot-reload mount)
-    if (window.IremboPay) {
+    if (window.IremboPay && typeof window.IremboPay.initiate === 'function') {
       iremboPayReadyRef.current = true;
+      widgetLoadPromiseRef.current = Promise.resolve();
       return;
     }
 
-    // Don't inject the same <script> tag twice
-    if (document.getElementById('irembopay-widget')) return;
-
-    // Load the IremboPay widget through our own proxy route.
-    // The browser cannot reach IremboPay's private IPs (198.18.0.x)
-    // directly, but the Next.js server can — so we proxy everything
-    // through /api/irembopay-* routes.
+    let cancelled = false;
     const widgetSrc = '/api/irembopay-widget';
+    const MAX_LOAD_ATTEMPTS = 3;
 
-    const script = document.createElement('script');
-    script.id = 'irembopay-widget';
-    script.src = widgetSrc;
-    script.async = true;
-    script.onload = () => {
-      iremboPayReadyRef.current = true;
-    };
-    script.onerror = () => {
-      iremboPayFailedRef.current = true;
-      console.error('[IremboPay] Widget script failed to load from', widgetSrc);
-    };
-    document.head.appendChild(script);
+    widgetLoadPromiseRef.current = new Promise((resolve, reject) => {
+      let attempt = 0;
 
-    // No cleanup — the id guard above prevents duplicate injection,
-    // and removing the tag on Strict Mode's simulated unmount would
-    // cancel an in-flight download, losing precious loading time.
+      function loadScript() {
+        attempt += 1;
+
+        const existing = document.getElementById('irembopay-widget');
+        if (existing) existing.remove();
+
+        const script = document.createElement('script');
+        script.id = 'irembopay-widget';
+        // Cache-bust each retry so a failed attempt isn't served stale
+        script.src = `${widgetSrc}?attempt=${attempt}`;
+        script.async = true;
+
+        script.onload = () => {
+          if (cancelled) return;
+          // onload only means the top-level script finished downloading
+          // and running — this widget loads an async chunk internally
+          // (the same one the webpack publicPath patch targets) and
+          // only assigns window.IremboPay once that chunk resolves.
+          // Poll briefly for the real thing instead of trusting onload.
+          const POLL_INTERVAL_MS = 100;
+          const POLL_TIMEOUT_MS = 10000;
+          const startedAt = Date.now();
+
+          function checkReady() {
+            if (cancelled) return;
+            if (window.IremboPay && typeof window.IremboPay.initiate === 'function') {
+              iremboPayReadyRef.current = true;
+              resolve();
+              return;
+            }
+            if (Date.now() - startedAt > POLL_TIMEOUT_MS) {
+              reject(new Error('window.IremboPay.initiate never appeared after script load'));
+              return;
+            }
+            setTimeout(checkReady, POLL_INTERVAL_MS);
+          }
+
+          checkReady();
+        };
+
+        script.onerror = () => {
+          if (cancelled) return;
+          console.error(
+            `[IremboPay] Widget script failed to load (attempt ${attempt}/${MAX_LOAD_ATTEMPTS})`,
+          );
+          if (attempt < MAX_LOAD_ATTEMPTS) {
+            setTimeout(() => { if (!cancelled) loadScript(); }, 1500 * attempt);
+          } else {
+            iremboPayFailedRef.current = true;
+            console.error('[IremboPay] Widget script failed to load after', MAX_LOAD_ATTEMPTS, 'attempts');
+            reject(new Error(`Widget script failed to load after ${MAX_LOAD_ATTEMPTS} attempts`));
+          }
+        };
+
+        document.head.appendChild(script);
+      }
+
+      loadScript();
+    });
+
+    return () => { cancelled = true; };
   }, []);
 
   useEffect(() => {
@@ -136,6 +191,10 @@ export default function CheckoutPage() {
   }, []);
 
   // ── Poll for payment status once on step 3 ────────────────────────
+  // This runs for both mobile money and card. Card no longer depends
+  // on the widget's own callback to learn the outcome — this poll is
+  // the source of truth, since it reads the same order row the
+  // webhook updates regardless of how the widget's connection behaved.
   useEffect(() => {
     if (step !== 3 || !order) return;
     if (paymentStatus === 'paid' || paymentStatus === 'failed' || paymentStatus === 'expired') return;
@@ -161,6 +220,17 @@ export default function CheckoutPage() {
 
     return () => clearInterval(interval);
   }, [step, order, form.phone, paymentStatus]);
+
+  // ── Reset card-payment guards when a terminal state is reached ─────
+  // So the customer can retry (back → cart → checkout) without the
+  // double-initiate guard blocking a fresh attempt.
+  useEffect(() => {
+    if (paymentStatus === 'failed' || paymentStatus === 'expired') {
+      initiatedRef.current = false;
+    }
+    // widgetLoadFailed state doesn't need resetting here — the step-3
+    // render reads it ephemerally, and the component remounts on re-entry.
+  }, [paymentStatus]);
 
   // ── updateForm — simple setter, no auto-detection ─────────────────
   const updateForm = (key, value) => {
@@ -287,13 +357,27 @@ export default function CheckoutPage() {
       }
 
       const paymentData = await paymentRes.json();
-      setOrder(data);
 
       if (paymentData.invoiceNumber) {
-        // Card payment: launch IremboPay inline widget
-        setProcessing(false);
+        // ── Card flow ────────────────────────────────────────────────
+        // IMPORTANT: we do NOT clearCart()/setStep(3) here anymore.
+        // Previously the code advanced to the "Processing your payment"
+        // screen immediately and only *then* awaited the widget script
+        // and called initiate(). Because the await gave React time to
+        // commit that state change, the modal ended up opening (or
+        // failing to) behind a screen that already looked like it was
+        // done — so users never saw the widget, or saw it vanish
+        // instantly into "Processing". We now wait for the widget to
+        // load and successfully call initiate() FIRST, and only move to
+        // the waiting screen once the modal has genuinely opened.
 
-        // Build the widget payload once
+        // Guard against double-initiate (e.g. double-click, re-render)
+        if (initiatedRef.current) {
+          setProcessing(false);
+          submittingRef.current = false;
+          return;
+        }
+
         const widgetPayload = {
           invoiceNumber: paymentData.invoiceNumber,
           publicKey: process.env.NEXT_PUBLIC_IREMBOPAY_PUBLIC_KEY,
@@ -301,43 +385,71 @@ export default function CheckoutPage() {
           callback: function (response) {
             console.log('[IremboPay] Callback fired:', JSON.stringify(response));
             if (response && response.status === 'PAID') {
-              clearCart();
               setPaymentStatus('paid');
-              setStep(3);
+            } else if (response && (response.status === 'FAILED' || response.status === 'CANCELLED')) {
+              // Widget reported a definitive failure — trust it so the
+              // customer isn't left waiting for the poll to time out.
+              setPaymentStatus('failed');
             } else if (response && response.code) {
               console.error('[IremboPay] Widget error:', JSON.stringify(response));
-              setError('Payment widget error: ' + (response.message || 'Unknown error'));
-              setProcessing(false);
-              submittingRef.current = false;
-            } else {
-              console.log('[IremboPay] Non-PAID status, transitioning to failed:', response);
-              setPaymentStatus('failed');
-              setStep(3);
+              // Don't force a failed state here — the poll is the
+              // source of truth. A widget-side error doesn't always
+              // mean the payment failed server-side.
             }
           },
         };
 
-        // Guard against double-initiate (e.g. double-click, re-render)
-        if (initiatedRef.current) return;
-        initiatedRef.current = true;
+        // Wait for the widget script rather than checking once and
+        // giving up — a retry in progress can still finish in time.
+        // Bounded at 8s so a customer isn't left staring at nothing
+        // if the script is genuinely unreachable. We stay on step 2
+        // (with the "Placing order..." button state) the whole time,
+        // so if this fails the customer sees a real error, not a fake
+        // "processing" screen.
+        try {
+          await Promise.race([
+            widgetLoadPromiseRef.current || Promise.reject(new Error('widget loader never started')),
+            new Promise((_, reject) =>
+              setTimeout(() => reject(new Error('timed out waiting for widget script')), 8000)
+            ),
+          ]);
+        } catch (waitErr) {
+          console.error(
+            '[IremboPay] Widget not available in time:',
+            waitErr.message,
+          );
+          setError('The card payment form could not be loaded. Please try again, or use MTN MoMo or Airtel Money instead.');
+          setProcessing(false);
+          submittingRef.current = false;
+          return;
+        }
 
-        // The widget script always loads before the user reaches this
-        // point (10-15s to fill the form).  Call initiate() directly —
-        // no queue needed, which avoids accidental double-fires.
         console.log('[IremboPay] Calling initiate with invoice:', widgetPayload.invoiceNumber);
         try {
           window.IremboPay.initiate(widgetPayload);
         } catch (initErr) {
           console.error('[IremboPay] initiate() threw:', initErr);
-          setError('Payment widget failed to initialize. Please try again.');
+          setError('Could not open the card payment form. Please try again, or use MTN MoMo or Airtel Money instead.');
           setProcessing(false);
           submittingRef.current = false;
-          initiatedRef.current = false;
+          return;
         }
-      } else {
-        // Mobile money: show "Check your phone" waiting screen
+
+        // Only now that initiate() has actually been called without
+        // throwing — meaning the modal has genuinely opened — do we
+        // mark it as initiated, clear the cart, and move to the
+        // waiting screen behind the modal.
+        initiatedRef.current = true;
+        setOrder(data);
         clearCart();
         setStep(3);
+        setProcessing(false);
+      } else {
+        // Mobile money: show "Check your phone" waiting screen
+        setOrder(data);
+        clearCart();
+        setStep(3);
+        setProcessing(false);
       }
     } catch {
       setError('Connection error. Please check your internet and try again.');
@@ -890,9 +1002,21 @@ export default function CheckoutPage() {
           {isCardPayment ? 'Processing your payment' : 'Check your phone'}
         </h1>
         {isCardPayment ? (
-          <p style={{ color: 'var(--text-muted)', fontSize: 14, lineHeight: 1.6, marginBottom: 8 }}>
-            Your card payment is being processed securely via IremboPay.
-          </p>
+          <>
+            <p style={{ color: 'var(--text-muted)', fontSize: 14, lineHeight: 1.6, marginBottom: 8 }}>
+              Your card payment is being processed securely via IremboPay.
+            </p>
+            {widgetLoadFailed && (
+              <div style={{
+                background: '#2e1a1a', border: '1px solid var(--red)',
+                borderRadius: 10, padding: '12px 14px', marginBottom: 16,
+                color: 'var(--red)', fontSize: 13, lineHeight: 1.5,
+              }}>
+                The card payment form could not be loaded. This may be a temporary issue —
+                please go back and try again, or use MTN MoMo or Airtel Money instead.
+              </div>
+            )}
+          </>
         ) : (
           <p style={{ color: 'var(--text-muted)', fontSize: 14, lineHeight: 1.6, marginBottom: 8 }}>
             A payment prompt has been sent to <strong style={{ color: 'var(--text)' }}>{displayPhone}</strong>.
