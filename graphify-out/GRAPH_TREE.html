@@ -1,0 +1,363 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>/ — graphify tree viewer</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      margin: 0;
+      padding: 0;
+      background: #f9f9f9;
+      color: #333;
+    }
+    h1 {
+      margin: 20px 0 0 24px;
+      font-size: 2.2rem;
+      font-weight: bold;
+      color: #1e3a56;
+    }
+    .controls {
+      margin: 20px 0 15px 24px;
+    }
+    button {
+      margin-right: 10px;
+      padding: 8px 18px;
+      background: #007bff;
+      color: #fff;
+      border: none;
+      border-radius: 5px;
+      font-size: 0.95rem;
+      cursor: pointer;
+      transition: background 0.2s ease-in-out;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+    button:hover {
+      background: #0056b3;
+    }
+    button:active {
+      background: #004085;
+    }
+    #tree-container {
+      width: calc(100vw - 48px); /* Adjust for body margin/padding */
+      height: 85vh;
+      overflow: auto;
+      border-radius: 8px;
+      background: #fff;
+      margin-left: 24px;
+      margin-right: 24px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+      border: 1px solid #ddd;
+    }
+    svg {
+      background: #fff;
+      border-radius: 8px;
+      display: block; /* Important for D3 */
+    }
+    .node circle {
+      stroke-width: 2.5px;
+    }
+    .node text { /* Base style for the <text> container */
+      font: 13px 'Segoe UI', sans-serif;
+      paint-order: stroke fill; /* Ensures text is readable over lines */
+      stroke: #fff; /* White halo */
+      stroke-width: 3px; /* Halo thickness */
+      stroke-linejoin: round;
+      stroke-opacity: 0.85; /* Halo opacity */
+    }
+    .link {
+      fill: none;
+      stroke-opacity: 0.7;
+      stroke-width: 2px;
+    }
+  </style>
+</head>
+<body>
+  <h1>/ — Knowledge Graph</h1>
+  <div class="controls">
+    <button onclick="expandAll()">Expand All</button>
+    <button onclick="collapseAll()">Collapse All</button>
+    <button onclick="resetView()">Reset View</button>
+  </div>
+  <div id="tree-container">
+    <svg id="tree-svg" width="6000" height="8000"></svg>
+  </div>
+
+  <script src="https://d3js.org/d3.v7.min.js"></script>
+  <script>
+    const initialJsonData = {"name":"/","total_count":333,"children":[{"name":"app","total_count":211,"children":[{"name":"about","total_count":2,"children":[{"name":"page.js","total_count":2,"children":[{"name":"AboutPage()","total_count":1,"children":[]},{"name":"metadata","total_count":1,"children":[]}]}]},{"name":"account","total_count":1,"children":[{"name":"page.js","total_count":1,"children":[{"name":"AccountPage()","total_count":1,"children":[]}]}]},{"name":"admin","total_count":33,"children":[{"name":"AdminHelpers.js","total_count":22,"children":[{"name":"adminLogin()","total_count":1,"children":[]},{"name":"adminLogout()","total_count":1,"children":[]},{"name":"apiFetch()","total_count":1,"children":[]},{"name":"apiMutate()","total_count":1,"children":[]},{"name":"BarChart()","total_count":1,"children":[]},{"name":"CategoryModal()","total_count":1,"children":[]},{"name":"downloadCSV()","total_count":1,"children":[]},{"name":"formatDate()","total_count":1,"children":[]},{"name":"formatRWF()","total_count":1,"children":[]},{"name":"ImageUploader()","total_count":1,"children":[]},{"name":"LOG_ICONS","total_count":1,"children":[]},{"name":"NEXT_STATUS","total_count":1,"children":[]},{"name":"printRevenueReport()","total_count":1,"children":[]},{"name":"printShippingLabel()","total_count":1,"children":[]},{"name":"PromotionModal()","total_count":1,"children":[]},{"name":"S","total_count":1,"children":[]},{"name":"StatCard()","total_count":1,"children":[]},{"name":"STATUS_COLOR","total_count":1,"children":[]},{"name":"StockModal()","total_count":1,"children":[]},{"name":"timeAgo()","total_count":1,"children":[]},{"name":"toSlug()","total_count":1,"children":[]},{"name":"VariationsEditor()","total_count":1,"children":[]}]},{"name":"layout.js","total_count":3,"children":[{"name":"AdminLayout()","total_count":1,"children":[]},{"name":"metadata","total_count":1,"children":[]},{"name":"viewport","total_count":1,"children":[]}]},{"name":"middleware.js","total_count":4,"children":[{"name":"config","total_count":1,"children":[]},{"name":"isValidAdminToken()","total_count":1,"children":[]},{"name":"JWT_SECRET","total_count":1,"children":[]},{"name":"middleware()","total_count":1,"children":[]}]},{"name":"page.js","total_count":4,"children":[{"name":"AdminPage()","total_count":1,"children":[]},{"name":"OrderModal()","total_count":1,"children":[]},{"name":"ProductModal()","total_count":1,"children":[]},{"name":"UserModal()","total_count":1,"children":[]}]}]},{"name":"api","total_count":108,"children":[{"name":"account","total_count":13,"children":[{"name":"addresses","total_count":6,"children":[{"name":"[id]","total_count":2,"children":[{"name":"route.js","total_count":2,"children":[{"name":"DELETE()","total_count":1,"children":[]},{"name":"getAuthenticatedUser()","total_count":1,"children":[]}]}]},{"name":"route.js","total_count":4,"children":[{"name":"DELETE()","total_count":1,"children":[]},{"name":"getUser()","total_count":1,"children":[]},{"name":"PATCH()","total_count":1,"children":[]},{"name":"POST()","total_count":1,"children":[]}]}]},{"name":"orders","total_count":2,"children":[{"name":"route.js","total_count":2,"children":[{"name":"GET()","total_count":1,"children":[]},{"name":"getAuthenticatedUser()","total_count":1,"children":[]}]}]},{"name":"profile","total_count":3,"children":[{"name":"route.js","total_count":3,"children":[{"name":"GET()","total_count":1,"children":[]},{"name":"getAuthenticatedUser()","total_count":1,"children":[]},{"name":"PATCH()","total_count":1,"children":[]}]}]},{"name":"returns","total_count":1,"children":[{"name":"route.js","total_count":1,"children":[{"name":"POST()","total_count":1,"children":[]}]}]},{"name":"set-password","total_count":1,"children":[{"name":"route.js","total_count":1,"children":[{"name":"POST()","total_count":1,"children":[]}]}]}]},{"name":"admin","total_count":56,"children":[{"name":"analytics","total_count":2,"children":[{"name":"route.js","total_count":2,"children":[{"name":"GET()","total_count":1,"children":[]},{"name":"getAdminUser()","total_count":1,"children":[]}]}]},{"name":"auth","total_count":5,"children":[{"name":"route.js","total_count":5,"children":[{"name":"createAdminToken()","total_count":1,"children":[]},{"name":"DELETE()","total_count":1,"children":[]},{"name":"GET()","total_count":1,"children":[]},{"name":"JWT_SECRET","total_count":1,"children":[]},{"name":"POST()","total_count":1,"children":[]}]}]},{"name":"banners","total_count":7,"children":[{"name":"route.js","total_count":5,"children":[{"name":"checkAdminAuth()","total_count":1,"children":[]},{"name":"DELETE()","total_count":1,"children":[]},{"name":"GET()","total_count":1,"children":[]},{"name":"PATCH()","total_count":1,"children":[]},{"name":"POST()","total_count":1,"children":[]}]},{"name":"upload","total_count":2,"children":[{"name":"route.js","total_count":2,"children":[{"name":"checkAdminAuth()","total_count":1,"children":[]},{"name":"POST()","total_count":1,"children":[]}]}]}]},{"name":"categories","total_count":7,"children":[{"name":"[id]","total_count":4,"children":[{"name":"route.js","total_count":4,"children":[{"name":"DELETE()","total_count":1,"children":[]},{"name":"GET()","total_count":1,"children":[]},{"name":"getAdminUser()","total_count":1,"children":[]},{"name":"PUT()","total_count":1,"children":[]}]}]},{"name":"route.js","total_count":3,"children":[{"name":"GET()","total_count":1,"children":[]},{"name":"getAdminUser()","total_count":1,"children":[]},{"name":"POST()","total_count":1,"children":[]}]}]},{"name":"dashboard","total_count":8,"children":[{"name":"route.js","total_count":8,"children":[{"name":"checkAdminAuth()","total_count":1,"children":[]},{"name":"DELETE()","total_count":1,"children":[]},{"name":"GET()","total_count":1,"children":[]},{"name":"log()","total_count":1,"children":[]},{"name":"PATCH()","total_count":1,"children":[]},{"name":"periodStart()","total_count":1,"children":[]},{"name":"POST()","total_count":1,"children":[]},{"name":"unauthorized()","total_count":1,"children":[]}]}]},{"name":"orders","total_count":8,"children":[{"name":"[id]","total_count":6,"children":[{"name":"status","total_count":6,"children":[{"name":"route.js","total_count":6,"children":[{"name":"getAdminUser()","total_count":1,"children":[]},{"name":"PATCH()","total_count":1,"children":[]},{"name":"sendStatusSMS()","total_count":1,"children":[]},{"name":"TODO: Integrate with Africa's Talking","total_count":1,"children":[]},{"name":"VALID_STATUSES","total_count":1,"children":[]},{"name":"VALID_TRANSITIONS","total_count":1,"children":[]}]}]}]},{"name":"route.js","total_count":2,"children":[{"name":"GET()","total_count":1,"children":[]},{"name":"getAdminUser()","total_count":1,"children":[]}]}]},{"name":"products","total_count":4,"children":[{"name":"[id]","total_count":2,"children":[{"name":"route.js","total_count":2,"children":[{"name":"getAdminUser()","total_count":1,"children":[]},{"name":"PATCH()","total_count":1,"children":[]}]}]},{"name":"route.js","total_count":2,"children":[{"name":"getAdminUser()","total_count":1,"children":[]},{"name":"POST()","total_count":1,"children":[]}]}]},{"name":"promotions","total_count":5,"children":[{"name":"route.js","total_count":5,"children":[{"name":"checkAdmin()","total_count":1,"children":[]},{"name":"DELETE()","total_count":1,"children":[]},{"name":"GET()","total_count":1,"children":[]},{"name":"PATCH()","total_count":1,"children":[]},{"name":"POST()","total_count":1,"children":[]}]}]},{"name":"reviews","total_count":4,"children":[{"name":"route.js","total_count":4,"children":[{"name":"DELETE()","total_count":1,"children":[]},{"name":"isAuthorized()","total_count":1,"children":[]},{"name":"JWT_SECRET","total_count":1,"children":[]},{"name":"PATCH()","total_count":1,"children":[]}]}]},{"name":"upload","total_count":4,"children":[{"name":"route.js","total_count":4,"children":[{"name":"checkAdminAuth()","total_count":1,"children":[]},{"name":"DELETE()","total_count":1,"children":[]},{"name":"PATCH()","total_count":1,"children":[]},{"name":"POST()","total_count":1,"children":[]}]}]},{"name":"variations","total_count":2,"children":[{"name":"[id]","total_count":2,"children":[{"name":"route.js","total_count":2,"children":[{"name":"checkAdmin()","total_count":1,"children":[]},{"name":"PATCH()","total_count":1,"children":[]}]}]}]}]},{"name":"auth","total_count":9,"children":[{"name":"forgot-password","total_count":1,"children":[{"name":"route.js","total_count":1,"children":[{"name":"POST()","total_count":1,"children":[]}]}]},{"name":"login","total_count":1,"children":[{"name":"route.js","total_count":1,"children":[{"name":"POST()","total_count":1,"children":[]}]}]},{"name":"logout","total_count":1,"children":[{"name":"route.js","total_count":1,"children":[{"name":"POST()","total_count":1,"children":[]}]}]},{"name":"register","total_count":1,"children":[{"name":"route.js","total_count":1,"children":[{"name":"POST()","total_count":1,"children":[]}]}]},{"name":"request-otp","total_count":1,"children":[{"name":"route.js","total_count":1,"children":[{"name":"POST()","total_count":1,"children":[]}]}]},{"name":"reset-password","total_count":1,"children":[{"name":"route.js","total_count":1,"children":[{"name":"POST()","total_count":1,"children":[]}]}]},{"name":"set-password","total_count":1,"children":[{"name":"route.js","total_count":1,"children":[{"name":"POST()","total_count":1,"children":[]}]}]},{"name":"verify-email","total_count":1,"children":[{"name":"route.js","total_count":1,"children":[{"name":"POST()","total_count":1,"children":[]}]}]},{"name":"verify-otp","total_count":1,"children":[{"name":"route.js","total_count":1,"children":[{"name":"POST()","total_count":1,"children":[]}]}]}]},{"name":"banners","total_count":1,"children":[{"name":"route.js","total_count":1,"children":[{"name":"GET()","total_count":1,"children":[]}]}]},{"name":"checkout","total_count":2,"children":[{"name":"route.js","total_count":2,"children":[{"name":"generateReference()","total_count":1,"children":[]},{"name":"POST()","total_count":1,"children":[]}]}]},{"name":"irembopay-api","total_count":9,"children":[{"name":"[...path]","total_count":9,"children":[{"name":"route.js","total_count":9,"children":[{"name":"fetchWithTimeout()","total_count":1,"children":[]},{"name":"GET()","total_count":1,"children":[]},{"name":"getPath()","total_count":1,"children":[]},{"name":"IMPORTANT: we open the client-facing stream RIGHT NOW and do all","total_count":1,"children":[]},{"name":"NOTE: In Next.js 16, `params` is a Promise and MUST be awaited.","total_count":1,"children":[]},{"name":"POST()","total_count":1,"children":[]},{"name":"proxyGet()","total_count":1,"children":[]},{"name":"proxyWithBody()","total_count":1,"children":[]},{"name":"PUT()","total_count":1,"children":[]}]}]}]},{"name":"irembopay-dashboard","total_count":3,"children":[{"name":"[...path]","total_count":3,"children":[{"name":"route.js","total_count":3,"children":[{"name":"GET()","total_count":1,"children":[]},{"name":"IMPORTANT: rewrite to an ABSOLUTE origin (scheme + host), not a","total_count":1,"children":[]},{"name":"NOTE: In Next.js 16, `params` is a Promise and MUST be awaited.","total_count":1,"children":[]}]}]}]},{"name":"irembopay-widget","total_count":3,"children":[{"name":"route.js","total_count":3,"children":[{"name":"GET()","total_count":1,"children":[]},{"name":"IMPORTANT: rewrite to an ABSOLUTE url (scheme + host), not a bare","total_count":1,"children":[]},{"name":"NOTE: this only patches postMessage in the window this script","total_count":1,"children":[]}]}]},{"name":"orders","total_count":3,"children":[{"name":"[id]","total_count":1,"children":[{"name":"status","total_count":1,"children":[{"name":"route.js","total_count":1,"children":[{"name":"GET()","total_count":1,"children":[]}]}]}]},{"name":"payment-status","total_count":1,"children":[{"name":"route.js","total_count":1,"children":[{"name":"GET()","total_count":1,"children":[]}]}]},{"name":"track","total_count":1,"children":[{"name":"route.js","total_count":1,"children":[{"name":"GET()","total_count":1,"children":[]}]}]}]},{"name":"payments","total_count":2,"children":[{"name":"initiate","total_count":2,"children":[{"name":"route.js","total_count":2,"children":[{"name":"irembopayHeaders()","total_count":1,"children":[]},{"name":"POST()","total_count":1,"children":[]}]}]}]},{"name":"products","total_count":2,"children":[{"name":"[id]","total_count":1,"children":[{"name":"variations","total_count":1,"children":[{"name":"route.js","total_count":1,"children":[{"name":"GET()","total_count":1,"children":[]}]}]}]},{"name":"route.js","total_count":1,"children":[{"name":"GET()","total_count":1,"children":[]}]}]},{"name":"reviews","total_count":4,"children":[{"name":"route.js","total_count":2,"children":[{"name":"GET()","total_count":1,"children":[]},{"name":"POST()","total_count":1,"children":[]}]},{"name":"token","total_count":2,"children":[{"name":"route.js","total_count":2,"children":[{"name":"GET()","total_count":1,"children":[]},{"name":"POST()","total_count":1,"children":[]}]}]}]},{"name":"webhooks","total_count":1,"children":[{"name":"irembopay","total_count":1,"children":[{"name":"route.js","total_count":1,"children":[{"name":"POST()","total_count":1,"children":[]}]}]}]}]},{"name":"cart","total_count":2,"children":[{"name":"page.js","total_count":2,"children":[{"name":"CartPage()","total_count":1,"children":[]},{"name":"formatRWF()","total_count":1,"children":[]}]}]},{"name":"category","total_count":4,"children":[{"name":"[slug]","total_count":1,"children":[{"name":"page.js","total_count":1,"children":[{"name":"CategoryPage()","total_count":1,"children":[]}]}]},{"name":"on-sale","total_count":3,"children":[{"name":"page.js","total_count":3,"children":[{"name":"formatRWF()","total_count":1,"children":[]},{"name":"metadata","total_count":1,"children":[]},{"name":"OnSalePage()","total_count":1,"children":[]}]}]}]},{"name":"checkout","total_count":3,"children":[{"name":"page.js","total_count":3,"children":[{"name":"CheckoutPage()","total_count":1,"children":[]},{"name":"formatRWF()","total_count":1,"children":[]},{"name":"IMPORTANT: we do NOT clearCart()/setStep(3) here anymore.","total_count":1,"children":[]}]}]},{"name":"contact","total_count":9,"children":[{"name":"page.js","total_count":9,"children":[{"name":"ClockIcon()","total_count":1,"children":[]},{"name":"CONTACT","total_count":1,"children":[]},{"name":"ContactCard()","total_count":1,"children":[]},{"name":"ContactPage()","total_count":1,"children":[]},{"name":"EmailIcon()","total_count":1,"children":[]},{"name":"InstagramIcon()","total_count":1,"children":[]},{"name":"LocationIcon()","total_count":1,"children":[]},{"name":"PhoneIcon()","total_count":1,"children":[]},{"name":"WhatsAppIcon()","total_count":1,"children":[]}]}]},{"name":"faq","total_count":2,"children":[{"name":"page.js","total_count":2,"children":[{"name":"FAQItem()","total_count":1,"children":[]},{"name":"FAQPage()","total_count":1,"children":[]}]}]},{"name":"forgot-password","total_count":1,"children":[{"name":"page.js","total_count":1,"children":[{"name":"ForgotPasswordPage()","total_count":1,"children":[]}]}]},{"name":"layout.js","total_count":4,"children":[{"name":"lato","total_count":1,"children":[]},{"name":"metadata","total_count":1,"children":[]},{"name":"playfair","total_count":1,"children":[]},{"name":"RootLayout()","total_count":1,"children":[]}]},{"name":"login","total_count":1,"children":[{"name":"page.js","total_count":1,"children":[{"name":"LoginPage()","total_count":1,"children":[]}]}]},{"name":"middleware.js","total_count":6,"children":[{"name":"checkRateLimit()","total_count":1,"children":[]},{"name":"config","total_count":1,"children":[]},{"name":"getRateLimitConfig()","total_count":1,"children":[]},{"name":"middleware()","total_count":1,"children":[]},{"name":"RATE_LIMIT_CONFIG","total_count":1,"children":[]},{"name":"rateLimitMap","total_count":1,"children":[]}]},{"name":"not-found.js","total_count":1,"children":[{"name":"NotFound()","total_count":1,"children":[]}]},{"name":"page.js","total_count":3,"children":[{"name":"getNavCategories()","total_count":1,"children":[]},{"name":"getProducts()","total_count":1,"children":[]},{"name":"HomePage()","total_count":1,"children":[]}]},{"name":"products","total_count":7,"children":[{"name":"[id]","total_count":3,"children":[{"name":"page.js","total_count":3,"children":[{"name":"formatRWF()","total_count":1,"children":[]},{"name":"generateMetadata()","total_count":1,"children":[]},{"name":"ProductPage()","total_count":1,"children":[]}]}]},{"name":"page.js","total_count":4,"children":[{"name":"getCategories()","total_count":1,"children":[]},{"name":"getProducts()","total_count":1,"children":[]},{"name":"metadata","total_count":1,"children":[]},{"name":"ProductsPage()","total_count":1,"children":[]}]}]},{"name":"register","total_count":2,"children":[{"name":"page.js","total_count":2,"children":[{"name":"ErrorBox()","total_count":1,"children":[]},{"name":"RegisterPage()","total_count":1,"children":[]}]}]},{"name":"returns","total_count":2,"children":[{"name":"page.js","total_count":2,"children":[{"name":"metadata","total_count":1,"children":[]},{"name":"ReturnsPage()","total_count":1,"children":[]}]}]},{"name":"review","total_count":8,"children":[{"name":"page.js","total_count":8,"children":[{"name":"ReviewPage()","total_count":1,"children":[]},{"name":"ReviewPageInner()","total_count":1,"children":[]},{"name":"ReviewView()","total_count":1,"children":[]},{"name":"StarPicker()","total_count":1,"children":[]},{"name":"STATUS_COLORS","total_count":1,"children":[]},{"name":"STATUS_LABELS","total_count":1,"children":[]},{"name":"STATUS_STEPS","total_count":1,"children":[]},{"name":"TrackingView()","total_count":1,"children":[]}]}]},{"name":"robots.js","total_count":1,"children":[{"name":"robots()","total_count":1,"children":[]}]},{"name":"sitemap.xml","total_count":1,"children":[{"name":"route.js","total_count":1,"children":[{"name":"GET()","total_count":1,"children":[]}]}]},{"name":"terms","total_count":5,"children":[{"name":"page.js","total_count":5,"children":[{"name":"Item()","total_count":1,"children":[]},{"name":"metadata","total_count":1,"children":[]},{"name":"Para()","total_count":1,"children":[]},{"name":"Section()","total_count":1,"children":[]},{"name":"TermsPage()","total_count":1,"children":[]}]}]},{"name":"track","total_count":5,"children":[{"name":"page.js","total_count":5,"children":[{"name":"formatRWF()","total_count":1,"children":[]},{"name":"STATUS_COLORS","total_count":1,"children":[]},{"name":"STATUS_LABELS","total_count":1,"children":[]},{"name":"TrackPage()","total_count":1,"children":[]},{"name":"TrackPageInner()","total_count":1,"children":[]}]}]}]},{"name":"components","total_count":56,"children":[{"name":"AccountClient.js","total_count":14,"children":[{"name":"AccountClient()","total_count":1,"children":[]},{"name":"AddressesTab()","total_count":1,"children":[]},{"name":"ErrorBox()","total_count":1,"children":[]},{"name":"formatDate()","total_count":1,"children":[]},{"name":"formatRWF()","total_count":1,"children":[]},{"name":"inputStyle()","total_count":1,"children":[]},{"name":"labelStyle","total_count":1,"children":[]},{"name":"OrderCard()","total_count":1,"children":[]},{"name":"OrdersTab()","total_count":1,"children":[]},{"name":"ProfileTab()","total_count":1,"children":[]},{"name":"ReturnForm()","total_count":1,"children":[]},{"name":"SecurityTab()","total_count":1,"children":[]},{"name":"STATUS_COLORS","total_count":1,"children":[]},{"name":"SuccessBox()","total_count":1,"children":[]}]},{"name":"AddToCartButton.js","total_count":1,"children":[{"name":"AddToCartButton()","total_count":1,"children":[]}]},{"name":"BannerSlider.js","total_count":1,"children":[{"name":"BannerSlider()","total_count":1,"children":[]}]},{"name":"CartContext.js","total_count":4,"children":[{"name":"CartContext","total_count":1,"children":[]},{"name":"cartKey()","total_count":1,"children":[]},{"name":"CartProvider()","total_count":1,"children":[]},{"name":"useCart()","total_count":1,"children":[]}]},{"name":"CartHeader.js","total_count":1,"children":[{"name":"CartHeader()","total_count":1,"children":[]}]},{"name":"CategoryStrip.js","total_count":3,"children":[{"name":"CategoryCard()","total_count":1,"children":[]},{"name":"CategoryStrip()","total_count":1,"children":[]},{"name":"CATS","total_count":1,"children":[]}]},{"name":"ConditionalLayout.js","total_count":3,"children":[{"name":"ConditionalLayout()","total_count":1,"children":[]},{"name":"Footer()","total_count":1,"children":[]},{"name":"PaymentBadge()","total_count":1,"children":[]}]},{"name":"Header.js","total_count":6,"children":[{"name":"CartIcon()","total_count":1,"children":[]},{"name":"Header()","total_count":1,"children":[]},{"name":"MoonIcon()","total_count":1,"children":[]},{"name":"PersonIcon()","total_count":1,"children":[]},{"name":"SearchIcon()","total_count":1,"children":[]},{"name":"SunIcon()","total_count":1,"children":[]}]},{"name":"ImageGallery.js","total_count":1,"children":[{"name":"ImageGallery()","total_count":1,"children":[]}]},{"name":"ProductGrid.js","total_count":4,"children":[{"name":"DesktopSectionHeader()","total_count":1,"children":[]},{"name":"formatRWF()","total_count":1,"children":[]},{"name":"ProductCard()","total_count":1,"children":[]},{"name":"ProductGrid()","total_count":1,"children":[]}]},{"name":"ProductPageClient.js","total_count":2,"children":[{"name":"formatRWF()","total_count":1,"children":[]},{"name":"ProductPageClient()","total_count":1,"children":[]}]},{"name":"ProductReviews.js","total_count":3,"children":[{"name":"formatDate()","total_count":1,"children":[]},{"name":"ProductReviews()","total_count":1,"children":[]},{"name":"StarRating()","total_count":1,"children":[]}]},{"name":"SaleCountdown.js","total_count":1,"children":[{"name":"SaleCountdown()","total_count":1,"children":[]}]},{"name":"TabButton.js","total_count":1,"children":[{"name":"TabButton","total_count":1,"children":[]}]},{"name":"ThemeProvider.js","total_count":4,"children":[{"name":"getInitialTheme()","total_count":1,"children":[]},{"name":"ThemeContext","total_count":1,"children":[]},{"name":"ThemeProvider()","total_count":1,"children":[]},{"name":"useTheme()","total_count":1,"children":[]}]},{"name":"TrustBar.js","total_count":5,"children":[{"name":"BoltIcon()","total_count":1,"children":[]},{"name":"PhoneIcon()","total_count":1,"children":[]},{"name":"ShieldIcon()","total_count":1,"children":[]},{"name":"TruckIcon()","total_count":1,"children":[]},{"name":"TrustBar()","total_count":1,"children":[]}]},{"name":"VariationSelector.js","total_count":1,"children":[{"name":"VariationSelector()","total_count":1,"children":[]}]},{"name":"WhatsAppWidget.js","total_count":1,"children":[{"name":"WhatsAppWidget()","total_count":1,"children":[]}]}]},{"name":"eslint.config.mjs","total_count":1,"children":[{"name":"eslintConfig","total_count":1,"children":[]}]},{"name":"lib","total_count":4,"children":[{"name":"r2","total_count":1,"children":[{"name":"client.js","total_count":1,"children":[{"name":"r2Client","total_count":1,"children":[]}]}]},{"name":"supabase","total_count":3,"children":[{"name":"client.js","total_count":1,"children":[{"name":"createClient()","total_count":1,"children":[]}]},{"name":"server.js","total_count":2,"children":[{"name":"createServerSupabaseClient()","total_count":1,"children":[]},{"name":"createServiceClient()","total_count":1,"children":[]}]}]}]},{"name":"next.config.ts","total_count":1,"children":[{"name":"nextConfig","total_count":1,"children":[]}]},{"name":"package.json","total_count":33,"children":[{"name":"@aws-sdk/client-s3","total_count":1,"children":[]},{"name":"@supabase/ssr","total_count":1,"children":[]},{"name":"@supabase/supabase-js","total_count":1,"children":[]},{"name":"@tailwindcss/postcss","total_count":1,"children":[]},{"name":"@testing-library/jest-dom","total_count":1,"children":[]},{"name":"@testing-library/react","total_count":1,"children":[]},{"name":"@types/node","total_count":1,"children":[]},{"name":"@types/react","total_count":1,"children":[]},{"name":"@types/react-dom","total_count":1,"children":[]},{"name":"@vercel/analytics","total_count":1,"children":[]},{"name":"@vercel/speed-insights","total_count":1,"children":[]},{"name":"browserslist","total_count":1,"children":[]},{"name":"build","total_count":1,"children":[]},{"name":"dependencies","total_count":1,"children":[]},{"name":"dev","total_count":1,"children":[]},{"name":"devDependencies","total_count":1,"children":[]},{"name":"eslint","total_count":1,"children":[]},{"name":"eslint-config-next","total_count":1,"children":[]},{"name":"jose","total_count":1,"children":[]},{"name":"lint","total_count":1,"children":[]},{"name":"name","total_count":1,"children":[]},{"name":"next","total_count":1,"children":[]},{"name":"private","total_count":1,"children":[]},{"name":"react","total_count":1,"children":[]},{"name":"react-dom","total_count":1,"children":[]},{"name":"sanitize-html","total_count":1,"children":[]},{"name":"scripts","total_count":1,"children":[]},{"name":"server-only","total_count":1,"children":[]},{"name":"start","total_count":1,"children":[]},{"name":"tailwindcss","total_count":1,"children":[]},{"name":"typescript","total_count":1,"children":[]},{"name":"version","total_count":1,"children":[]},{"name":"vitest","total_count":1,"children":[]}]},{"name":"postcss.config.mjs","total_count":1,"children":[{"name":"config","total_count":1,"children":[]}]},{"name":"scripts","total_count":7,"children":[{"name":"dump-schema.mjs","total_count":7,"children":[{"name":"__dirname","total_count":1,"children":[]},{"name":"getRowCount()","total_count":1,"children":[]},{"name":"getTableSchema()","total_count":1,"children":[]},{"name":"KNOWN_TABLES","total_count":1,"children":[]},{"name":"loadEnv()","total_count":1,"children":[]},{"name":"main()","total_count":1,"children":[]},{"name":"supabase","total_count":1,"children":[]}]}]},{"name":"tsconfig.json","total_count":19,"children":[{"name":"@/*","total_count":1,"children":[]},{"name":"allowJs","total_count":1,"children":[]},{"name":"compilerOptions","total_count":1,"children":[]},{"name":"esModuleInterop","total_count":1,"children":[]},{"name":"exclude","total_count":1,"children":[]},{"name":"include","total_count":1,"children":[]},{"name":"incremental","total_count":1,"children":[]},{"name":"isolatedModules","total_count":1,"children":[]},{"name":"jsx","total_count":1,"children":[]},{"name":"lib","total_count":1,"children":[]},{"name":"module","total_count":1,"children":[]},{"name":"moduleResolution","total_count":1,"children":[]},{"name":"noEmit","total_count":1,"children":[]},{"name":"paths","total_count":1,"children":[]},{"name":"plugins","total_count":1,"children":[]},{"name":"resolveJsonModule","total_count":1,"children":[]},{"name":"skipLibCheck","total_count":1,"children":[]},{"name":"strict","total_count":1,"children":[]},{"name":"target","total_count":1,"children":[]}]}]};
+
+    function transformData(jsonData) {
+        // Helper function to recursively build the children structure
+        function processNode(node, parentL1StageName) {
+            let displayName = node.name;
+            // Append total_count if it exists and is not already in the name
+            if (node.total_count !== undefined) {
+                if (!/\(Total Count: \d+\)$/.test(displayName)) {
+                    displayName += ` (Total Count: ${node.total_count})`;
+                }
+            }
+
+            const newNode = { name: displayName };
+
+            if (parentL1StageName === "Root") {
+                 newNode.originalStageName = node.name;
+            } else {
+                newNode.originalStageName = parentL1StageName;
+            }
+
+            if (node.children && node.children.length > 0) {
+                const stageNameToPass = (parentL1StageName === "Root") ? node.name : parentL1StageName;
+                newNode.children = node.children.map(child => processNode(child, stageNameToPass));
+            }
+
+            return newNode;
+        }
+
+        let rootDisplayName = jsonData.name;
+        if (jsonData.total_count !== undefined && !/\(Total Count: \d+\)$/.test(rootDisplayName)) {
+            rootDisplayName += ` (Total Count: ${jsonData.total_count})`;
+        }
+
+        return {
+            name: rootDisplayName,
+            originalStageName: "Root",
+            children: (jsonData.children || []).map(child => processNode(child, "Root"))
+        };
+    }
+
+    const treeData = transformData(initialJsonData);
+
+    // Auto-populated phaseColors: every depth-1 child of the root gets
+    // a stable colour from a bigger palette so all top-level dirs are
+    // distinguishable.
+    const PALETTE = [
+      ["#3498DB","#2980B9","#AED6F1"], ["#2ECC71","#27AE60","#A9DFBF"],
+      ["#E74C3C","#C0392B","#F5B7B1"], ["#9B59B6","#8E44AD","#D7BDE2"],
+      ["#F39C12","#D68910","#FAD7A0"], ["#1ABC9C","#117864","#A2D9CE"],
+      ["#34495E","#1B2631","#ABB2B9"], ["#E67E22","#BA4A00","#F5CBA7"],
+      ["#16A085","#0E6655","#A2D9CE"], ["#D35400","#A04000","#EDBB99"],
+      ["#7F8C8D","#566573","#D5DBDB"], ["#C0392B","#7B241C","#F5B7B1"],
+      ["#2E86C1","#1B4F72","#A9CCE3"], ["#28B463","#196F3D","#A9DFBF"],
+      ["#AF7AC5","#6C3483","#D2B4DE"],
+    ];
+    const phaseColors = { "Root": { fill: "#4A4A4A", stroke: "#333333", collapsedFill: "#6C757D" },
+                          "Default": { fill: "#BDC3C7", stroke: "#95A5A6", collapsedFill: "#ECF0F1" } };
+    (initialJsonData.children || []).forEach((c, i) => {
+      const pal = PALETTE[i % PALETTE.length];
+      phaseColors[c.name] = { fill: pal[0], stroke: pal[1], collapsedFill: pal[2] };
+    });
+
+    const levelSpecificPalettes = {
+      0: { fill: "#4A4A4A", stroke: "#333333", collapsedFill: "#6C757D" },
+      2: { fill: "#6ab04c", stroke: "#508a38", collapsedFill: "#a3d391" },
+      3: { fill: "#f0932b", stroke: "#d0730f", collapsedFill: "#f6c07e" },
+      4: { fill: "#be2edd", stroke: "#a01cb3", collapsedFill: "#e08bf2" },
+      5: { fill: "#00a8ff", stroke: "#007ac1", collapsedFill: "#74d2ff" },
+      6: { fill: "#e55039", stroke: "#c23620", collapsedFill: "#f09a8d" },
+      default: { fill: "#747d8c", stroke: "#57606f", collapsedFill: "#a4b0be" }
+    };
+
+    const svgElement = d3.select("#tree-svg");
+    const initialSvgWidth = +svgElement.attr("width");
+    const initialSvgHeight = +svgElement.attr("height");
+    const margin = { top: 40, right: 120, bottom: 80, left: 450 };
+    let width = initialSvgWidth - margin.left - margin.right;
+    let height = initialSvgHeight - margin.top - margin.bottom;
+    const duration = 500;
+    let nodeCounter = 0;
+    const g = svgElement.append("g").attr("transform", `translate(${margin.left},${margin.top})`);
+    const treemap = d3.tree().nodeSize([40, 0]);
+    let rootNode = d3.hierarchy(treeData, d => d.children);
+    rootNode.x0 = 0;
+    rootNode.y0 = 0;
+
+    if (rootNode.children) {
+      rootNode.children.forEach(d_child => {
+        if (d_child.children) { collapseBranch(d_child); }
+      });
+    }
+    updateTree(rootNode);
+
+    function collapseBranch(d) { if (d.children) { d._children = d.children; d._children.forEach(collapseBranch); d.children = null; } }
+    function expandBranch(d) { if (d._children) { d.children = d._children; d._children = null; } if (d.children) { d.children.forEach(expandBranch); } }
+    window.expandAll = () => { expandBranch(rootNode); updateTree(rootNode); };
+    window.collapseAll = () => { if (rootNode.children) { rootNode.children.forEach(collapseBranch); } updateTree(rootNode); };
+    window.resetView = () => { if (rootNode.children) { rootNode.children.forEach(d_child => { if (d_child.children || d_child._children) { collapseBranch(d_child); } }); } if (rootNode._children && !rootNode.children) { rootNode.children = rootNode._children; rootNode._children = null; } updateTree(rootNode); };
+
+    function updateTree(source) {
+      const treeLayoutData = treemap(rootNode);
+      let nodes = treeLayoutData.descendants();
+      let links = treeLayoutData.descendants().slice(1);
+
+      let minX = 0;
+      let maxX = 0;
+      if (nodes.length > 0) {
+        minX = d3.min(nodes, d => d.x);
+        maxX = d3.max(nodes, d => d.x);
+      }
+
+      let neededHeight = Math.max(initialSvgHeight, maxX - minX + margin.top + margin.bottom + 100);
+      svgElement.transition().duration(duration / 2).attr("height", neededHeight);
+      g.transition().duration(duration / 2).attr("transform", `translate(${margin.left},${margin.top - minX + 40})`);
+
+      nodes.forEach(d => { d.y = d.depth * 400; }); // Adjust horizontal separation if needed
+
+      const node = g.selectAll('g.node').data(nodes, d => d.id || (d.id = ++nodeCounter));
+      const nodeEnter = node.enter().append('g')
+        .attr('class', d => "node" + (d.children || d._children ? " node--internal" : " node--leaf") + (d._children ? " _children" : ""))
+        .attr('transform', d => `translate(${source.y0},${source.x0})`)
+        .on('click', (event, d) => { if (d.children) { d._children = d.children; d.children = null; } else if (d._children) { d.children = d._children; d._children = null; } updateTree(d); })
+        .style('cursor', d => (d.children || d._children) ? 'pointer' : 'default');
+
+      nodeEnter.append('circle').attr('r', 1e-6);
+
+      nodeEnter.append('text')
+        .attr('dy', '.35em')
+        .attr('x', d => d.children || d._children ? -14 : 14)
+        .attr('text-anchor', d => d.children || d._children ? 'end' : 'start')
+        .style("fill-opacity", 1e-6)
+        .call(wrapText, 380);
+
+      const nodeUpdate = nodeEnter.merge(node);
+      nodeUpdate.transition().duration(duration)
+        .attr('transform', d => `translate(${d.y},${d.x})`)
+        .attr('class', d => "node" + (d.children ? " node--internal" : " node--leaf") + (d._children ? " node--internal _children" : ""));
+
+      nodeUpdate.select('circle').attr('r', 8.5)
+        .style('fill', d => {
+            let palette;
+            if (d.depth === 0) {
+                palette = levelSpecificPalettes[0];
+            } else if (d.depth === 1) {
+                palette = phaseColors[d.data.originalStageName] || phaseColors.Default;
+            } else {
+                palette = levelSpecificPalettes[d.depth] || levelSpecificPalettes.default;
+            }
+            if (d._children) return palette.collapsedFill;
+            if (d.children) return palette.fill;
+            return "#fff";
+        })
+        .style('stroke', d => {
+            let palette;
+            if (d.depth === 0) {
+                palette = levelSpecificPalettes[0];
+            } else if (d.depth === 1) {
+                palette = phaseColors[d.data.originalStageName] || phaseColors.Default;
+            } else {
+                palette = levelSpecificPalettes[d.depth] || levelSpecificPalettes.default;
+            }
+            return palette.stroke;
+        });
+      nodeUpdate.select('text').style("fill-opacity", 1).call(wrapText, 380);
+
+      const nodeExit = node.exit().transition().duration(duration).attr('transform', d => `translate(${source.y},${source.x})`).remove();
+      nodeExit.select('circle').attr('r', 1e-6);
+      nodeExit.select('text').style('fill-opacity', 1e-6);
+
+      const link = g.selectAll('path.link').data(links, d => d.id);
+      const linkEnter = link.enter().insert('path', "g").attr('class', 'link').attr('d', d => { const o = { x: source.x0, y: source.y0 }; return diagonal(o, o); });
+
+      linkEnter.merge(link).transition().duration(duration).attr('d', d => diagonal(d, d.parent))
+        .style('stroke', d => {
+            const sourceNode = d.parent;
+            if (!sourceNode) return phaseColors.Default.stroke;
+            const l1AncestorName = sourceNode.data.originalStageName;
+            const colorPalette = phaseColors[l1AncestorName] || phaseColors.Default;
+            return colorPalette.stroke;
+        });
+      link.exit().transition().duration(duration).attr('d', d => { const o = { x: source.x, y: source.y }; return diagonal(o, o); }).remove();
+      nodes.forEach(d => { d.x0 = d.x; d.y0 = d.y; });
+    }
+
+    function diagonal(s, d) { return `M ${s.y} ${s.x} C ${(s.y + d.y) / 2} ${s.x}, ${(s.y + d.y) / 2} ${d.x}, ${d.y} ${d.x}`; }
+
+    function wrapText(textElements, maxWidth) {
+        const textPartColors = {
+            name: '#343a40',
+            count: '#0056b3'
+        };
+        const countRegex = /(\s\(Total Count: \d+\))$/;
+
+        textElements.each(function () {
+            const textD3 = d3.select(this);
+            const originalNodeText = textD3.datum().data.name;
+            const x = parseFloat(textD3.attr("x") || 0);
+            const initialDy = textD3.attr("dy");
+            const textAnchor = textD3.attr("text-anchor");
+            const lineHeight = 1.1;
+
+            textD3.text(null);
+
+            let namePart = originalNodeText;
+            let countPartText = "";
+
+            const countMatch = originalNodeText.match(countRegex);
+            if (countMatch && originalNodeText.endsWith(countMatch[0])) {
+                namePart = originalNodeText.substring(0, originalNodeText.length - countMatch[0].length).trim();
+                countPartText = countMatch[0].trim();
+            }
+
+            const tokens = [];
+            namePart.split(/\s+/).filter(Boolean).forEach(word => {
+                tokens.push({ text: word, type: 'name' });
+            });
+            if (countPartText) {
+                tokens.push({ text: countPartText, type: 'count' });
+            }
+
+            if (tokens.length === 0 && originalNodeText) {
+                tokens.push({ text: originalNodeText, type: 'name' });
+            }
+
+            let currentTspan = textD3.append("tspan").attr("x", x).attr("dy", initialDy);
+            if (textAnchor === "end") currentTspan.attr("text-anchor", "end");
+
+            let lineTokens = [];
+
+            for (let i = 0; i < tokens.length; i++) {
+                const tokenObj = tokens[i];
+
+                lineTokens.push(tokenObj);
+                currentTspan.text(lineTokens.map(t => t.text).join(" "));
+
+                if (currentTspan.node().getComputedTextLength() > maxWidth && lineTokens.length > 1) {
+                    lineTokens.pop();
+
+                    currentTspan.text(null);
+                    lineTokens.forEach((prevToken, idx) => {
+                        currentTspan.append("tspan")
+                            .text((idx > 0 ? " " : "") + prevToken.text)
+                            .style("fill", textPartColors[prevToken.type] || textPartColors.name)
+                            .style("font-weight", prevToken.type === 'count' ? "bold" : "normal");
+                    });
+
+                    lineTokens = [tokenObj];
+                    currentTspan = textD3.append("tspan").attr("x", x).attr("dy", lineHeight + "em");
+                    if (textAnchor === "end") currentTspan.attr("text-anchor", "end");
+                }
+            }
+
+            currentTspan.text(null);
+            lineTokens.forEach((token, idx) => {
+                currentTspan.append("tspan")
+                    .text((idx > 0 ? " " : "") + token.text)
+                    .style("fill", textPartColors[token.type] || textPartColors.name)
+                    .style("font-weight", token.type === 'count' ? "bold" : "normal");
+            });
+
+            if (textD3.selectAll("tspan > tspan").empty() && textD3.select("tspan").text().length === 0 && originalNodeText) {
+                let t = textD3.select("tspan");
+                let displayText = originalNodeText;
+                t.text(displayText).style("fill", textPartColors.name);
+                if (t.node() && t.node().getComputedTextLength() > maxWidth && displayText.length > 20) {
+                    let estimatedChars = Math.floor(maxWidth / (t.node().getComputedTextLength()/displayText.length) );
+                    displayText = displayText.substring(0, Math.max(0, estimatedChars - 3)) + "...";
+                    t.text(displayText);
+                }
+            }
+        });
+    }
+  </script>
+</body>
+</html>
