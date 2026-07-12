@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useRef, useEffect } from 'react';
+import QRCode from 'qrcode';
 
 // Admin secret is no longer exposed to client - auth is via httpOnly cookie
 // These helpers now rely on the admin_auth cookie set by /api/admin/auth
@@ -127,14 +128,14 @@ export function printRevenueReport(data, period) {
   w.document.close();
 }
 
-export function printShippingLabel(order) {
-  const trackUrl = encodeURIComponent(`${SITE_URL}/review?token=${order.review_token}`);
-  const qrUrl    = `https://api.qrserver.com/v1/create-qr-code/?size=140x140&data=${trackUrl}`;
+export async function printShippingLabel(order) {
+  const trackUrl = `${SITE_URL}/review?token=${encodeURIComponent(order.review_token)}`;
+  const qrDataUrl = await QRCode.toDataURL(trackUrl, { width: 140, margin: 1, color: { dark: '#000', light: '#fff' } });
   const w = window.open('', '_blank');
   w.document.write(`<!DOCTYPE html><html><head><title>Label — ${order.reference}</title>
   <style>*{margin:0;padding:0;box-sizing:border-box;}body{font-family:Arial,sans-serif;padding:20px;}.label{border:2px solid #000;border-radius:8px;padding:20px;max-width:400px;margin:0 auto;}.hdr{display:flex;justify-content:space-between;align-items:flex-start;border-bottom:2px solid #000;padding-bottom:12px;margin-bottom:14px;}.brand{font-size:22px;font-weight:900;letter-spacing:3px;}.brand-sub{font-size:9px;letter-spacing:2px;color:#555;margin-top:2px;}.sec{margin-bottom:12px;padding-bottom:12px;border-bottom:1px solid #ddd;}.sec-lbl{font-size:9px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:#888;margin-bottom:4px;}.sec-val{font-size:14px;font-weight:700;line-height:1.4;}.ref{font-size:20px;font-weight:900;letter-spacing:3px;font-family:monospace;}.footer{font-size:9px;color:#aaa;text-align:center;margin-top:10px;}@media print{button{display:none;}body{padding:0;}}</style>
   </head><body><div class="label">
-  <div class="hdr"><div><div class="brand">STARLORD</div><div class="brand-sub">GROUP · KIGALI</div></div><img src="${qrUrl}" width="70" height="70" alt="QR"/></div>
+  <div class="hdr"><div><div class="brand">STARLORD</div><div class="brand-sub">GROUP · KIGALI</div></div><img src="${qrDataUrl}" width="70" height="70" alt="QR"/></div>
   <div class="sec"><div class="sec-lbl">Order Reference</div><div class="ref">${order.reference}</div></div>
   <div class="sec"><div class="sec-lbl">Ship To</div><div class="sec-val">${order.customer_name}</div><div style="font-size:13px;color:#333;margin-top:3px;">${order.customer_phone}</div></div>
   <div class="sec"><div class="sec-lbl">Delivery Address</div><div style="font-size:13px;line-height:1.5;">${order.delivery_address}</div></div>
