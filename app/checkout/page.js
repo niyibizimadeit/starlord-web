@@ -206,8 +206,11 @@ export default function CheckoutPage() {
         if (data.paymentStatus === 'paid') {
           setPaymentStatus('paid');
           clearInterval(interval);
-          // Disconnect the modal-dismiss observer — payment succeeded
+          // Disconnect the modal-dismiss observer and clear the error poll
           if (widgetModalObserverRef.current) {
+            if (widgetModalObserverRef.current._errorPoll) {
+              clearInterval(widgetModalObserverRef.current._errorPoll);
+            }
             widgetModalObserverRef.current.disconnect();
             widgetModalObserverRef.current = null;
           }
@@ -292,9 +295,13 @@ export default function CheckoutPage() {
       }
 
       // Dismiss the IremboPay widget modal if it's still showing an error
-      // message. Disconnect the observer first so removing the modal
-      // doesn't trigger a redundant setPaymentStatus('failed') call.
+      // message. Disconnect the observer and clear the error poll first so
+      // removing the modal doesn't trigger a redundant state change.
       if (widgetModalObserverRef.current) {
+        if (widgetModalObserverRef.current._errorPoll) {
+          clearInterval(widgetModalObserverRef.current._errorPoll);
+          widgetModalObserverRef.current._errorPoll = null;
+        }
         widgetModalObserverRef.current.disconnect();
         widgetModalObserverRef.current = null;
       }
@@ -524,11 +531,11 @@ export default function CheckoutPage() {
         if (widgetModalObserverRef.current) {
           widgetModalObserverRef.current.disconnect();
         }
+
+        // ── Observer: detect manual modal dismiss ────────────────────
         widgetModalObserverRef.current = new MutationObserver(() => {
           if (!document.getElementById(MODAL_ID)) {
             // Modal was removed from the DOM — payment didn't complete.
-            // Use the functional updater so we read the latest state,
-            // not a stale closure value.
             setPaymentStatus(prev => (prev === 'paid' ? prev : 'failed'));
             if (widgetModalObserverRef.current) {
               widgetModalObserverRef.current.disconnect();
@@ -536,9 +543,44 @@ export default function CheckoutPage() {
             }
           }
         });
-        // The widget appends its modal to document.body. Watch body for
-        // childList changes so we detect when the modal is removed.
         widgetModalObserverRef.current.observe(document.body, { childList: true });
+
+        // ── Poll: detect widget error message in the DOM ─────────────
+        // The IremboPay widget may show an error (e.g. "Sorry, we have not
+        // received your payment") inside #irembopay-alertBox WITHOUT firing
+        // the callback. Poll the widget's DOM every 1.5s; when we see the
+        // alert box become visible with error text, auto-dismiss the modal
+        // and transition to failed — no manual close needed.
+        const WIDGET_ERROR_POLL_MS = 1500;
+        let widgetErrorPoll = setInterval(() => {
+          const alertBox = document.getElementById('irembopay-alertBox');
+          if (!alertBox) return; // widget not yet rendered
+          const display = window.getComputedStyle(alertBox).display;
+          if (display === 'none') return; // alert not shown
+          const text = (alertBox.textContent || '').toLowerCase();
+          if (
+            text.includes('sorry') ||
+            text.includes('not received') ||
+            text.includes('payment could not') ||
+            text.includes('declined') ||
+            text.includes('failed')
+          ) {
+            clearInterval(widgetErrorPoll);
+            // Disconnect observer before we remove the modal ourselves
+            if (widgetModalObserverRef.current) {
+              widgetModalObserverRef.current.disconnect();
+              widgetModalObserverRef.current = null;
+            }
+            const modal = document.getElementById(MODAL_ID);
+            if (modal) modal.remove();
+            setPaymentStatus('failed');
+          }
+        }, WIDGET_ERROR_POLL_MS);
+
+        // Store the poll handle on the observer ref (reuse the same ref
+        // for cleanup — we'll clear it in the terminal-state useEffect).
+        // We store it as a property so the cleanup code can reach it.
+        widgetModalObserverRef.current._errorPoll = widgetErrorPoll;
 
         // Only now that initiate() has actually been called without
         // throwing — meaning the modal has genuinely opened — do we
