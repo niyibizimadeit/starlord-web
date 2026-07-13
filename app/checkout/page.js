@@ -11,7 +11,7 @@ function formatRWF(n) {
 }
 
 export default function CheckoutPage() {
-  const { cart, cartTotal, clearCart } = useCart();
+  const { cart, cartTotal, clearCart, restoreCart } = useCart();
   const router = useRouter();
 
   const [step, setStep]               = useState(1);
@@ -43,6 +43,8 @@ export default function CheckoutPage() {
   // ── Guards ─────────────────────────────────────────────────────────
   const submittingRef = useRef(false);  // prevents double-submit
   const initiatedRef  = useRef(false);  // prevents double-initiate
+  const widgetModalObserverRef = useRef(null);  // watches for IremboPay modal dismiss
+  const savedCartRef = useRef(null);            // cart snapshot before clearCart()
 
   // ── Load IremboPay inline widget script ───────────────────────────
   // The sandbox occasionally drops the connection for this script the
@@ -204,6 +206,14 @@ export default function CheckoutPage() {
         if (data.paymentStatus === 'paid') {
           setPaymentStatus('paid');
           clearInterval(interval);
+          // Disconnect the modal-dismiss observer — payment succeeded
+          if (widgetModalObserverRef.current) {
+            widgetModalObserverRef.current.disconnect();
+            widgetModalObserverRef.current = null;
+          }
+          // Cart is already cleared at step 3; ensure the backup is
+          // dropped so a stale restore can't happen on a later render.
+          savedCartRef.current = null;
 
           // The IremboPay widget's own notification channel has proven
           // unreliable in this environment — it can leave the customer
@@ -241,24 +251,57 @@ export default function CheckoutPage() {
         } else if (data.paymentStatus === 'failed') {
           setPaymentStatus('failed');
           clearInterval(interval);
+          if (widgetModalObserverRef.current) {
+            widgetModalObserverRef.current.disconnect();
+            widgetModalObserverRef.current = null;
+          }
         } else if (data.expired) {
           setPaymentStatus('expired');
           clearInterval(interval);
+          if (widgetModalObserverRef.current) {
+            widgetModalObserverRef.current.disconnect();
+            widgetModalObserverRef.current = null;
+          }
         }
       } catch {}
     }, 4000);
 
-    return () => clearInterval(interval);
+    return () => {
+      clearInterval(interval);
+      // Clean up the modal-dismiss observer if the component unmounts
+      // or dependencies change before a terminal state is reached.
+      if (widgetModalObserverRef.current) {
+        widgetModalObserverRef.current.disconnect();
+        widgetModalObserverRef.current = null;
+      }
+    };
   }, [step, order, form.phone, paymentStatus]);
 
-  // ── Reset card-payment guards when a terminal state is reached ─────
-  // So the customer can retry (back → cart → checkout) without the
-  // double-initiate guard blocking a fresh attempt.
+  // ── Handle terminal payment states ────────────────────────────────
+  // When payment fails or expires: restore the cart so the customer can
+  // retry, dismiss the IremboPay widget modal if it's still open, and
+  // reset the double-initiate guard.
   useEffect(() => {
     if (paymentStatus === 'failed' || paymentStatus === 'expired') {
       initiatedRef.current = false;
+
+      // Restore the cart that was cleared when we advanced to step 3
+      if (savedCartRef.current && savedCartRef.current.length > 0) {
+        restoreCart(savedCartRef.current);
+        savedCartRef.current = null;
+      }
+
+      // Dismiss the IremboPay widget modal if it's still showing an error
+      // message. Disconnect the observer first so removing the modal
+      // doesn't trigger a redundant setPaymentStatus('failed') call.
+      if (widgetModalObserverRef.current) {
+        widgetModalObserverRef.current.disconnect();
+        widgetModalObserverRef.current = null;
+      }
+      const modalEl = document.getElementById('irembopay-iremboPayModalContainer');
+      if (modalEl) modalEl.remove();
     }
-  }, [paymentStatus]);
+  }, [paymentStatus, restoreCart]);
 
   // ── updateForm — simple setter, no auto-detection ─────────────────
   const updateForm = (key, value) => {
@@ -414,15 +457,22 @@ export default function CheckoutPage() {
             console.log('[IremboPay] Callback fired:', JSON.stringify(response));
             if (response && response.status === 'PAID') {
               setPaymentStatus('paid');
-            } else if (response && (response.status === 'FAILED' || response.status === 'CANCELLED')) {
-              // Widget reported a definitive failure — trust it so the
-              // customer isn't left waiting for the poll to time out.
+            } else {
+              // Widget reported non-success (FAILED, CANCELLED, error code,
+              // or anything else). Treat as a failure — don't wait for a
+              // webhook that may never arrive for declined cards.
+              if (response && (response.status === 'FAILED' || response.status === 'CANCELLED')) {
+                console.log('[IremboPay] Widget reported:', response.status);
+              } else {
+                console.error('[IremboPay] Widget non-success:', JSON.stringify(response));
+              }
               setPaymentStatus('failed');
-            } else if (response && response.code) {
-              console.error('[IremboPay] Widget error:', JSON.stringify(response));
-              // Don't force a failed state here — the poll is the
-              // source of truth. A widget-side error doesn't always
-              // mean the payment failed server-side.
+              // Disconnect the modal-dismiss observer — the callback already
+              // told us the payment didn't succeed.
+              if (widgetModalObserverRef.current) {
+                widgetModalObserverRef.current.disconnect();
+                widgetModalObserverRef.current = null;
+              }
             }
           },
         };
@@ -463,18 +513,47 @@ export default function CheckoutPage() {
           return;
         }
 
+        // ── Watch for widget modal dismiss ──────────────────────────
+        // The IremboPay widget may show an error message (e.g. "Sorry, we
+        // have not received your payment") without calling the callback and
+        // without auto-closing. When the user closes the modal manually, we
+        // need to detect that and transition to the failed state — otherwise
+        // the checkout stays stuck on "Processing your payment" forever.
+        const MODAL_ID = 'irembopay-iremboPayModalContainer';
+        // Disconnect any previous observer (shouldn't exist, but be safe)
+        if (widgetModalObserverRef.current) {
+          widgetModalObserverRef.current.disconnect();
+        }
+        widgetModalObserverRef.current = new MutationObserver(() => {
+          if (!document.getElementById(MODAL_ID)) {
+            // Modal was removed from the DOM — payment didn't complete.
+            // Use the functional updater so we read the latest state,
+            // not a stale closure value.
+            setPaymentStatus(prev => (prev === 'paid' ? prev : 'failed'));
+            if (widgetModalObserverRef.current) {
+              widgetModalObserverRef.current.disconnect();
+              widgetModalObserverRef.current = null;
+            }
+          }
+        });
+        // The widget appends its modal to document.body. Watch body for
+        // childList changes so we detect when the modal is removed.
+        widgetModalObserverRef.current.observe(document.body, { childList: true });
+
         // Only now that initiate() has actually been called without
         // throwing — meaning the modal has genuinely opened — do we
-        // mark it as initiated, clear the cart, and move to the
-        // waiting screen behind the modal.
+        // mark it as initiated, save the cart (so we can restore on
+        // failure), clear it, and move to the waiting screen.
         initiatedRef.current = true;
         setOrder(data);
+        savedCartRef.current = [...cart];
         clearCart();
         setStep(3);
         setProcessing(false);
       } else {
         // Mobile money: show "Check your phone" waiting screen
         setOrder(data);
+        savedCartRef.current = [...cart];
         clearCart();
         setStep(3);
         setProcessing(false);
