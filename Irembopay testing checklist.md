@@ -18,15 +18,15 @@
 - [x] Verify `irembopay_transaction_id` is stored on the order row
 
 ### 1.2 Failed Payment
-- [ ] Place an order, select MTN, enter sandbox fail number: `0780123456`
-- [ ] Confirm checkout page transitions to a "Payment failed" state
-- [ ] Verify in Supabase: `status = payment_failed`, `payment_status = failed`
-- [ ] Verify reserved stock is restored (check product stock count before and after)
+- [x] Place an order, select MTN, enter sandbox fail number: `0780123456`
+- [x] Confirm checkout page transitions to a "Payment failed" state
+- [x] Verify in Supabase: `status = payment_failed`, `payment_status = failed`
+- [x] Verify reserved stock is restored (check product stock count before and after)
 
 ### 1.3 Expired Payment
-- [ ] Place an order and do nothing for 15 minutes (or set `payment_expires_at` to a past time manually)
-- [ ] Confirm the checkout page shows an "expired" state
-- [ ] Verify stock is restored
+- [x] Place an order and do nothing for 15 minutes (or set `payment_expires_at` to a past time manually)
+- [x] Confirm the checkout page shows an "expired" state
+- [x] Verify stock is restored
 
 ---
 
@@ -39,8 +39,8 @@
 - [x] Verify in IremboPay dashboard: webhook **Successful: True**, response **200**
 
 ### 2.2 Failed Payment
-- [ ] Enter sandbox fail number: `0730123456`
-- [ ] Confirm `status = payment_failed`, stock restored
+- [x] Enter sandbox fail number: `0730123456`
+- [x] Confirm `status = payment_failed`, stock restored
 
 ---
 

@@ -200,9 +200,10 @@ export default function CheckoutPage() {
     const interval = setInterval(async () => {
       try {
         const res = await fetch(
-          `/api/orders/payment-status?ref=${order.reference}&phone=${encodeURIComponent(form.phone)}`
+          `/api/orders/payment-status?ref=${order.reference}&phone=${encodeURIComponent(form.phone.replace(/\s/g, ''))}`
         );
         const data = await res.json();
+
         if (data.paymentStatus === 'paid') {
           setPaymentStatus('paid');
           clearInterval(interval);
@@ -277,9 +278,8 @@ export default function CheckoutPage() {
 
     return () => {
       clearInterval(interval);
-      // Clean up the modal-dismiss observer and error poll if the
-      // component unmounts or dependencies change before a terminal
-      // state is reached.
+      // Clean up the modal-dismiss observer if the component unmounts
+      // or dependencies change before a terminal state is reached.
       if (widgetModalObserverRef.current) {
         if (widgetModalObserverRef.current._stuckTimeout) {
           clearTimeout(widgetModalObserverRef.current._stuckTimeout);
