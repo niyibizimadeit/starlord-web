@@ -1,7 +1,7 @@
-# Graph Report - starlord-web  (2026-07-13)
+# Graph Report - starlord-web  (2026-07-14)
 
 ## Corpus Check
-- 106 files · ~62,463 words
+- 106 files · ~62,468 words
 - Verdict: corpus is large enough that graph structure adds value.
 
 ## Summary
@@ -10,7 +10,7 @@
 - Token cost: 0 input · 0 output
 
 ## Graph Freshness
-- Built from commit: `1a7bc4ab`
+- Built from commit: `d6f543f9`
 - Run `git rev-parse HEAD` and compare to check if the graph is stale.
 - Run `graphify update .` after code changes (no API cost).
 
@@ -216,7 +216,7 @@ Cohesion: 0.67
 Nodes (3): CheckoutPage(), formatRWF(), IMPORTANT: we do NOT clearCart()/setStep(3) here anymore.
 
 ## Knowledge Gaps
-- **135 isolated node(s):** `CartContext`, `metadata`, `metadata`, `viewport`, `JWT_SECRET` (+130 more)
+- **135 isolated node(s):** `1.1 Successful Payment`, `1.2 Failed Payment`, `1.3 Expired Payment`, `2.1 Successful Payment`, `2.2 Failed Payment` (+130 more)
   These have ≤1 connection - possible missing edges or undocumented components.
 - **20 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
 
@@ -229,7 +229,7 @@ _Questions this graph is uniquely positioned to answer:_
   _High betweenness centrality (0.026) - this node is a cross-community bridge._
 - **Why does `createServerSupabaseClient()` connect `server.js` to `route.js`, `useCart`, `route.js`?**
   _High betweenness centrality (0.016) - this node is a cross-community bridge._
-- **What connects `IMPORTANT: we do NOT clearCart()/setStep(3) here anymore.`, `CartContext`, `metadata` to the rest of the system?**
+- **What connects `1.1 Successful Payment`, `1.2 Failed Payment`, `1.3 Expired Payment` to the rest of the system?**
   _143 weakly-connected nodes found - possible documentation gaps or missing edges._
 - **Should `createServiceClient` be split into smaller, more focused modules?**
   _Cohesion score 0.10752688172043011 - nodes in this community are weakly interconnected._
