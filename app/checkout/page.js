@@ -208,8 +208,8 @@ export default function CheckoutPage() {
           clearInterval(interval);
           // Disconnect the modal-dismiss observer and clear the error poll
           if (widgetModalObserverRef.current) {
-            if (widgetModalObserverRef.current._errorPoll) {
-              clearInterval(widgetModalObserverRef.current._errorPoll);
+            if (widgetModalObserverRef.current._stuckTimeout) {
+              clearTimeout(widgetModalObserverRef.current._stuckTimeout);
             }
             widgetModalObserverRef.current.disconnect();
             widgetModalObserverRef.current = null;
@@ -255,6 +255,9 @@ export default function CheckoutPage() {
           setPaymentStatus('failed');
           clearInterval(interval);
           if (widgetModalObserverRef.current) {
+            if (widgetModalObserverRef.current._stuckTimeout) {
+              clearTimeout(widgetModalObserverRef.current._stuckTimeout);
+            }
             widgetModalObserverRef.current.disconnect();
             widgetModalObserverRef.current = null;
           }
@@ -262,6 +265,9 @@ export default function CheckoutPage() {
           setPaymentStatus('expired');
           clearInterval(interval);
           if (widgetModalObserverRef.current) {
+            if (widgetModalObserverRef.current._stuckTimeout) {
+              clearTimeout(widgetModalObserverRef.current._stuckTimeout);
+            }
             widgetModalObserverRef.current.disconnect();
             widgetModalObserverRef.current = null;
           }
@@ -271,9 +277,13 @@ export default function CheckoutPage() {
 
     return () => {
       clearInterval(interval);
-      // Clean up the modal-dismiss observer if the component unmounts
-      // or dependencies change before a terminal state is reached.
+      // Clean up the modal-dismiss observer and error poll if the
+      // component unmounts or dependencies change before a terminal
+      // state is reached.
       if (widgetModalObserverRef.current) {
+        if (widgetModalObserverRef.current._stuckTimeout) {
+          clearTimeout(widgetModalObserverRef.current._stuckTimeout);
+        }
         widgetModalObserverRef.current.disconnect();
         widgetModalObserverRef.current = null;
       }
@@ -298,9 +308,9 @@ export default function CheckoutPage() {
       // message. Disconnect the observer and clear the error poll first so
       // removing the modal doesn't trigger a redundant state change.
       if (widgetModalObserverRef.current) {
-        if (widgetModalObserverRef.current._errorPoll) {
-          clearInterval(widgetModalObserverRef.current._errorPoll);
-          widgetModalObserverRef.current._errorPoll = null;
+        if (widgetModalObserverRef.current._stuckTimeout) {
+          clearTimeout(widgetModalObserverRef.current._stuckTimeout);
+          widgetModalObserverRef.current._stuckTimeout = null;
         }
         widgetModalObserverRef.current.disconnect();
         widgetModalObserverRef.current = null;
@@ -545,42 +555,38 @@ export default function CheckoutPage() {
         });
         widgetModalObserverRef.current.observe(document.body, { childList: true });
 
-        // ── Poll: detect widget error message in the DOM ─────────────
+        // ── Timeout: auto-dismiss stuck widget after 60s ────────────
         // The IremboPay widget may show an error (e.g. "Sorry, we have not
-        // received your payment") inside #irembopay-alertBox WITHOUT firing
-        // the callback. Poll the widget's DOM every 1.5s; when we see the
-        // alert box become visible with error text, auto-dismiss the modal
-        // and transition to failed — no manual close needed.
-        const WIDGET_ERROR_POLL_MS = 1500;
-        let widgetErrorPoll = setInterval(() => {
-          const alertBox = document.getElementById('irembopay-alertBox');
-          if (!alertBox) return; // widget not yet rendered
-          const display = window.getComputedStyle(alertBox).display;
-          if (display === 'none') return; // alert not shown
-          const text = (alertBox.textContent || '').toLowerCase();
-          if (
-            text.includes('sorry') ||
-            text.includes('not received') ||
-            text.includes('payment could not') ||
-            text.includes('declined') ||
-            text.includes('failed')
-          ) {
-            clearInterval(widgetErrorPoll);
+        // received your payment") WITHOUT firing the callback and WITHOUT
+        // auto-closing. Rather than trying to parse the widget's DOM (which
+        // risks false positives from init text), we set a generous timeout.
+        // If the modal is still open after 60s and payment isn't confirmed,
+        // we auto-dismiss it and transition to failed.
+        //
+        // 60s is long enough that the user has definitely entered card
+        // details and the payment has been processed one way or the other.
+        // A successful payment would have already closed the modal via the
+        // callback or the payment-status poll.
+        const STUCK_MODAL_TIMEOUT_MS = 60_000;
+        const stuckModalTimeout = setTimeout(() => {
+          const modal = document.getElementById(MODAL_ID);
+          if (modal) {
             // Disconnect observer before we remove the modal ourselves
             if (widgetModalObserverRef.current) {
               widgetModalObserverRef.current.disconnect();
               widgetModalObserverRef.current = null;
             }
-            const modal = document.getElementById(MODAL_ID);
-            if (modal) modal.remove();
-            setPaymentStatus('failed');
+            modal.remove();
           }
-        }, WIDGET_ERROR_POLL_MS);
+          // Only transition if we're still pending — if the poll already
+          // set us to paid/failed/expired, don't overwrite it.
+          setPaymentStatus(prev =>
+            prev === 'pending' ? 'failed' : prev
+          );
+        }, STUCK_MODAL_TIMEOUT_MS);
 
-        // Store the poll handle on the observer ref (reuse the same ref
-        // for cleanup — we'll clear it in the terminal-state useEffect).
-        // We store it as a property so the cleanup code can reach it.
-        widgetModalObserverRef.current._errorPoll = widgetErrorPoll;
+        // Store the timeout handle for cleanup in terminal-state paths
+        widgetModalObserverRef.current._stuckTimeout = stuckModalTimeout;
 
         // Only now that initiate() has actually been called without
         // throwing — meaning the modal has genuinely opened — do we

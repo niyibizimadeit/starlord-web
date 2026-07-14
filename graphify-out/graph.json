@@ -10,7 +10,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "app_checkout_page",
-      "community": 1,
+      "community": 53,
       "norm_label": "page.js"
     },
     {
@@ -20,7 +20,7 @@
       "source_location": "L9",
       "_origin": "ast",
       "id": "app_checkout_page_formatrwf",
-      "community": 1,
+      "community": 53,
       "norm_label": "formatrwf()"
     },
     {
@@ -30,17 +30,17 @@
       "source_location": "L13",
       "_origin": "ast",
       "id": "app_checkout_page_checkoutpage",
-      "community": 1,
+      "community": 53,
       "norm_label": "checkoutpage()"
     },
     {
       "label": "IMPORTANT: we do NOT clearCart()/setStep(3) here anymore.",
       "file_type": "rationale",
       "source_file": "app/checkout/page.js",
-      "source_location": "L434",
+      "source_location": "L451",
       "_origin": "ast",
-      "id": "app_checkout_page_rationale_434",
-      "community": 1,
+      "id": "app_checkout_page_rationale_451",
+      "community": 53,
       "norm_label": "important: we do not clearcart()/setstep(3) here anymore."
     },
     {
@@ -49,9 +49,9 @@
       "source_file": "components/CartContext.js",
       "source_location": "L1",
       "_origin": "ast",
-      "id": "components_cartcontext",
       "community": 1,
-      "norm_label": "cartcontext.js"
+      "norm_label": "cartcontext.js",
+      "id": "components_cartcontext"
     },
     {
       "label": "CartContext",
@@ -59,9 +59,9 @@
       "source_file": "components/CartContext.js",
       "source_location": "L5",
       "_origin": "ast",
-      "id": "components_cartcontext_cartcontext",
       "community": 1,
-      "norm_label": "cartcontext"
+      "norm_label": "cartcontext",
+      "id": "components_cartcontext_cartcontext"
     },
     {
       "label": "cartKey()",
@@ -69,9 +69,9 @@
       "source_file": "components/CartContext.js",
       "source_location": "L8",
       "_origin": "ast",
-      "id": "components_cartcontext_cartkey",
       "community": 1,
-      "norm_label": "cartkey()"
+      "norm_label": "cartkey()",
+      "id": "components_cartcontext_cartkey"
     },
     {
       "label": "CartProvider()",
@@ -79,9 +79,9 @@
       "source_file": "components/CartContext.js",
       "source_location": "L15",
       "_origin": "ast",
-      "id": "components_cartcontext_cartprovider",
       "community": 1,
-      "norm_label": "cartprovider()"
+      "norm_label": "cartprovider()",
+      "id": "components_cartcontext_cartprovider"
     },
     {
       "label": "useCart()",
@@ -89,9 +89,9 @@
       "source_file": "components/CartContext.js",
       "source_location": "L84",
       "_origin": "ast",
-      "id": "components_cartcontext_usecart",
       "community": 1,
-      "norm_label": "usecart()"
+      "norm_label": "usecart()",
+      "id": "components_cartcontext_usecart"
     },
     {
       "label": "page.js",
@@ -549,7 +549,7 @@
       "source_file": "app/api/account/addresses/route.js",
       "source_location": "L1",
       "_origin": "ast",
-      "community": 3,
+      "community": 46,
       "norm_label": "route.js",
       "id": "app_api_account_addresses_route"
     },
@@ -559,7 +559,7 @@
       "source_file": "app/api/account/addresses/route.js",
       "source_location": "L4",
       "_origin": "ast",
-      "community": 3,
+      "community": 46,
       "norm_label": "getuser()",
       "id": "app_api_account_addresses_route_getuser"
     },
@@ -569,7 +569,7 @@
       "source_file": "app/api/account/addresses/route.js",
       "source_location": "L10",
       "_origin": "ast",
-      "community": 3,
+      "community": 46,
       "norm_label": "post()",
       "id": "app_api_account_addresses_route_post"
     },
@@ -579,7 +579,7 @@
       "source_file": "app/api/account/addresses/route.js",
       "source_location": "L49",
       "_origin": "ast",
-      "community": 3,
+      "community": 46,
       "norm_label": "patch()",
       "id": "app_api_account_addresses_route_patch"
     },
@@ -589,7 +589,7 @@
       "source_file": "app/api/account/addresses/route.js",
       "source_location": "L91",
       "_origin": "ast",
-      "community": 3,
+      "community": 46,
       "norm_label": "delete()",
       "id": "app_api_account_addresses_route_delete"
     },
@@ -709,7 +709,7 @@
       "source_file": "app/api/admin/analytics/route.js",
       "source_location": "L1",
       "_origin": "ast",
-      "community": 53,
+      "community": 0,
       "norm_label": "route.js",
       "id": "app_api_admin_analytics_route"
     },
@@ -719,7 +719,7 @@
       "source_file": "app/api/admin/analytics/route.js",
       "source_location": "L6",
       "_origin": "ast",
-      "community": 53,
+      "community": 0,
       "norm_label": "getadminuser()",
       "id": "app_api_admin_analytics_route_getadminuser"
     },
@@ -729,7 +729,7 @@
       "source_file": "app/api/admin/analytics/route.js",
       "source_location": "L25",
       "_origin": "ast",
-      "community": 53,
+      "community": 0,
       "norm_label": "get()",
       "id": "app_api_admin_analytics_route_get"
     },
@@ -799,7 +799,7 @@
       "source_file": "app/api/admin/banners/route.js",
       "source_location": "L1",
       "_origin": "ast",
-      "community": 46,
+      "community": 0,
       "norm_label": "route.js",
       "id": "app_api_admin_banners_route"
     },
@@ -809,7 +809,7 @@
       "source_file": "app/api/admin/banners/route.js",
       "source_location": "L5",
       "_origin": "ast",
-      "community": 46,
+      "community": 0,
       "norm_label": "checkadminauth()",
       "id": "app_api_admin_banners_route_checkadminauth"
     },
@@ -819,7 +819,7 @@
       "source_file": "app/api/admin/banners/route.js",
       "source_location": "L20",
       "_origin": "ast",
-      "community": 46,
+      "community": 0,
       "norm_label": "get()",
       "id": "app_api_admin_banners_route_get"
     },
@@ -829,7 +829,7 @@
       "source_file": "app/api/admin/banners/route.js",
       "source_location": "L30",
       "_origin": "ast",
-      "community": 46,
+      "community": 0,
       "norm_label": "post()",
       "id": "app_api_admin_banners_route_post"
     },
@@ -839,7 +839,7 @@
       "source_file": "app/api/admin/banners/route.js",
       "source_location": "L53",
       "_origin": "ast",
-      "community": 46,
+      "community": 0,
       "norm_label": "patch()",
       "id": "app_api_admin_banners_route_patch"
     },
@@ -849,7 +849,7 @@
       "source_file": "app/api/admin/banners/route.js",
       "source_location": "L72",
       "_origin": "ast",
-      "community": 46,
+      "community": 0,
       "norm_label": "delete()",
       "id": "app_api_admin_banners_route_delete"
     },
@@ -1389,7 +1389,7 @@
       "source_file": "app/api/admin/variations/[id]/route.js",
       "source_location": "L1",
       "_origin": "ast",
-      "community": 56,
+      "community": 44,
       "norm_label": "route.js",
       "id": "app_api_admin_variations_id_route"
     },
@@ -1399,7 +1399,7 @@
       "source_file": "app/api/admin/variations/[id]/route.js",
       "source_location": "L5",
       "_origin": "ast",
-      "community": 56,
+      "community": 44,
       "norm_label": "checkadmin()",
       "id": "app_api_admin_variations_id_route_checkadmin"
     },
@@ -1409,7 +1409,7 @@
       "source_file": "app/api/admin/variations/[id]/route.js",
       "source_location": "L18",
       "_origin": "ast",
-      "community": 56,
+      "community": 44,
       "norm_label": "patch()",
       "id": "app_api_admin_variations_id_route_patch"
     },
@@ -1619,7 +1619,7 @@
       "source_file": "app/api/checkout/route.js",
       "source_location": "L1",
       "_origin": "ast",
-      "community": 3,
+      "community": 56,
       "norm_label": "route.js",
       "id": "app_api_checkout_route"
     },
@@ -1629,7 +1629,7 @@
       "source_file": "app/api/checkout/route.js",
       "source_location": "L5",
       "_origin": "ast",
-      "community": 3,
+      "community": 56,
       "norm_label": "generatereference()",
       "id": "app_api_checkout_route_generatereference"
     },
@@ -1639,7 +1639,7 @@
       "source_file": "app/api/checkout/route.js",
       "source_location": "L11",
       "_origin": "ast",
-      "community": 3,
+      "community": 56,
       "norm_label": "post()",
       "id": "app_api_checkout_route_post"
     },
@@ -5056,34 +5056,12 @@
       "confidence_score": 1.0
     },
     {
-      "relation": "imports_from",
-      "context": "import",
-      "confidence": "EXTRACTED",
-      "source_file": "app/checkout/page.js",
-      "source_location": "L4",
-      "weight": 1.0,
-      "source": "app_checkout_page",
-      "target": "components_cartcontext",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "imports",
-      "context": "import",
-      "confidence": "EXTRACTED",
-      "source_file": "app/checkout/page.js",
-      "source_location": "L4",
-      "weight": 1.0,
-      "source": "app_checkout_page",
-      "target": "components_cartcontext_usecart",
-      "confidence_score": 1.0
-    },
-    {
       "relation": "rationale_for",
       "confidence": "EXTRACTED",
       "source_file": "app/checkout/page.js",
-      "source_location": "L434",
+      "source_location": "L451",
       "weight": 1.0,
-      "source": "app_checkout_page_rationale_434",
+      "source": "app_checkout_page_rationale_451",
       "target": "app_checkout_page",
       "confidence_score": 1.0
     },
@@ -5092,22 +5070,11 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "app/checkout/page.js",
-      "source_location": "L626",
+      "source_location": "L643",
       "weight": 1.0,
       "source": "app_checkout_page_checkoutpage",
       "target": "app_checkout_page_formatrwf",
       "confidence_score": 1.0
-    },
-    {
-      "relation": "calls",
-      "context": "call",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "app/checkout/page.js",
-      "source_location": "L14",
-      "weight": 1.0,
-      "source": "app_checkout_page_checkoutpage",
-      "target": "components_cartcontext_usecart"
     },
     {
       "relation": "imports_from",
@@ -5148,9 +5115,9 @@
       "source_file": "components/CartContext.js",
       "source_location": "L5",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "components_cartcontext",
-      "target": "components_cartcontext_cartcontext",
-      "confidence_score": 1.0
+      "target": "components_cartcontext_cartcontext"
     },
     {
       "relation": "contains",
@@ -5158,9 +5125,9 @@
       "source_file": "components/CartContext.js",
       "source_location": "L8",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "components_cartcontext",
-      "target": "components_cartcontext_cartkey",
-      "confidence_score": 1.0
+      "target": "components_cartcontext_cartkey"
     },
     {
       "relation": "contains",
@@ -5168,9 +5135,9 @@
       "source_file": "components/CartContext.js",
       "source_location": "L15",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "components_cartcontext",
-      "target": "components_cartcontext_cartprovider",
-      "confidence_score": 1.0
+      "target": "components_cartcontext_cartprovider"
     },
     {
       "relation": "contains",
@@ -5178,9 +5145,9 @@
       "source_file": "components/CartContext.js",
       "source_location": "L84",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "components_cartcontext",
-      "target": "components_cartcontext_usecart",
-      "confidence_score": 1.0
+      "target": "components_cartcontext_usecart"
     },
     {
       "relation": "imports_from",
@@ -5233,9 +5200,9 @@
       "source_file": "components/CartContext.js",
       "source_location": "L40",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "components_cartcontext_cartprovider",
-      "target": "components_cartcontext_cartkey",
-      "confidence_score": 1.0
+      "target": "components_cartcontext_cartkey"
     },
     {
       "relation": "imports",
@@ -13006,5 +12973,5 @@
     }
   ],
   "hyperedges": [],
-  "built_at_commit": "bfea5db7218af4b1165c2ceed40a1cd04f8f6ef0"
+  "built_at_commit": "1a7bc4ab28f1800be60e5f0afd1f3183a70879ea"
 }

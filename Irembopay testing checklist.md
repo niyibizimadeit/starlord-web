@@ -66,12 +66,12 @@
 - [x] Confirm status updates correctly
 
 ### 3.3 Failed Card Payment
-- [ ] Enter sandbox fail card:
+- [x] Enter sandbox fail card:
   - Card Number: `5198 9602 2985 7244`
   - Expiry: `01/35`
   - CVV: `123`
-- [ ] Confirm checkout transitions to failed state
-- [ ] Verify stock is restored
+- [x] Confirm checkout transitions to failed state
+- [x] Verify stock is restored
 
 ---
 

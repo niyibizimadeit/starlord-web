@@ -1,7 +1,7 @@
-# Graph Report - starlord-web  (2026-07-12)
+# Graph Report - starlord-web  (2026-07-13)
 
 ## Corpus Check
-- 106 files · ~61,878 words
+- 106 files · ~62,424 words
 - Verdict: corpus is large enough that graph structure adds value.
 
 ## Summary
@@ -10,7 +10,7 @@
 - Token cost: 0 input · 0 output
 
 ## Graph Freshness
-- Built from commit: `76c0ff34`
+- Built from commit: `bfea5db7`
 - Run `git rev-parse HEAD` and compare to check if the graph is stale.
 - Run `graphify update .` after code changes (no API cost).
 
@@ -208,7 +208,7 @@ Cohesion: 0.83
 Nodes (3): GET(), getAdminUser(), POST()
 
 ## Knowledge Gaps
-- **135 isolated node(s):** `metadata`, `metadata`, `viewport`, `JWT_SECRET`, `config` (+130 more)
+- **135 isolated node(s):** `CartContext`, `metadata`, `metadata`, `viewport`, `JWT_SECRET` (+130 more)
   These have ≤1 connection - possible missing edges or undocumented components.
 - **22 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
 
@@ -221,7 +221,7 @@ _Questions this graph is uniquely positioned to answer:_
   _High betweenness centrality (0.031) - this node is a cross-community bridge._
 - **Why does `createServerSupabaseClient()` connect `server.js` to `useCart`?**
   _High betweenness centrality (0.016) - this node is a cross-community bridge._
-- **What connects `metadata`, `metadata`, `viewport` to the rest of the system?**
+- **What connects `IMPORTANT: we do NOT clearCart()/setStep(3) here anymore.`, `CartContext`, `metadata` to the rest of the system?**
   _143 weakly-connected nodes found - possible documentation gaps or missing edges._
 - **Should `createServiceClient` be split into smaller, more focused modules?**
   _Cohesion score 0.13852813852813853 - nodes in this community are weakly interconnected._
