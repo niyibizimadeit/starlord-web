@@ -97,9 +97,9 @@
 
 - [ ] Double-submit: click "Pay" twice rapidly — confirm only one invoice is created (idempotency key on orders table prevents duplicate orders)
 - [ ] Network drop during payment: initiate payment, kill network, restore — confirm order stays in `pending` until webhook arrives
-- [ ] Wrong phone format: enter `+250781234567` instead of `0781234567` — confirm validation catches it before API call
+- [x] Wrong phone format: enter `+250781234567` instead of `0781234567` — confirm validation catches it before API call
 - [ ] Zero amount: confirm checkout blocks orders with 0 total
-- [ ] Very large order: test with an order total above 100,000 RWF
+- [x] Very large order: test with an order total above 100,000 RWF
 
 ---
 
