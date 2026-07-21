@@ -86,10 +86,10 @@
 
 ## 5. Order Flow End-to-End
 
-- [ ] Guest checkout: place order without logging in, payment succeeds, order confirmed
-- [ ] Logged-in checkout: place order as registered user, payment succeeds, order appears in account order history
-- [ ] Admin dashboard: confirmed order appears with correct status, payment method, and `irembopay_transaction_id`
-- [ ] Track order page: customer can track order after payment confirmation
+- [x] Guest checkout: place order without logging in, payment succeeds, order confirmed
+- [x] Logged-in checkout: place order as registered user, payment succeeds, order appears in account order history
+- [x] Admin dashboard: confirmed order appears with correct status, payment method, and `irembopay_transaction_id`
+- [x] Track order page: customer can track order after payment confirmation
 
 ---
 
