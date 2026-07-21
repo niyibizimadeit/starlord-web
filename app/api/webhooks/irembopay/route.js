@@ -27,9 +27,6 @@ export async function POST(request) {
         return new Response('Unauthorized', { status: 401 });
       }
 
-      console.log('[Webhook] Timestamp:', timestamp, 'Current:', Date.now());
-      console.log('[Webhook] Time diff ms:', Math.abs(Date.now() - parseInt(timestamp, 10)));
-
       if (Math.abs(Date.now() - parseInt(timestamp, 10)) > 5 * 60 * 1000) {
         console.error('[IremboPay] Webhook timestamp too old');
         return new Response('Unauthorized', { status: 401 });
@@ -52,14 +49,8 @@ export async function POST(request) {
       }
     }
 
-    console.log('[Webhook] Signature verified, proceeding...');
-
     const payload = JSON.parse(rawBody);
     const data = payload.data;
-
-    console.log('[Webhook] Full payload:', JSON.stringify(payload, null, 2));
-    console.log('[Webhook] transactionId:', data?.transactionId);
-    console.log('[Webhook] paymentStatus:', data?.paymentStatus);
 
     if (!data) {
       return new Response('Bad Request', { status: 400 });
@@ -85,12 +76,10 @@ export async function POST(request) {
     }
 
     if (existing) {
-      console.log('[Webhook] Already processed:', invoiceNumber);
       return new Response('OK', { status: 200 });
     }
 
     // Find the order by reference (IremboPay's transactionId = our order reference)
-    console.log('[Webhook] Looking up order by reference:', transactionId);
     const { data: order, error: orderError } = await supabase
       .from('orders')
       .select('*')
@@ -107,8 +96,6 @@ export async function POST(request) {
       return new Response('OK', { status: 200 });
     }
 
-    console.log('[Webhook] Found order:', order.id, 'status:', order.status, 'payment_status:', order.payment_status);
-
     // Map IremboPay payment method to internal values (CHECK constraint allows 'mtn', 'airtel', 'card')
     function normalizePaymentMethod(method) {
       if (!method) return 'mtn';
@@ -121,8 +108,6 @@ export async function POST(request) {
 
     // Apply the payment result
     if (paymentStatus === 'PAID') {
-      console.log('[Webhook] Updating order to confirmed/paid...');
-
       const { error: updateError } = await supabase
         .from('orders')
         .update({
@@ -136,11 +121,8 @@ export async function POST(request) {
 
       if (updateError) {
         console.error('[Webhook] Order update FAILED:', JSON.stringify(updateError));
-      } else {
-        console.log('[Webhook] Order updated successfully to confirmed/paid');
       }
     } else {
-      console.log('[Webhook] Payment not PAID — status:', paymentStatus);
       await supabase
         .from('orders')
         .update({
@@ -175,11 +157,8 @@ export async function POST(request) {
       console.error('[Webhook] Failed to record processed_webhook:', JSON.stringify(insertError));
       console.error('[Webhook] Error code:', insertError.code, 'message:', insertError.message);
       // If table doesn't exist, that's a setup issue — log but don't block payment processing
-    } else {
-      console.log('[Webhook] Recorded in processed_webhooks');
     }
 
-    console.log('[Webhook] Done processing:', invoiceNumber);
     return new Response('OK', { status: 200 });
 
   } catch (err) {

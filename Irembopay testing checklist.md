@@ -95,8 +95,8 @@
 
 ## 6. Edge Cases
 
-- [ ] Double-submit: click "Pay" twice rapidly — confirm only one invoice is created (idempotency key on orders table prevents duplicate orders)
-- [ ] Network drop during payment: initiate payment, kill network, restore — confirm order stays in `pending` until webhook arrives
+- [x] Double-submit: click "Pay" twice rapidly — confirm only one invoice is created (idempotency key on orders table prevents duplicate orders)
+- [x] Network drop during payment: initiate payment, kill network, restore — confirm order stays in `pending` until webhook arrives
 - [x] Wrong phone format: enter `+250781234567` instead of `0781234567` — confirm validation catches it before API call
 - [ ] Zero amount: confirm checkout blocks orders with 0 total
 - [x] Very large order: test with an order total above 100,000 RWF
@@ -105,13 +105,13 @@
 
 ## 7. Security Checks
 
-- [ ] Confirm `/api/payments/initiate` requires a valid `orderId` that exists in the database
-- [ ] Confirm it rejects orders that are not in `pending` payment status
-- [ ] Confirm `/api/webhooks/irembopay` returns 401 for requests with no signature header
-- [ ] Confirm it returns 401 for requests with invalid signature
-- [ ] Confirm the secret key is not exposed in any client-side bundle (check browser dev tools → Sources)
-- [ ] Delete the debug endpoint `/api/debug/route.js` if you created it during testing
-- [ ] Remove all `console.log('[Webhook]...')` debug lines from the webhook handler before go-live
+- [x] Confirm `/api/payments/initiate` requires a valid `orderId` that exists in the database
+- [x] Confirm it rejects orders that are not in `pending` payment status
+- [x] Confirm `/api/webhooks/irembopay` returns 401 for requests with no signature header
+- [x] Confirm it returns 401 for requests with invalid signature
+- [x] Confirm the secret key is not exposed in any client-side bundle (check browser dev tools → Sources)
+- [x] Delete the debug endpoint `/api/debug/route.js` if you created it during testing
+- [x] Remove all `console.log('[Webhook]...')` debug lines from the webhook handler before go-live
 
 ---
 
