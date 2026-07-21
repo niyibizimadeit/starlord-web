@@ -78,9 +78,9 @@
 ## 4. Webhook Reliability
 
 - [x] Confirm every successful payment produces exactly one row in `processed_webhooks`
-- [ ] Confirm re-sending a webhook for an already-processed invoice does NOT create a duplicate update (idempotency check works)
-- [ ] Confirm webhook signature verification rejects a tampered payload (send a curl with wrong signature, confirm 401)
-- [ ] Confirm webhook timestamp check rejects a replay older than 5 minutes
+- [x] Confirm re-sending a webhook for an already-processed invoice does NOT create a duplicate update (idempotency check works)
+- [x] Confirm webhook signature verification rejects a tampered payload (send a curl with wrong signature, confirm 401)
+- [x] Confirm webhook timestamp check rejects a replay older than 5 minutes
 
 ---
 
