@@ -8,8 +8,11 @@ export async function POST(request) {
     const secretKey = process.env.IREMBOPAY_SECRET_KEY;
 
     if (!secretKey) {
-      console.warn('[IremboPay] IREMBOPAY_SECRET_KEY not set — skipping signature verification');
-    } else if (!signatureHeader) {
+      console.error('[IremboPay] IREMBOPAY_SECRET_KEY not set — rejecting all webhooks');
+      return new Response('Server configuration error', { status: 500 });
+    }
+
+    if (!signatureHeader) {
       console.error('[IremboPay] Missing irembopay-signature header');
       return new Response('Unauthorized', { status: 401 });
     } else {
@@ -106,6 +109,19 @@ export async function POST(request) {
       return 'mtn'; // default
     }
 
+    // ── Guard: never overwrite a confirmed payment ─────────────────────
+    // If the order is already confirmed/paid, reject any update from a
+    // subsequent webhook (late duplicate, replay, or FAILED arriving after
+    // PAID). This prevents race conditions and replay attacks.
+    if (order.payment_status === 'paid') {
+      console.warn('[Webhook] Order', order.id, 'already paid — ignoring duplicate webhook');
+      // Still record the duplicate so IremboPay's dashboard shows 200
+      await supabase.from('processed_webhooks')
+        .insert({ transaction_id: invoiceNumber, order_id: order.id, payload })
+        .catch(() => {});
+      return new Response('OK', { status: 200 });
+    }
+
     // Apply the payment result
     if (paymentStatus === 'PAID') {
       const { error: updateError } = await supabase
@@ -117,19 +133,21 @@ export async function POST(request) {
           irembopay_transaction_id: invoiceNumber,
         })
         .eq('id', order.id)
-        .select('id');
+        .eq('payment_status', 'pending'); // Only update if still pending
 
       if (updateError) {
         console.error('[Webhook] Order update FAILED:', JSON.stringify(updateError));
       }
     } else {
+      // Only mark as failed if still pending (don't overwrite confirmed)
       await supabase
         .from('orders')
         .update({
           status:         'payment_failed',
           payment_status: 'failed',
         })
-        .eq('id', order.id);
+        .eq('id', order.id)
+        .eq('payment_status', 'pending');
 
       // Restore stock
       const { data: orderItems } = await supabase

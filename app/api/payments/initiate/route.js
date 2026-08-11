@@ -18,11 +18,27 @@ export async function POST(request) {
       return Response.json({ error: 'Missing required fields' }, { status: 400 });
     }
 
+    // Validate amount is a positive finite number
+    if (typeof amount !== 'number' || amount <= 0 || !Number.isFinite(amount)) {
+      return Response.json({ error: 'Invalid amount' }, { status: 400 });
+    }
+
+    // Server-side phone validation based on payment method
+    if (method !== 'card') {
+      const cleanPhone = phone.replace(/\s+/g, '');
+      if (method === 'mtn' && !/^(078|079)\d{7}$/.test(cleanPhone)) {
+        return Response.json({ error: 'Invalid MTN MoMo number (must start with 078 or 079)' }, { status: 400 });
+      }
+      if (method === 'airtel' && !/^(072|073)\d{7}$/.test(cleanPhone)) {
+        return Response.json({ error: 'Invalid Airtel Money number (must start with 072 or 073)' }, { status: 400 });
+      }
+    }
+
     const supabase = createServiceClient();
 
     const { data: order, error: orderError } = await supabase
       .from('orders')
-      .select('id, payment_status, customer_name, customer_phone')
+      .select('id, total, payment_status, customer_name, customer_phone, payment_expires_at')
       .eq('id', orderId)
       .eq('reference', reference)
       .single();
@@ -33,6 +49,17 @@ export async function POST(request) {
     }
     if (order.payment_status !== 'pending') {
       return Response.json({ error: 'Order already processed' }, { status: 409 });
+    }
+
+    // Verify the amount matches the order total (prevents price manipulation)
+    if (order.total !== amount) {
+      console.error('Amount mismatch: order total', order.total, '≠ provided', amount);
+      return Response.json({ error: 'Amount mismatch' }, { status: 400 });
+    }
+
+    // Check if the order's payment window has expired
+    if (order.payment_expires_at && new Date(order.payment_expires_at) < new Date()) {
+      return Response.json({ error: 'Order payment window has expired' }, { status: 410 });
     }
 
     // Step 1: Create invoice

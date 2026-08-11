@@ -2,10 +2,12 @@
 
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
+import { useTheme } from '@/components/ThemeProvider';
 
 export default function NotFound() {
   const [mounted, setMounted] = useState(false);
   useEffect(() => setMounted(true), []);
+  const { theme } = useTheme();
 
   return (
     <div style={{
@@ -62,15 +64,11 @@ export default function NotFound() {
 
         {/* Logo */}
         <div style={{ marginBottom: 32 }}>
-          <div style={{
-            fontFamily: 'Playfair Display, serif',
-            fontSize: 18, fontWeight: 800,
-            color: 'var(--gold)', letterSpacing: 4,
-          }}>STARLORD</div>
-          <div style={{
-            fontSize: 9, color: 'var(--text-faint)',
-            letterSpacing: 6, marginTop: 2,
-          }}>GROUP</div>
+          <img
+            src={theme === 'dark' ? '/logo/Light-no background.png' : '/logo/Dark-no background.png'}
+            alt="STARLORD GROUP"
+            style={{ height: 52, width: 'auto' }}
+          />
         </div>
 
         {/* Gold accent line */}

@@ -64,16 +64,12 @@ export default function Header() {
       }}>
 
         {/* Logo */}
-        <Link href="/" style={{ flexShrink: 0 }}>
-          <div style={{
-            fontFamily: 'Playfair Display, serif',
-            fontWeight: 800, fontSize: 20,
-            color: 'var(--gold)', letterSpacing: 3, lineHeight: 1,
-          }}>STARLORD</div>
-          <div style={{
-            fontSize: 8, color: 'var(--text-muted)',
-            letterSpacing: 5, marginTop: 2,
-          }}>GROUP</div>
+        <Link href="/" style={{ flexShrink: 0, display: 'flex', alignItems: 'center' }}>
+          <img
+            src={theme === 'dark' ? '/logo/Light-no background.png' : '/logo/Dark-no background.png'}
+            alt="STARLORD GROUP"
+            style={{ height: 66, width: 'auto' }}
+          />
         </Link>
 
         {/* Desktop Nav — dynamic categories */}

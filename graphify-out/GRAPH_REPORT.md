@@ -1,16 +1,16 @@
-# Graph Report - starlord-web  (2026-07-14)
+# Graph Report - starlord-web  (2026-08-12)
 
 ## Corpus Check
-- 106 files · ~62,627 words
+- 109 files · ~88,118 words
 - Verdict: corpus is large enough that graph structure adds value.
 
 ## Summary
-- 503 nodes · 755 edges · 58 communities (37 shown, 21 thin omitted)
+- 533 nodes · 798 edges · 60 communities (37 shown, 23 thin omitted)
 - Extraction: 100% EXTRACTED · 0% INFERRED · 0% AMBIGUOUS
 - Token cost: 0 input · 0 output
 
 ## Graph Freshness
-- Built from commit: `317141b4`
+- Built from commit: `d7f45b3e`
 - Run `git rev-parse HEAD` and compare to check if the graph is stale.
 - Run `graphify update .` after code changes (no API cost).
 
@@ -45,6 +45,7 @@
 - route.js
 - route.js
 - page.js
+- not-found.js
 - TabButton.js
 - eslint.config.mjs
 - next.config.ts
@@ -65,12 +66,14 @@
 - route.js
 - CLAUDE.md
 - route.js
+- route.js
+- route.js
 
 ## God Nodes (most connected - your core abstractions)
-1. `createServiceClient()` - 96 edges
+1. `createServiceClient()` - 98 edges
 2. `createServerSupabaseClient()` - 30 edges
 3. `compilerOptions` - 16 edges
-4. `useCart()` - 13 edges
+4. `useCart()` - 15 edges
 5. `StarlordGroup Web - starlordgroup.rw(live site)` - 11 edges
 6. `IremboPay Pre-Production Testing Checklist` - 10 edges
 7. `AdminPage()` - 9 edges
@@ -93,31 +96,31 @@
 ## Import Cycles
 - None detected.
 
-## Communities (58 total, 21 thin omitted)
+## Communities (60 total, 23 thin omitted)
 
 ### Community 0 - "createServiceClient"
-Cohesion: 0.13
-Nodes (13): GET(), getAdminUser(), POST(), GET(), GET(), GET(), GET(), GET() (+5 more)
+Cohesion: 0.12
+Nodes (15): GET(), getAdminUser(), POST(), POST(), GET(), GET(), GET(), GET() (+7 more)
 
 ### Community 1 - "useCart"
-Cohesion: 0.08
-Nodes (28): CartPage(), formatRWF(), formatRWF(), metadata, OnSalePage(), formatRWF(), generateMetadata(), ProductPage() (+20 more)
+Cohesion: 0.07
+Nodes (31): CartPage(), formatRWF(), formatRWF(), metadata, OnSalePage(), CheckoutPage(), formatRWF(), IMPORTANT: we do NOT clearCart()/setStep(3) here anymore. (+23 more)
 
 ### Community 2 - "dependencies"
 Cohesion: 0.06
 Nodes (34): browserslist, dependencies, @aws-sdk/client-s3, jose, next, qrcode, react, react-dom (+26 more)
 
 ### Community 3 - "server.js"
-Cohesion: 0.10
-Nodes (21): AccountPage(), DELETE(), getUser(), PATCH(), POST(), POST(), POST(), POST() (+13 more)
+Cohesion: 0.13
+Nodes (15): AccountPage(), POST(), POST(), POST(), POST(), POST(), POST(), POST() (+7 more)
 
 ### Community 4 - "page.js"
 Cohesion: 0.19
 Nodes (25): adminLogin(), apiFetch(), apiMutate(), BarChart(), CategoryModal(), downloadCSV(), formatDate(), formatRWF() (+17 more)
 
 ### Community 5 - "Header.js"
-Cohesion: 0.11
-Nodes (11): lato, metadata, playfair, ConditionalLayout(), Header(), getInitialTheme(), ThemeContext, ThemeProvider() (+3 more)
+Cohesion: 0.12
+Nodes (13): lato, metadata, playfair, NotFound(), ConditionalLayout(), Footer(), Header(), getInitialTheme() (+5 more)
 
 ### Community 6 - "compilerOptions"
 Cohesion: 0.10
@@ -160,8 +163,8 @@ Cohesion: 0.38
 Nodes (6): checkRateLimit(), config, getRateLimitConfig(), middleware(), RATE_LIMIT_CONFIG, rateLimitMap
 
 ### Community 17 - "route.js"
-Cohesion: 0.40
-Nodes (3): createAdminToken(), JWT_SECRET, POST()
+Cohesion: 0.53
+Nodes (4): createAdminToken(), GET(), getJwtSecret(), POST()
 
 ### Community 19 - "page.js"
 Cohesion: 0.40
@@ -174,6 +177,10 @@ Nodes (4): config, isValidAdminToken(), JWT_SECRET, middleware()
 ### Community 21 - "route.js"
 Cohesion: 0.60
 Nodes (4): DELETE(), isAuthorized(), JWT_SECRET, PATCH()
+
+### Community 35 - "not-found.js"
+Cohesion: 0.53
+Nodes (5): checkAdminAuth(), DELETE(), GET(), PATCH(), POST()
 
 ### Community 41 - "StarlordGroup Web - Complete Developer Onboarding Guide"
 Cohesion: 0.06
@@ -191,10 +198,6 @@ Nodes (19): 1. Clone & Install, 2. Environment Variables, 3. Run Dev Server, �
 Cohesion: 0.60
 Nodes (5): checkAdmin(), DELETE(), GET(), PATCH(), POST()
 
-### Community 46 - "route.js"
-Cohesion: 0.53
-Nodes (5): checkAdminAuth(), DELETE(), GET(), PATCH(), POST()
-
 ### Community 47 - "route.js"
 Cohesion: 0.70
 Nodes (4): DELETE(), GET(), getAdminUser(), PUT()
@@ -204,32 +207,36 @@ Cohesion: 0.83
 Nodes (3): GET(), getAuthenticatedUser(), PATCH()
 
 ### Community 49 - "route.js"
-Cohesion: 0.83
-Nodes (3): GET(), getAdminUser(), POST()
+Cohesion: 0.08
+Nodes (24): 10. In-Memory Rate Limiter Is Stateless on Serverless, 11. Checkout API Doesn't Validate Allowed Payment Methods, 12. `NEXT_PUBLIC_IREMBOPAY_BASE_URL` Exposed to Browser Unnecessarily, 13. Missing Input Type/Sanity Validation on Amount, 14. No CSRF Protection on Checkout/Payment Endpoints, 15. `cart` localStorage Key Not Versioned, 16. Checkout API Ignoring `deliveryFee` Client Field Without Warning, 17. Immediate Recovery from Payment Failure Not Possible (+16 more)
 
 ### Community 53 - "route.js"
-Cohesion: 0.67
-Nodes (3): CheckoutPage(), formatRWF(), IMPORTANT: we do NOT clearCart()/setStep(3) here anymore.
+Cohesion: 0.70
+Nodes (4): DELETE(), getUser(), PATCH(), POST()
+
+### Community 56 - "route.js"
+Cohesion: 0.83
+Nodes (3): fail(), pass(), test-security.sh script
 
 ## Knowledge Gaps
-- **135 isolated node(s):** `1.1 Successful Payment`, `1.2 Failed Payment`, `1.3 Expired Payment`, `2.1 Successful Payment`, `2.2 Failed Payment` (+130 more)
+- **153 isolated node(s):** `metadata`, `metadata`, `viewport`, `JWT_SECRET`, `config` (+148 more)
   These have ≤1 connection - possible missing edges or undocumented components.
-- **21 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
+- **23 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
 
 ## Suggested Questions
 _Questions this graph is uniquely positioned to answer:_
 
-- **Why does `createServiceClient()` connect `createServiceClient` to `useCart`, `server.js`, `page.js`, `route.js`, `route.js`, `route.js`, `route.js`, `route.js`, `route.js`, `route.js`, `route.js`, `route.js`, `route.js`, `route.js`, `route.js`, `route.js`, `route.js`, `route.js`?**
-  _High betweenness centrality (0.121) - this node is a cross-community bridge._
+- **Why does `createServiceClient()` connect `createServiceClient` to `useCart`, `server.js`, `page.js`, `route.js`, `route.js`, `route.js`, `route.js`, `not-found.js`, `route.js`, `route.js`, `route.js`, `route.js`, `route.js`, `route.js`, `route.js`, `route.js`, `route.js`, `route.js`, `route.js`, `route.js`?**
+  _High betweenness centrality (0.114) - this node is a cross-community bridge._
 - **Why does `useCart()` connect `useCart` to `Header.js`?**
-  _High betweenness centrality (0.026) - this node is a cross-community bridge._
-- **Why does `createServerSupabaseClient()` connect `server.js` to `useCart`?**
-  _High betweenness centrality (0.016) - this node is a cross-community bridge._
-- **What connects `1.1 Successful Payment`, `1.2 Failed Payment`, `1.3 Expired Payment` to the rest of the system?**
-  _143 weakly-connected nodes found - possible documentation gaps or missing edges._
+  _High betweenness centrality (0.030) - this node is a cross-community bridge._
+- **Why does `createServerSupabaseClient()` connect `server.js` to `useCart`, `route.js`, `route.js`?**
+  _High betweenness centrality (0.014) - this node is a cross-community bridge._
+- **What connects `metadata`, `metadata`, `viewport` to the rest of the system?**
+  _161 weakly-connected nodes found - possible documentation gaps or missing edges._
 - **Should `createServiceClient` be split into smaller, more focused modules?**
-  _Cohesion score 0.13438735177865613 - nodes in this community are weakly interconnected._
+  _Cohesion score 0.12307692307692308 - nodes in this community are weakly interconnected._
 - **Should `useCart` be split into smaller, more focused modules?**
-  _Cohesion score 0.08084163898117387 - nodes in this community are weakly interconnected._
+  _Cohesion score 0.07400555041628122 - nodes in this community are weakly interconnected._
 - **Should `dependencies` be split into smaller, more focused modules?**
   _Cohesion score 0.05714285714285714 - nodes in this community are weakly interconnected._

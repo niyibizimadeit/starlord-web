@@ -22,6 +22,10 @@ const lato = Lato({
 export const metadata = {
   title: 'STARLORD GROUP — Premium Accessories, Kigali',
   description: 'Premium phone cases, fashion accessories. Pay with MTN MoMo or Airtel Money. Delivery across Rwanda.',
+  icons: {
+    icon: '/icon.png',
+    apple: '/apple-icon.png',
+  },
 };
 
 export default function RootLayout({ children }) {

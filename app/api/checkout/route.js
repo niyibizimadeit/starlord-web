@@ -18,6 +18,12 @@ export async function POST(request) {
       return Response.json({ error: 'Missing required fields' }, { status: 400 });
     }
 
+    // Validate payment method is one of the supported types
+    const VALID_PAYMENT_METHODS = ['mtn', 'airtel', 'card'];
+    if (!VALID_PAYMENT_METHODS.includes(paymentMethod)) {
+      return Response.json({ error: 'Invalid payment method. Must be mtn, airtel, or card.' }, { status: 400 });
+    }
+
     const phoneRegex = /^(078|079|072|073)\d{7}$/;
     const cleanPhone = customer.phone.replace(/\s/g, '');
     if (!phoneRegex.test(cleanPhone)) {
@@ -189,7 +195,11 @@ export async function POST(request) {
 
     const stockFailed = stockResults.find(r => !r.success || r.error);
     if (stockFailed) {
-      await supabase.from('orders').update({ status: 'stock_conflict' }).eq('id', order.id);
+      // Mark the order as conflicted and clean up the orphaned order items
+      await Promise.all([
+        supabase.from('orders').update({ status: 'stock_conflict' }).eq('id', order.id),
+        supabase.from('order_items').delete().eq('order_id', order.id),
+      ]);
       return Response.json({
         error: 'One or more items just sold out. Please review your cart and try again.',
         code:  'STOCK_CONFLICT',

@@ -6,8 +6,13 @@ if (!process.env.ADMIN_SECRET) {
   throw new Error('ADMIN_SECRET environment variable is not set. Admin panel is disabled.');
 }
 
+// JWT signing key — separate from the login password for security.
+// Falls back to ADMIN_SECRET for backward compatibility with existing deployments.
+function getJwtSecret() {
+  const secret = process.env.ADMIN_JWT_SECRET || process.env.ADMIN_SECRET;
+  return new TextEncoder().encode(secret);
+}
 
-const JWT_SECRET = new TextEncoder().encode(process.env.ADMIN_SECRET);
 const JWT_EXPIRY = '24h';
 
 async function createAdminToken() {
@@ -15,7 +20,7 @@ async function createAdminToken() {
     .setProtectedHeader({ alg: 'HS256' })
     .setIssuedAt()
     .setExpirationTime(JWT_EXPIRY)
-    .sign(JWT_SECRET);
+    .sign(getJwtSecret());
 }
 
 // ── POST /api/admin/auth — Login ──────────────────────────────────────────────
@@ -69,7 +74,7 @@ export async function GET() {
     const token = cookieStore.get('admin_auth')?.value;
     if (!token) return Response.json({ authenticated: false });
 
-    const { payload } = await jwtVerify(token, JWT_SECRET);
+    const { payload } = await jwtVerify(token, getJwtSecret());
     if (payload.role !== 'admin') return Response.json({ authenticated: false });
 
     return Response.json({ authenticated: true });

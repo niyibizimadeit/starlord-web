@@ -1,7 +1,9 @@
 import { NextResponse } from 'next/server';
 import { jwtVerify } from 'jose';
 
-const JWT_SECRET = new TextEncoder().encode(process.env.ADMIN_SECRET);
+const JWT_SECRET = new TextEncoder().encode(
+  process.env.ADMIN_JWT_SECRET || process.env.ADMIN_SECRET
+);
 
 async function isValidAdminToken(token) {
   if (!token) return false;

@@ -5,8 +5,8 @@
     "semantic_hash": "7583f1d34506a2b83ce1a762b1069a23"
   },
   ".claude/settings.local.json": {
-    "mtime": 1784620027.3533163,
-    "ast_hash": "6c682a6868efd8030f6bca3945d3900d",
+    "mtime": 1785409078.1905382,
+    "ast_hash": "c34243ebc8b400e714b72755c6408ed1",
     "semantic_hash": ""
   },
   "app/about/page.js": {
@@ -30,9 +30,9 @@
     "semantic_hash": "b90fa02d7f2e6350e82280d0ac681ca9"
   },
   "app/admin/middleware.js": {
-    "mtime": 1775929298.730674,
-    "ast_hash": "ec181d37a45e08c102776f7d3531ec02",
-    "semantic_hash": "ec181d37a45e08c102776f7d3531ec02"
+    "mtime": 1785409486.861084,
+    "ast_hash": "413b920ea32562aa039c85855189569f",
+    "semantic_hash": ""
   },
   "app/admin/page.js": {
     "mtime": 1779065682.19861,
@@ -75,9 +75,9 @@
     "semantic_hash": "e41be882c42796930322ae2377c186b6"
   },
   "app/api/admin/auth/route.js": {
-    "mtime": 1775929723.741301,
-    "ast_hash": "8fb08becaba85af041153cf05e82c3f1",
-    "semantic_hash": "8fb08becaba85af041153cf05e82c3f1"
+    "mtime": 1785409483.0927527,
+    "ast_hash": "6c4d1184322472be6ba32342862adecd",
+    "semantic_hash": ""
   },
   "app/api/admin/banners/route.js": {
     "mtime": 1775935332.3094566,
@@ -195,9 +195,9 @@
     "semantic_hash": "a84a10465d34ef800784d29cb28ec78a"
   },
   "app/api/checkout/route.js": {
-    "mtime": 1777802136.9084558,
-    "ast_hash": "f8bb42869e7f3eaef694e9486a6786e7",
-    "semantic_hash": "f8bb42869e7f3eaef694e9486a6786e7"
+    "mtime": 1785409510.175393,
+    "ast_hash": "4e426d6ce2f2d319702efbce66ea4dd1",
+    "semantic_hash": ""
   },
   "app/api/irembopay-api/[...path]/route.js": {
     "mtime": 1783577167.5466795,
@@ -220,8 +220,8 @@
     "semantic_hash": "46d03957042071edf4366bb4706ad29f"
   },
   "app/api/orders/payment-status/route.js": {
-    "mtime": 1784009757.4182281,
-    "ast_hash": "3e31b67fc493805be1157a33ddaf35cd",
+    "mtime": 1785409467.7739959,
+    "ast_hash": "9fa42b40517138540ef2a922a511c606",
     "semantic_hash": ""
   },
   "app/api/orders/track/route.js": {
@@ -230,9 +230,9 @@
     "semantic_hash": "7bf678bd67073bb9a9e5c69b7c38f39a"
   },
   "app/api/payments/initiate/route.js": {
-    "mtime": 1782774651.0911007,
-    "ast_hash": "8764225b24436f94919e579ca2397fbe",
-    "semantic_hash": "8764225b24436f94919e579ca2397fbe"
+    "mtime": 1785409430.0868232,
+    "ast_hash": "1e4853da81dba841fc0381bf39993df2",
+    "semantic_hash": ""
   },
   "app/api/products/[id]/variations/route.js": {
     "mtime": 1773804388.8199887,
@@ -255,9 +255,9 @@
     "semantic_hash": "95549c97b1c675b173934ee52dda99a6"
   },
   "app/api/webhooks/irembopay/route.js": {
-    "mtime": 1782774145.1081748,
-    "ast_hash": "aada197532d231cb3796f9f7b4b7ae6e",
-    "semantic_hash": "aada197532d231cb3796f9f7b4b7ae6e"
+    "mtime": 1785409460.0716584,
+    "ast_hash": "93628dae8b48b6899b93eeffe6364b57",
+    "semantic_hash": ""
   },
   "app/cart/page.js": {
     "mtime": 1773805644.572738,
@@ -295,9 +295,9 @@
     "semantic_hash": "4c33ecab6bb99a8a7cf76a49577c53a4"
   },
   "app/layout.js": {
-    "mtime": 1780457986.2364798,
-    "ast_hash": "90d889baf9a7efa3deb4fce337b52190",
-    "semantic_hash": "90d889baf9a7efa3deb4fce337b52190"
+    "mtime": 1786472613.2122471,
+    "ast_hash": "e30e97a5d5e7038b621ee2ffc8adb37d",
+    "semantic_hash": ""
   },
   "app/login/page.js": {
     "mtime": 1775840710.060831,
@@ -305,14 +305,14 @@
     "semantic_hash": "b44a5d06cca932c0c0a6246bc2d6cf32"
   },
   "app/middleware.js": {
-    "mtime": 1780457930.2355833,
-    "ast_hash": "6af5b19b70b4a9eab047b69f6c43fba4",
-    "semantic_hash": "6af5b19b70b4a9eab047b69f6c43fba4"
+    "mtime": 1785409522.8456378,
+    "ast_hash": "de88e19d3e951685d267977ba0d2f8b3",
+    "semantic_hash": ""
   },
   "app/not-found.js": {
-    "mtime": 1773918696.027272,
-    "ast_hash": "3ab8ff69cd7fda1a2ca95b81d9807ff0",
-    "semantic_hash": "3ab8ff69cd7fda1a2ca95b81d9807ff0"
+    "mtime": 1786472656.792911,
+    "ast_hash": "c9e8efc0d409f7c93c6483e458f1c401",
+    "semantic_hash": ""
   },
   "app/page.js": {
     "mtime": 1780458031.5228584,
@@ -395,14 +395,14 @@
     "semantic_hash": "24283f6f35970415fd6a19a289209018"
   },
   "components/ConditionalLayout.js": {
-    "mtime": 1775837732.4213848,
-    "ast_hash": "8865ebc8038d99c12f77677e13ea7d2a",
-    "semantic_hash": "8865ebc8038d99c12f77677e13ea7d2a"
+    "mtime": 1786472642.8905172,
+    "ast_hash": "54b745a1a1257f747132ff7d5fc23772",
+    "semantic_hash": ""
   },
   "components/Header.js": {
-    "mtime": 1779099520.0599053,
-    "ast_hash": "d93c79995d6c09e62dd8acd716118e23",
-    "semantic_hash": "d93c79995d6c09e62dd8acd716118e23"
+    "mtime": 1786472632.5729318,
+    "ast_hash": "e0704ddc23245fca1c1ddb6872ae35d2",
+    "semantic_hash": ""
   },
   "components/ImageGallery.js": {
     "mtime": 1779064753.562099,
@@ -520,8 +520,8 @@
     "semantic_hash": ""
   },
   "Irembopay testing checklist.md": {
-    "mtime": 1784621249.9276464,
-    "ast_hash": "6fa4d7742f90dba28586f151fd6672ac",
+    "mtime": 1784622245.0042524,
+    "ast_hash": "65326a37e443fa3c5adbf9cde24f8f4a",
     "semantic_hash": ""
   },
   "README.md": {
@@ -557,6 +557,51 @@
   "public/window.svg": {
     "mtime": 1773170313.7302306,
     "ast_hash": "a2760511c65806022ad20adf74370ff3",
+    "semantic_hash": ""
+  },
+  "test-security.sh": {
+    "mtime": 1784621388.7875552,
+    "ast_hash": "d621ed5dd844c389b17397cfbd15bb4c",
+    "semantic_hash": ""
+  },
+  "fixes.md": {
+    "mtime": 1785409560.2226396,
+    "ast_hash": "1021621adae2a37b208355e187bbd286",
+    "semantic_hash": ""
+  },
+  ".claude/memory/payment-audit-findings.md": {
+    "mtime": 1785409283.2595167,
+    "ast_hash": "0205afad065c30717232904807ba0fed",
+    "semantic_hash": ""
+  },
+  "app/apple-icon.png": {
+    "mtime": 1786472601.5260835,
+    "ast_hash": "806d5ee41aea3139a6942442078cf128",
+    "semantic_hash": ""
+  },
+  "app/icon.png": {
+    "mtime": 1786472601.519992,
+    "ast_hash": "69b26d7ea3c3b7cfb4fbacb0ea9392e1",
+    "semantic_hash": ""
+  },
+  "public/logo/Dark-no background.png": {
+    "mtime": 1786472233.9391513,
+    "ast_hash": "0083aeac26c1ec6130c025d597e29b9b",
+    "semantic_hash": ""
+  },
+  "public/logo/Dark.png": {
+    "mtime": 1786472233.9411385,
+    "ast_hash": "22d530e3e4ed4ebe2db39eefc19a5e2c",
+    "semantic_hash": ""
+  },
+  "public/logo/Light-no background.png": {
+    "mtime": 1786472233.942954,
+    "ast_hash": "17b03050965d64f643cfaa7ed4cac38c",
+    "semantic_hash": ""
+  },
+  "public/logo/Light.png": {
+    "mtime": 1786472233.943898,
+    "ast_hash": "75a8e1f0e4453a26e77da8175c1f9690",
     "semantic_hash": ""
   }
 }

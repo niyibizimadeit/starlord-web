@@ -38,7 +38,9 @@ export async function GET(request) {
       await supabase
         .from('orders')
         .update({ status: 'payment_failed', payment_status: 'failed' })
-        .eq('id', order.id);
+        .eq('id', order.id)
+        .eq('status', 'pending')
+        .eq('payment_status', 'pending');
 
       const { data: items } = await supabase
         .from('order_items')

@@ -1,6 +1,7 @@
 'use client';
 
 import { usePathname } from 'next/navigation';
+import { useTheme } from './ThemeProvider';
 import Header from './Header';
 import WhatsAppWidget from './WhatsAppWidget';
 import Link from 'next/link';
@@ -18,6 +19,7 @@ function PaymentBadge({ text }) {
 }
 
 function Footer() {
+  const { theme } = useTheme();
   return (
     <footer style={{ borderTop: '1px solid var(--border)', background: 'var(--surface)' }}>
       <div className="container" style={{
@@ -28,8 +30,11 @@ function Footer() {
       }}>
         {/* Brand */}
         <div>
-          <div style={{ fontFamily: 'Playfair Display, serif', fontSize: 20, fontWeight: 800, color: 'var(--gold)', letterSpacing: 3, marginBottom: 6 }}>STARLORD</div>
-          <div style={{ fontSize: 8, color: 'var(--text-faint)', letterSpacing: 5, marginBottom: 16, textTransform: 'uppercase' }}>GROUP</div>
+          <img
+            src={theme === 'dark' ? '/logo/Light-no background.png' : '/logo/Dark-no background.png'}
+            alt="STARLORD GROUP"
+            style={{ height: 52, width: 'auto', marginBottom: 12 }}
+          />
           <p style={{ fontSize: 13, color: 'var(--text-muted)', lineHeight: 1.7, maxWidth: 220 }}>Premium accessories for everyday life. Based in Kigali, delivering across Rwanda.</p>
         </div>
 
