@@ -3,6 +3,7 @@ import { Playfair_Display, Lato } from 'next/font/google';
 import { ThemeProvider } from '@/components/ThemeProvider';
 import { CartProvider } from '@/components/CartContext';
 import ConditionalLayout from '@/components/ConditionalLayout';
+import ServiceWorkerRegister from '@/components/ServiceWorkerRegister';
 import { SpeedInsights } from '@vercel/speed-insights/next';
 
 const playfair = Playfair_Display({
@@ -22,10 +23,12 @@ const lato = Lato({
 export const metadata = {
   title: 'STARLORD GROUP — Premium Accessories, Kigali',
   description: 'Premium phone cases, fashion accessories. Pay with MTN MoMo or Airtel Money. Delivery across Rwanda.',
+  manifest: '/manifest.json',
   icons: {
     icon: '/icon.png',
     apple: '/apple-icon.png',
   },
+  themeColor: '#1A1814',
 };
 
 export default function RootLayout({ children }) {
@@ -41,6 +44,7 @@ export default function RootLayout({ children }) {
           </CartProvider>
         </ThemeProvider>
         <SpeedInsights />
+        <ServiceWorkerRegister />
       </body>
     </html>
   );

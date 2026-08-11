@@ -295,9 +295,9 @@
     "semantic_hash": "4c33ecab6bb99a8a7cf76a49577c53a4"
   },
   "app/layout.js": {
-    "mtime": 1780457986.2364798,
-    "ast_hash": "90d889baf9a7efa3deb4fce337b52190",
-    "semantic_hash": "90d889baf9a7efa3deb4fce337b52190"
+    "mtime": 1786472613.2122471,
+    "ast_hash": "e30e97a5d5e7038b621ee2ffc8adb37d",
+    "semantic_hash": ""
   },
   "app/login/page.js": {
     "mtime": 1775840710.060831,
@@ -310,9 +310,9 @@
     "semantic_hash": ""
   },
   "app/not-found.js": {
-    "mtime": 1773918696.027272,
-    "ast_hash": "3ab8ff69cd7fda1a2ca95b81d9807ff0",
-    "semantic_hash": "3ab8ff69cd7fda1a2ca95b81d9807ff0"
+    "mtime": 1786472656.792911,
+    "ast_hash": "c9e8efc0d409f7c93c6483e458f1c401",
+    "semantic_hash": ""
   },
   "app/page.js": {
     "mtime": 1780458031.5228584,
@@ -395,14 +395,14 @@
     "semantic_hash": "24283f6f35970415fd6a19a289209018"
   },
   "components/ConditionalLayout.js": {
-    "mtime": 1775837732.4213848,
-    "ast_hash": "8865ebc8038d99c12f77677e13ea7d2a",
-    "semantic_hash": "8865ebc8038d99c12f77677e13ea7d2a"
+    "mtime": 1786472642.8905172,
+    "ast_hash": "54b745a1a1257f747132ff7d5fc23772",
+    "semantic_hash": ""
   },
   "components/Header.js": {
-    "mtime": 1779099520.0599053,
-    "ast_hash": "d93c79995d6c09e62dd8acd716118e23",
-    "semantic_hash": "d93c79995d6c09e62dd8acd716118e23"
+    "mtime": 1786472807.746287,
+    "ast_hash": "9043eae061806393f9782814cce58275",
+    "semantic_hash": ""
   },
   "components/ImageGallery.js": {
     "mtime": 1779064753.562099,
@@ -520,7 +520,7 @@
     "semantic_hash": ""
   },
   "Irembopay testing checklist.md": {
-    "mtime": 1784622245.0042524,
+    "mtime": 1786473437.7791686,
     "ast_hash": "65326a37e443fa3c5adbf9cde24f8f4a",
     "semantic_hash": ""
   },
@@ -572,6 +572,36 @@
   ".claude/memory/payment-audit-findings.md": {
     "mtime": 1785409283.2595167,
     "ast_hash": "0205afad065c30717232904807ba0fed",
+    "semantic_hash": ""
+  },
+  "app/apple-icon.png": {
+    "mtime": 1786472601.5260835,
+    "ast_hash": "806d5ee41aea3139a6942442078cf128",
+    "semantic_hash": ""
+  },
+  "app/icon.png": {
+    "mtime": 1786472601.519992,
+    "ast_hash": "69b26d7ea3c3b7cfb4fbacb0ea9392e1",
+    "semantic_hash": ""
+  },
+  "public/logo/Dark-no background.png": {
+    "mtime": 1786472233.9391513,
+    "ast_hash": "0083aeac26c1ec6130c025d597e29b9b",
+    "semantic_hash": ""
+  },
+  "public/logo/Dark.png": {
+    "mtime": 1786472233.9411385,
+    "ast_hash": "22d530e3e4ed4ebe2db39eefc19a5e2c",
+    "semantic_hash": ""
+  },
+  "public/logo/Light-no background.png": {
+    "mtime": 1786472233.942954,
+    "ast_hash": "17b03050965d64f643cfaa7ed4cac38c",
+    "semantic_hash": ""
+  },
+  "public/logo/Light.png": {
+    "mtime": 1786472233.943898,
+    "ast_hash": "75a8e1f0e4453a26e77da8175c1f9690",
     "semantic_hash": ""
   }
 }

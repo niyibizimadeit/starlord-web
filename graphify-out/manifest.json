@@ -295,8 +295,8 @@
     "semantic_hash": "4c33ecab6bb99a8a7cf76a49577c53a4"
   },
   "app/layout.js": {
-    "mtime": 1786472613.2122471,
-    "ast_hash": "e30e97a5d5e7038b621ee2ffc8adb37d",
+    "mtime": 1786474652.331698,
+    "ast_hash": "444a75f7574051f48fb798e175432cc3",
     "semantic_hash": ""
   },
   "app/login/page.js": {
@@ -400,8 +400,8 @@
     "semantic_hash": ""
   },
   "components/Header.js": {
-    "mtime": 1786472632.5729318,
-    "ast_hash": "e0704ddc23245fca1c1ddb6872ae35d2",
+    "mtime": 1786472807.746287,
+    "ast_hash": "9043eae061806393f9782814cce58275",
     "semantic_hash": ""
   },
   "components/ImageGallery.js": {
@@ -520,7 +520,7 @@
     "semantic_hash": ""
   },
   "Irembopay testing checklist.md": {
-    "mtime": 1784622245.0042524,
+    "mtime": 1786473437.7791686,
     "ast_hash": "65326a37e443fa3c5adbf9cde24f8f4a",
     "semantic_hash": ""
   },
@@ -602,6 +602,31 @@
   "public/logo/Light.png": {
     "mtime": 1786472233.943898,
     "ast_hash": "75a8e1f0e4453a26e77da8175c1f9690",
+    "semantic_hash": ""
+  },
+  "components/ServiceWorkerRegister.js": {
+    "mtime": 1786474646.9616568,
+    "ast_hash": "6c035ade52179d0c1557607852c21d31",
+    "semantic_hash": ""
+  },
+  "public/manifest.json": {
+    "mtime": 1786474625.298925,
+    "ast_hash": "4fffc8db032d4c53e96bb64a5b3cf657",
+    "semantic_hash": ""
+  },
+  "public/sw.js": {
+    "mtime": 1786474643.421825,
+    "ast_hash": "0ad71f8a3ef5e7ac409622c2cc673d5f",
+    "semantic_hash": ""
+  },
+  "public/icon-192.png": {
+    "mtime": 1786474609.0486817,
+    "ast_hash": "5067768fc68fbb19228a63c58ece5a7b",
+    "semantic_hash": ""
+  },
+  "public/icon-512.png": {
+    "mtime": 1786474609.0410988,
+    "ast_hash": "69b26d7ea3c3b7cfb4fbacb0ea9392e1",
     "semantic_hash": ""
   }
 }

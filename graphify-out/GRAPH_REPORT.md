@@ -1,16 +1,16 @@
 # Graph Report - starlord-web  (2026-08-12)
 
 ## Corpus Check
-- 109 files · ~88,118 words
+- 112 files · ~91,179 words
 - Verdict: corpus is large enough that graph structure adds value.
 
 ## Summary
-- 533 nodes · 798 edges · 60 communities (37 shown, 23 thin omitted)
+- 547 nodes · 811 edges · 61 communities (38 shown, 23 thin omitted)
 - Extraction: 100% EXTRACTED · 0% INFERRED · 0% AMBIGUOUS
 - Token cost: 0 input · 0 output
 
 ## Graph Freshness
-- Built from commit: `d7f45b3e`
+- Built from commit: `3932c4d4`
 - Run `git rev-parse HEAD` and compare to check if the graph is stale.
 - Run `graphify update .` after code changes (no API cost).
 
@@ -68,6 +68,7 @@
 - route.js
 - route.js
 - route.js
+- route.js
 
 ## God Nodes (most connected - your core abstractions)
 1. `createServiceClient()` - 98 edges
@@ -83,8 +84,6 @@
 
 ## Surprising Connections (you probably didn't know these)
 - `GET()` --calls--> `createServiceClient()`  [EXTRACTED]
-  app/api/admin/banners/route.js → lib/supabase/server.js
-- `GET()` --calls--> `createServiceClient()`  [EXTRACTED]
   app/api/reviews/route.js → lib/supabase/server.js
 - `generateMetadata()` --calls--> `createServiceClient()`  [EXTRACTED]
   app/products/[id]/page.js → lib/supabase/server.js
@@ -92,15 +91,17 @@
   app/account/page.js → lib/supabase/server.js
 - `printShippingLabel()` --references--> `qrcode`  [EXTRACTED]
   app/admin/AdminHelpers.js → package.json
+- `getUser()` --calls--> `createServerSupabaseClient()`  [EXTRACTED]
+  app/api/account/addresses/route.js → lib/supabase/server.js
 
 ## Import Cycles
 - None detected.
 
-## Communities (60 total, 23 thin omitted)
+## Communities (61 total, 23 thin omitted)
 
 ### Community 0 - "createServiceClient"
-Cohesion: 0.12
-Nodes (15): GET(), getAdminUser(), POST(), POST(), GET(), GET(), GET(), GET() (+7 more)
+Cohesion: 0.11
+Nodes (19): checkAdminAuth(), DELETE(), GET(), PATCH(), POST(), GET(), getAdminUser(), POST() (+11 more)
 
 ### Community 1 - "useCart"
 Cohesion: 0.07
@@ -119,8 +120,8 @@ Cohesion: 0.19
 Nodes (25): adminLogin(), apiFetch(), apiMutate(), BarChart(), CategoryModal(), downloadCSV(), formatDate(), formatRWF() (+17 more)
 
 ### Community 5 - "Header.js"
-Cohesion: 0.12
-Nodes (13): lato, metadata, playfair, NotFound(), ConditionalLayout(), Footer(), Header(), getInitialTheme() (+5 more)
+Cohesion: 0.11
+Nodes (14): lato, metadata, playfair, NotFound(), ConditionalLayout(), Footer(), Header(), ServiceWorkerRegister() (+6 more)
 
 ### Community 6 - "compilerOptions"
 Cohesion: 0.10
@@ -179,8 +180,8 @@ Cohesion: 0.60
 Nodes (4): DELETE(), isAuthorized(), JWT_SECRET, PATCH()
 
 ### Community 35 - "not-found.js"
-Cohesion: 0.53
-Nodes (5): checkAdminAuth(), DELETE(), GET(), PATCH(), POST()
+Cohesion: 0.20
+Nodes (9): background_color, description, display, icons, name, orientation, short_name, start_url (+1 more)
 
 ### Community 41 - "StarlordGroup Web - Complete Developer Onboarding Guide"
 Cohesion: 0.06
@@ -193,6 +194,10 @@ Nodes (18): 1.1 Successful Payment, 1.2 Failed Payment, 1.3 Expired Payment, 1. 
 ### Community 43 - "StarlordGroup Web - starlordgroup.rw(live site)"
 Cohesion: 0.11
 Nodes (19): 1. Clone & Install, 2. Environment Variables, 3. Run Dev Server, 🙌 Acknowledgments, Admin Dashboard:, 🤝 Contributing, ☁️ Deployment, 🔒 Environment Variables Reference (+11 more)
+
+### Community 44 - "route.js"
+Cohesion: 0.83
+Nodes (3): GET(), getAdminUser(), POST()
 
 ### Community 45 - "route.js"
 Cohesion: 0.60
@@ -219,23 +224,23 @@ Cohesion: 0.83
 Nodes (3): fail(), pass(), test-security.sh script
 
 ## Knowledge Gaps
-- **153 isolated node(s):** `metadata`, `metadata`, `viewport`, `JWT_SECRET`, `config` (+148 more)
+- **163 isolated node(s):** `metadata`, `metadata`, `viewport`, `JWT_SECRET`, `config` (+158 more)
   These have ≤1 connection - possible missing edges or undocumented components.
 - **23 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
 
 ## Suggested Questions
 _Questions this graph is uniquely positioned to answer:_
 
-- **Why does `createServiceClient()` connect `createServiceClient` to `useCart`, `server.js`, `page.js`, `route.js`, `route.js`, `route.js`, `route.js`, `not-found.js`, `route.js`, `route.js`, `route.js`, `route.js`, `route.js`, `route.js`, `route.js`, `route.js`, `route.js`, `route.js`, `route.js`, `route.js`?**
-  _High betweenness centrality (0.114) - this node is a cross-community bridge._
+- **Why does `createServiceClient()` connect `createServiceClient` to `useCart`, `server.js`, `page.js`, `route.js`, `route.js`, `route.js`, `route.js`, `route.js`, `route.js`, `route.js`, `route.js`, `route.js`, `route.js`, `route.js`, `route.js`, `route.js`, `route.js`, `route.js`, `route.js`?**
+  _High betweenness centrality (0.109) - this node is a cross-community bridge._
 - **Why does `useCart()` connect `useCart` to `Header.js`?**
-  _High betweenness centrality (0.030) - this node is a cross-community bridge._
+  _High betweenness centrality (0.029) - this node is a cross-community bridge._
 - **Why does `createServerSupabaseClient()` connect `server.js` to `useCart`, `route.js`, `route.js`?**
   _High betweenness centrality (0.014) - this node is a cross-community bridge._
 - **What connects `metadata`, `metadata`, `viewport` to the rest of the system?**
-  _161 weakly-connected nodes found - possible documentation gaps or missing edges._
+  _171 weakly-connected nodes found - possible documentation gaps or missing edges._
 - **Should `createServiceClient` be split into smaller, more focused modules?**
-  _Cohesion score 0.12307692307692308 - nodes in this community are weakly interconnected._
+  _Cohesion score 0.10752688172043011 - nodes in this community are weakly interconnected._
 - **Should `useCart` be split into smaller, more focused modules?**
   _Cohesion score 0.07400555041628122 - nodes in this community are weakly interconnected._
 - **Should `dependencies` be split into smaller, more focused modules?**
