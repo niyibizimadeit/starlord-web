@@ -295,8 +295,8 @@
     "semantic_hash": "4c33ecab6bb99a8a7cf76a49577c53a4"
   },
   "app/layout.js": {
-    "mtime": 1786474652.331698,
-    "ast_hash": "444a75f7574051f48fb798e175432cc3",
+    "mtime": 1786474955.8143253,
+    "ast_hash": "ef618c1494ed6fadfba20045409c3539",
     "semantic_hash": ""
   },
   "app/login/page.js": {
@@ -627,6 +627,16 @@
   "public/icon-512.png": {
     "mtime": 1786474609.0410988,
     "ast_hash": "69b26d7ea3c3b7cfb4fbacb0ea9392e1",
+    "semantic_hash": ""
+  },
+  "app/loading.js": {
+    "mtime": 1786474931.7737935,
+    "ast_hash": "f5f37e33e2f68c092ad4d8aa9e10b5f6",
+    "semantic_hash": ""
+  },
+  "components/LoadingScreen.js": {
+    "mtime": 1786474902.1918259,
+    "ast_hash": "7587c07665582ab3940b56f06490417c",
     "semantic_hash": ""
   }
 }

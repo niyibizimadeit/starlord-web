@@ -5,12 +5,12 @@
 - Verdict: corpus is large enough that graph structure adds value.
 
 ## Summary
-- 552 nodes · 821 edges · 61 communities (38 shown, 23 thin omitted)
+- 552 nodes · 810 edges · 63 communities (40 shown, 23 thin omitted)
 - Extraction: 100% EXTRACTED · 0% INFERRED · 0% AMBIGUOUS
 - Token cost: 0 input · 0 output
 
 ## Graph Freshness
-- Built from commit: `b8a5e5e0`
+- Built from commit: `a7b921e0`
 - Run `git rev-parse HEAD` and compare to check if the graph is stale.
 - Run `graphify update .` after code changes (no API cost).
 
@@ -69,6 +69,7 @@
 - route.js
 - route.js
 - route.js
+- layout.js
 
 ## God Nodes (most connected - your core abstractions)
 1. `createServiceClient()` - 98 edges
@@ -78,9 +79,9 @@
 5. `StarlordGroup Web - starlordgroup.rw(live site)` - 11 edges
 6. `IremboPay Pre-Production Testing Checklist` - 10 edges
 7. `AdminPage()` - 9 edges
-8. `useTheme()` - 9 edges
-9. `StarlordGroup Web - Complete Developer Onboarding Guide` - 9 edges
-10. `formatRWF()` - 7 edges
+8. `StarlordGroup Web - Complete Developer Onboarding Guide` - 9 edges
+9. `formatRWF()` - 7 edges
+10. `apiMutate()` - 7 edges
 
 ## Surprising Connections (you probably didn't know these)
 - `GET()` --calls--> `createServiceClient()`  [EXTRACTED]
@@ -97,7 +98,7 @@
 ## Import Cycles
 - None detected.
 
-## Communities (61 total, 23 thin omitted)
+## Communities (63 total, 23 thin omitted)
 
 ### Community 0 - "createServiceClient"
 Cohesion: 0.12
@@ -120,8 +121,8 @@ Cohesion: 0.19
 Nodes (25): adminLogin(), apiFetch(), apiMutate(), BarChart(), CategoryModal(), downloadCSV(), formatDate(), formatRWF() (+17 more)
 
 ### Community 5 - "Header.js"
-Cohesion: 0.10
-Nodes (15): lato, metadata, playfair, NotFound(), ConditionalLayout(), Footer(), Header(), LoadingScreen() (+7 more)
+Cohesion: 0.14
+Nodes (9): NotFound(), Footer(), Header(), getInitialTheme(), ThemeContext, ThemeProvider(), useTheme(), WhatsAppWidget() (+1 more)
 
 ### Community 6 - "compilerOptions"
 Cohesion: 0.10
@@ -223,8 +224,12 @@ Nodes (4): DELETE(), getUser(), PATCH(), POST()
 Cohesion: 0.83
 Nodes (3): fail(), pass(), test-security.sh script
 
+### Community 61 - "layout.js"
+Cohesion: 0.24
+Nodes (4): lato, metadata, playfair, LoadingScreen()
+
 ## Knowledge Gaps
-- **163 isolated node(s):** `metadata`, `metadata`, `viewport`, `JWT_SECRET`, `config` (+158 more)
+- **163 isolated node(s):** `playfair`, `lato`, `metadata`, `metadata`, `metadata` (+158 more)
   These have ≤1 connection - possible missing edges or undocumented components.
 - **23 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
 
@@ -232,12 +237,12 @@ Nodes (3): fail(), pass(), test-security.sh script
 _Questions this graph is uniquely positioned to answer:_
 
 - **Why does `createServiceClient()` connect `createServiceClient` to `useCart`, `server.js`, `page.js`, `route.js`, `route.js`, `route.js`, `route.js`, `route.js`, `route.js`, `route.js`, `route.js`, `route.js`, `route.js`, `route.js`, `route.js`, `route.js`, `route.js`, `route.js`, `route.js`?**
-  _High betweenness centrality (0.110) - this node is a cross-community bridge._
+  _High betweenness centrality (0.103) - this node is a cross-community bridge._
 - **Why does `useCart()` connect `useCart` to `Header.js`?**
-  _High betweenness centrality (0.028) - this node is a cross-community bridge._
+  _High betweenness centrality (0.032) - this node is a cross-community bridge._
 - **Why does `createServerSupabaseClient()` connect `server.js` to `useCart`, `route.js`?**
-  _High betweenness centrality (0.014) - this node is a cross-community bridge._
-- **What connects `metadata`, `metadata`, `viewport` to the rest of the system?**
+  _High betweenness centrality (0.013) - this node is a cross-community bridge._
+- **What connects `playfair`, `lato`, `metadata` to the rest of the system?**
   _171 weakly-connected nodes found - possible documentation gaps or missing edges._
 - **Should `createServiceClient` be split into smaller, more focused modules?**
   _Cohesion score 0.12307692307692308 - nodes in this community are weakly interconnected._
