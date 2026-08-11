@@ -1,8 +1,10 @@
 import './globals.css';
+import { Suspense } from 'react';
 import { Playfair_Display, Lato } from 'next/font/google';
 import { ThemeProvider } from '@/components/ThemeProvider';
 import { CartProvider } from '@/components/CartContext';
 import ConditionalLayout from '@/components/ConditionalLayout';
+import LoadingScreen from '@/components/LoadingScreen';
 import ServiceWorkerRegister from '@/components/ServiceWorkerRegister';
 import { SpeedInsights } from '@vercel/speed-insights/next';
 
@@ -38,9 +40,11 @@ export default function RootLayout({ children }) {
       <body>
         <ThemeProvider>
           <CartProvider>
-            <ConditionalLayout>
-              {children}
-            </ConditionalLayout>
+            <Suspense fallback={<LoadingScreen />}>
+              <ConditionalLayout>
+                {children}
+              </ConditionalLayout>
+            </Suspense>
           </CartProvider>
         </ThemeProvider>
         <SpeedInsights />

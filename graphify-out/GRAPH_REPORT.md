@@ -1,16 +1,16 @@
 # Graph Report - starlord-web  (2026-08-12)
 
 ## Corpus Check
-- 112 files · ~91,179 words
+- 114 files · ~91,783 words
 - Verdict: corpus is large enough that graph structure adds value.
 
 ## Summary
-- 547 nodes · 811 edges · 61 communities (38 shown, 23 thin omitted)
+- 552 nodes · 821 edges · 61 communities (38 shown, 23 thin omitted)
 - Extraction: 100% EXTRACTED · 0% INFERRED · 0% AMBIGUOUS
 - Token cost: 0 input · 0 output
 
 ## Graph Freshness
-- Built from commit: `3932c4d4`
+- Built from commit: `b8a5e5e0`
 - Run `git rev-parse HEAD` and compare to check if the graph is stale.
 - Run `graphify update .` after code changes (no API cost).
 
@@ -78,11 +78,13 @@
 5. `StarlordGroup Web - starlordgroup.rw(live site)` - 11 edges
 6. `IremboPay Pre-Production Testing Checklist` - 10 edges
 7. `AdminPage()` - 9 edges
-8. `StarlordGroup Web - Complete Developer Onboarding Guide` - 9 edges
-9. `formatRWF()` - 7 edges
-10. `apiMutate()` - 7 edges
+8. `useTheme()` - 9 edges
+9. `StarlordGroup Web - Complete Developer Onboarding Guide` - 9 edges
+10. `formatRWF()` - 7 edges
 
 ## Surprising Connections (you probably didn't know these)
+- `GET()` --calls--> `createServiceClient()`  [EXTRACTED]
+  app/api/admin/banners/route.js → lib/supabase/server.js
 - `GET()` --calls--> `createServiceClient()`  [EXTRACTED]
   app/api/reviews/route.js → lib/supabase/server.js
 - `generateMetadata()` --calls--> `createServiceClient()`  [EXTRACTED]
@@ -91,8 +93,6 @@
   app/account/page.js → lib/supabase/server.js
 - `printShippingLabel()` --references--> `qrcode`  [EXTRACTED]
   app/admin/AdminHelpers.js → package.json
-- `getUser()` --calls--> `createServerSupabaseClient()`  [EXTRACTED]
-  app/api/account/addresses/route.js → lib/supabase/server.js
 
 ## Import Cycles
 - None detected.
@@ -100,8 +100,8 @@
 ## Communities (61 total, 23 thin omitted)
 
 ### Community 0 - "createServiceClient"
-Cohesion: 0.11
-Nodes (19): checkAdminAuth(), DELETE(), GET(), PATCH(), POST(), GET(), getAdminUser(), POST() (+11 more)
+Cohesion: 0.12
+Nodes (15): GET(), getAdminUser(), POST(), POST(), GET(), GET(), GET(), GET() (+7 more)
 
 ### Community 1 - "useCart"
 Cohesion: 0.07
@@ -113,23 +113,23 @@ Nodes (34): browserslist, dependencies, @aws-sdk/client-s3, jose, next, qrcode, 
 
 ### Community 3 - "server.js"
 Cohesion: 0.13
-Nodes (15): AccountPage(), POST(), POST(), POST(), POST(), POST(), POST(), POST() (+7 more)
+Nodes (16): AccountPage(), POST(), POST(), POST(), POST(), POST(), POST(), POST() (+8 more)
 
 ### Community 4 - "page.js"
 Cohesion: 0.19
 Nodes (25): adminLogin(), apiFetch(), apiMutate(), BarChart(), CategoryModal(), downloadCSV(), formatDate(), formatRWF() (+17 more)
 
 ### Community 5 - "Header.js"
-Cohesion: 0.11
-Nodes (14): lato, metadata, playfair, NotFound(), ConditionalLayout(), Footer(), Header(), ServiceWorkerRegister() (+6 more)
+Cohesion: 0.10
+Nodes (15): lato, metadata, playfair, NotFound(), ConditionalLayout(), Footer(), Header(), LoadingScreen() (+7 more)
 
 ### Community 6 - "compilerOptions"
 Cohesion: 0.10
 Nodes (19): compilerOptions, allowJs, esModuleInterop, incremental, isolatedModules, jsx, lib, module (+11 more)
 
 ### Community 7 - "AccountClient.js"
-Cohesion: 0.20
-Nodes (9): AddressesTab(), formatDate(), formatRWF(), inputStyle(), labelStyle, OrderCard(), ProfileTab(), SecurityTab() (+1 more)
+Cohesion: 0.18
+Nodes (10): AccountClient(), AddressesTab(), formatDate(), formatRWF(), inputStyle(), labelStyle, OrderCard(), ProfileTab() (+2 more)
 
 ### Community 8 - "page.js"
 Cohesion: 0.23
@@ -196,8 +196,8 @@ Cohesion: 0.11
 Nodes (19): 1. Clone & Install, 2. Environment Variables, 3. Run Dev Server, 🙌 Acknowledgments, Admin Dashboard:, 🤝 Contributing, ☁️ Deployment, 🔒 Environment Variables Reference (+11 more)
 
 ### Community 44 - "route.js"
-Cohesion: 0.83
-Nodes (3): GET(), getAdminUser(), POST()
+Cohesion: 0.53
+Nodes (5): checkAdminAuth(), DELETE(), GET(), PATCH(), POST()
 
 ### Community 45 - "route.js"
 Cohesion: 0.60
@@ -232,15 +232,15 @@ Nodes (3): fail(), pass(), test-security.sh script
 _Questions this graph is uniquely positioned to answer:_
 
 - **Why does `createServiceClient()` connect `createServiceClient` to `useCart`, `server.js`, `page.js`, `route.js`, `route.js`, `route.js`, `route.js`, `route.js`, `route.js`, `route.js`, `route.js`, `route.js`, `route.js`, `route.js`, `route.js`, `route.js`, `route.js`, `route.js`, `route.js`?**
-  _High betweenness centrality (0.109) - this node is a cross-community bridge._
+  _High betweenness centrality (0.110) - this node is a cross-community bridge._
 - **Why does `useCart()` connect `useCart` to `Header.js`?**
-  _High betweenness centrality (0.029) - this node is a cross-community bridge._
-- **Why does `createServerSupabaseClient()` connect `server.js` to `useCart`, `route.js`, `route.js`?**
+  _High betweenness centrality (0.028) - this node is a cross-community bridge._
+- **Why does `createServerSupabaseClient()` connect `server.js` to `useCart`, `route.js`?**
   _High betweenness centrality (0.014) - this node is a cross-community bridge._
 - **What connects `metadata`, `metadata`, `viewport` to the rest of the system?**
   _171 weakly-connected nodes found - possible documentation gaps or missing edges._
 - **Should `createServiceClient` be split into smaller, more focused modules?**
-  _Cohesion score 0.10752688172043011 - nodes in this community are weakly interconnected._
+  _Cohesion score 0.12307692307692308 - nodes in this community are weakly interconnected._
 - **Should `useCart` be split into smaller, more focused modules?**
   _Cohesion score 0.07400555041628122 - nodes in this community are weakly interconnected._
 - **Should `dependencies` be split into smaller, more focused modules?**

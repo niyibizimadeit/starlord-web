@@ -710,7 +710,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "app_api_admin_banners_route",
-      "community": 0,
+      "community": 44,
       "norm_label": "route.js"
     },
     {
@@ -720,7 +720,7 @@
       "source_location": "L5",
       "_origin": "ast",
       "id": "app_api_admin_banners_route_checkadminauth",
-      "community": 0,
+      "community": 44,
       "norm_label": "checkadminauth()"
     },
     {
@@ -730,7 +730,7 @@
       "source_location": "L20",
       "_origin": "ast",
       "id": "app_api_admin_banners_route_get",
-      "community": 0,
+      "community": 44,
       "norm_label": "get()"
     },
     {
@@ -740,7 +740,7 @@
       "source_location": "L30",
       "_origin": "ast",
       "id": "app_api_admin_banners_route_post",
-      "community": 0,
+      "community": 44,
       "norm_label": "post()"
     },
     {
@@ -750,7 +750,7 @@
       "source_location": "L53",
       "_origin": "ast",
       "id": "app_api_admin_banners_route_patch",
-      "community": 0,
+      "community": 44,
       "norm_label": "patch()"
     },
     {
@@ -760,7 +760,7 @@
       "source_location": "L72",
       "_origin": "ast",
       "id": "app_api_admin_banners_route_delete",
-      "community": 0,
+      "community": 44,
       "norm_label": "delete()"
     },
     {
@@ -850,7 +850,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "app_api_admin_categories_route",
-      "community": 44,
+      "community": 0,
       "norm_label": "route.js"
     },
     {
@@ -860,7 +860,7 @@
       "source_location": "L6",
       "_origin": "ast",
       "id": "app_api_admin_categories_route_getadminuser",
-      "community": 44,
+      "community": 0,
       "norm_label": "getadminuser()"
     },
     {
@@ -870,7 +870,7 @@
       "source_location": "L16",
       "_origin": "ast",
       "id": "app_api_admin_categories_route_get",
-      "community": 44,
+      "community": 0,
       "norm_label": "get()"
     },
     {
@@ -880,7 +880,7 @@
       "source_location": "L53",
       "_origin": "ast",
       "id": "app_api_admin_categories_route_post",
-      "community": 44,
+      "community": 0,
       "norm_label": "post()"
     },
     {
@@ -1050,7 +1050,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "app_api_admin_orders_route",
-      "community": 0,
+      "community": 59,
       "norm_label": "route.js"
     },
     {
@@ -1060,7 +1060,7 @@
       "source_location": "L6",
       "_origin": "ast",
       "id": "app_api_admin_orders_route_getadminuser",
-      "community": 0,
+      "community": 59,
       "norm_label": "getadminuser()"
     },
     {
@@ -1070,7 +1070,7 @@
       "source_location": "L26",
       "_origin": "ast",
       "id": "app_api_admin_orders_route_get",
-      "community": 0,
+      "community": 59,
       "norm_label": "get()"
     },
     {
@@ -1530,7 +1530,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "app_api_checkout_route",
-      "community": 59,
+      "community": 3,
       "norm_label": "route.js"
     },
     {
@@ -1540,7 +1540,7 @@
       "source_location": "L5",
       "_origin": "ast",
       "id": "app_api_checkout_route_generatereference",
-      "community": 59,
+      "community": 3,
       "norm_label": "generatereference()"
     },
     {
@@ -1550,7 +1550,7 @@
       "source_location": "L11",
       "_origin": "ast",
       "id": "app_api_checkout_route_post",
-      "community": 59,
+      "community": 3,
       "norm_label": "post()"
     },
     {
@@ -2237,7 +2237,7 @@
       "label": "playfair",
       "file_type": "code",
       "source_file": "app/layout.js",
-      "source_location": "L9",
+      "source_location": "L11",
       "_origin": "ast",
       "id": "app_layout_playfair",
       "community": 5,
@@ -2247,7 +2247,7 @@
       "label": "lato",
       "file_type": "code",
       "source_file": "app/layout.js",
-      "source_location": "L16",
+      "source_location": "L18",
       "_origin": "ast",
       "id": "app_layout_lato",
       "community": 5,
@@ -2257,7 +2257,7 @@
       "label": "metadata",
       "file_type": "code",
       "source_file": "app/layout.js",
-      "source_location": "L23",
+      "source_location": "L25",
       "_origin": "ast",
       "id": "app_layout_metadata",
       "community": 5,
@@ -2267,11 +2267,31 @@
       "label": "RootLayout()",
       "file_type": "code",
       "source_file": "app/layout.js",
-      "source_location": "L34",
+      "source_location": "L36",
       "_origin": "ast",
       "id": "app_layout_rootlayout",
       "community": 5,
       "norm_label": "rootlayout()"
+    },
+    {
+      "label": "loading.js",
+      "file_type": "code",
+      "source_file": "app/loading.js",
+      "source_location": "L1",
+      "_origin": "ast",
+      "id": "app_loading",
+      "community": 5,
+      "norm_label": "loading.js"
+    },
+    {
+      "label": "Loading()",
+      "file_type": "code",
+      "source_file": "app/loading.js",
+      "source_location": "L3",
+      "_origin": "ast",
+      "id": "app_loading_loading",
+      "community": 5,
+      "norm_label": "loading()"
     },
     {
       "label": "page.js",
@@ -2970,7 +2990,7 @@
       "source_location": "L734",
       "_origin": "ast",
       "id": "components_accountclient_accountclient",
-      "community": 3,
+      "community": 7,
       "norm_label": "accountclient()"
     },
     {
@@ -3252,6 +3272,36 @@
       "id": "components_imagegallery_imagegallery",
       "community": 1,
       "norm_label": "imagegallery()"
+    },
+    {
+      "label": "LoadingScreen.js",
+      "file_type": "code",
+      "source_file": "components/LoadingScreen.js",
+      "source_location": "L1",
+      "_origin": "ast",
+      "id": "components_loadingscreen",
+      "community": 5,
+      "norm_label": "loadingscreen.js"
+    },
+    {
+      "label": "SkeletonCard()",
+      "file_type": "code",
+      "source_file": "components/LoadingScreen.js",
+      "source_location": "L6",
+      "_origin": "ast",
+      "id": "components_loadingscreen_skeletoncard",
+      "community": 5,
+      "norm_label": "skeletoncard()"
+    },
+    {
+      "label": "LoadingScreen()",
+      "file_type": "code",
+      "source_file": "components/LoadingScreen.js",
+      "source_location": "L38",
+      "_origin": "ast",
+      "id": "components_loadingscreen_loadingscreen",
+      "community": 5,
+      "norm_label": "loadingscreen()"
     },
     {
       "label": "ProductGrid.js",
@@ -10126,7 +10176,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "app/layout.js",
-      "source_location": "L16",
+      "source_location": "L18",
       "weight": 1.0,
       "source": "app_layout",
       "target": "app_layout_lato",
@@ -10136,7 +10186,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "app/layout.js",
-      "source_location": "L23",
+      "source_location": "L25",
       "weight": 1.0,
       "source": "app_layout",
       "target": "app_layout_metadata",
@@ -10146,7 +10196,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "app/layout.js",
-      "source_location": "L9",
+      "source_location": "L11",
       "weight": 1.0,
       "source": "app_layout",
       "target": "app_layout_playfair",
@@ -10156,7 +10206,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "app/layout.js",
-      "source_location": "L34",
+      "source_location": "L36",
       "weight": 1.0,
       "source": "app_layout",
       "target": "app_layout_rootlayout",
@@ -10167,7 +10217,7 @@
       "context": "import",
       "confidence": "EXTRACTED",
       "source_file": "app/layout.js",
-      "source_location": "L4",
+      "source_location": "L5",
       "weight": 1.0,
       "source": "app_layout",
       "target": "components_cartcontext",
@@ -10178,7 +10228,7 @@
       "context": "import",
       "confidence": "EXTRACTED",
       "source_file": "app/layout.js",
-      "source_location": "L4",
+      "source_location": "L5",
       "weight": 1.0,
       "source": "app_layout",
       "target": "components_cartcontext_cartprovider",
@@ -10189,7 +10239,7 @@
       "context": "import",
       "confidence": "EXTRACTED",
       "source_file": "app/layout.js",
-      "source_location": "L5",
+      "source_location": "L6",
       "weight": 1.0,
       "source": "app_layout",
       "target": "components_conditionallayout",
@@ -10200,7 +10250,7 @@
       "context": "import",
       "confidence": "EXTRACTED",
       "source_file": "app/layout.js",
-      "source_location": "L5",
+      "source_location": "L6",
       "weight": 1.0,
       "source": "app_layout",
       "target": "components_conditionallayout_conditionallayout",
@@ -10211,7 +10261,29 @@
       "context": "import",
       "confidence": "EXTRACTED",
       "source_file": "app/layout.js",
-      "source_location": "L6",
+      "source_location": "L7",
+      "weight": 1.0,
+      "source": "app_layout",
+      "target": "components_loadingscreen",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "app/layout.js",
+      "source_location": "L7",
+      "weight": 1.0,
+      "source": "app_layout",
+      "target": "components_loadingscreen_loadingscreen",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "app/layout.js",
+      "source_location": "L8",
       "weight": 1.0,
       "source": "app_layout",
       "target": "components_serviceworkerregister",
@@ -10222,7 +10294,7 @@
       "context": "import",
       "confidence": "EXTRACTED",
       "source_file": "app/layout.js",
-      "source_location": "L6",
+      "source_location": "L8",
       "weight": 1.0,
       "source": "app_layout",
       "target": "components_serviceworkerregister_serviceworkerregister",
@@ -10233,7 +10305,7 @@
       "context": "import",
       "confidence": "EXTRACTED",
       "source_file": "app/layout.js",
-      "source_location": "L3",
+      "source_location": "L4",
       "weight": 1.0,
       "source": "app_layout",
       "target": "components_themeprovider",
@@ -10244,10 +10316,42 @@
       "context": "import",
       "confidence": "EXTRACTED",
       "source_file": "app/layout.js",
-      "source_location": "L3",
+      "source_location": "L4",
       "weight": 1.0,
       "source": "app_layout",
       "target": "components_themeprovider_themeprovider",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "app/loading.js",
+      "source_location": "L3",
+      "weight": 1.0,
+      "source": "app_loading",
+      "target": "app_loading_loading",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "app/loading.js",
+      "source_location": "L1",
+      "weight": 1.0,
+      "source": "app_loading",
+      "target": "components_loadingscreen",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "app/loading.js",
+      "source_location": "L1",
+      "weight": 1.0,
+      "source": "app_loading",
+      "target": "components_loadingscreen_loadingscreen",
       "confidence_score": 1.0
     },
     {
@@ -11878,6 +11982,59 @@
       "source": "components_productpageclient",
       "target": "components_imagegallery_imagegallery",
       "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "components/LoadingScreen.js",
+      "source_location": "L38",
+      "weight": 1.0,
+      "source": "components_loadingscreen",
+      "target": "components_loadingscreen_loadingscreen",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "components/LoadingScreen.js",
+      "source_location": "L6",
+      "weight": 1.0,
+      "source": "components_loadingscreen",
+      "target": "components_loadingscreen_skeletoncard",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "components/LoadingScreen.js",
+      "source_location": "L4",
+      "weight": 1.0,
+      "source": "components_loadingscreen",
+      "target": "components_themeprovider",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "components/LoadingScreen.js",
+      "source_location": "L4",
+      "weight": 1.0,
+      "source": "components_loadingscreen",
+      "target": "components_themeprovider_usetheme",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "components/LoadingScreen.js",
+      "source_location": "L39",
+      "weight": 1.0,
+      "source": "components_loadingscreen_loadingscreen",
+      "target": "components_themeprovider_usetheme"
     },
     {
       "relation": "contains",
@@ -13974,5 +14131,5 @@
     }
   ],
   "hyperedges": [],
-  "built_at_commit": "3932c4d42c851589dbcd28934c218c758ce5511f"
+  "built_at_commit": "b8a5e5e024d2675abe4e46f8da1724dd4331bdb3"
 }

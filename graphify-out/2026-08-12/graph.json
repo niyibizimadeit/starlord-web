@@ -4,724 +4,194 @@
   "graph": {},
   "nodes": [
     {
-      "label": "payment-audit-findings.md",
-      "file_type": "document",
-      "source_file": ".claude/memory/payment-audit-findings.md",
-      "source_location": "L1",
-      "_origin": "ast",
-      "id": "claude_memory_payment_audit_findings",
-      "community": 57,
-      "norm_label": "payment-audit-findings.md"
-    },
-    {
-      "label": "middleware.js",
-      "file_type": "code",
-      "source_file": "app/admin/middleware.js",
-      "source_location": "L1",
-      "_origin": "ast",
-      "id": "app_admin_middleware",
-      "community": 20,
-      "norm_label": "middleware.js"
-    },
-    {
-      "label": "JWT_SECRET",
-      "file_type": "code",
-      "source_file": "app/admin/middleware.js",
-      "source_location": "L4",
-      "_origin": "ast",
-      "id": "app_admin_middleware_jwt_secret",
-      "community": 20,
-      "norm_label": "jwt_secret"
-    },
-    {
-      "label": "isValidAdminToken()",
-      "file_type": "code",
-      "source_file": "app/admin/middleware.js",
-      "source_location": "L8",
-      "_origin": "ast",
-      "id": "app_admin_middleware_isvalidadmintoken",
-      "community": 20,
-      "norm_label": "isvalidadmintoken()"
-    },
-    {
-      "label": "middleware()",
-      "file_type": "code",
-      "source_file": "app/admin/middleware.js",
-      "source_location": "L19",
-      "_origin": "ast",
-      "id": "app_admin_middleware_middleware",
-      "community": 20,
-      "norm_label": "middleware()"
-    },
-    {
-      "label": "config",
-      "file_type": "code",
-      "source_file": "app/admin/middleware.js",
-      "source_location": "L40",
-      "_origin": "ast",
-      "id": "app_admin_middleware_config",
-      "community": 20,
-      "norm_label": "config"
-    },
-    {
-      "label": "route.js",
-      "file_type": "code",
-      "source_file": "app/api/admin/auth/route.js",
-      "source_location": "L1",
-      "_origin": "ast",
-      "id": "app_api_admin_auth_route",
-      "community": 17,
-      "norm_label": "route.js"
-    },
-    {
-      "label": "getJwtSecret()",
-      "file_type": "code",
-      "source_file": "app/api/admin/auth/route.js",
-      "source_location": "L11",
-      "_origin": "ast",
-      "id": "app_api_admin_auth_route_getjwtsecret",
-      "community": 17,
-      "norm_label": "getjwtsecret()"
-    },
-    {
-      "label": "createAdminToken()",
-      "file_type": "code",
-      "source_file": "app/api/admin/auth/route.js",
-      "source_location": "L18",
-      "_origin": "ast",
-      "id": "app_api_admin_auth_route_createadmintoken",
-      "community": 17,
-      "norm_label": "createadmintoken()"
-    },
-    {
-      "label": "POST()",
-      "file_type": "code",
-      "source_file": "app/api/admin/auth/route.js",
-      "source_location": "L27",
-      "_origin": "ast",
-      "id": "app_api_admin_auth_route_post",
-      "community": 17,
-      "norm_label": "post()"
-    },
-    {
-      "label": "GET()",
-      "file_type": "code",
-      "source_file": "app/api/admin/auth/route.js",
-      "source_location": "L71",
-      "_origin": "ast",
-      "id": "app_api_admin_auth_route_get",
-      "community": 17,
-      "norm_label": "get()"
-    },
-    {
-      "label": "DELETE()",
-      "file_type": "code",
-      "source_file": "app/api/admin/auth/route.js",
-      "source_location": "L88",
-      "_origin": "ast",
-      "id": "app_api_admin_auth_route_delete",
-      "community": 17,
-      "norm_label": "delete()"
-    },
-    {
-      "label": "route.js",
-      "file_type": "code",
-      "source_file": "app/api/checkout/route.js",
-      "source_location": "L1",
-      "_origin": "ast",
-      "id": "app_api_checkout_route",
-      "community": 59,
-      "norm_label": "route.js"
-    },
-    {
-      "label": "generateReference()",
-      "file_type": "code",
-      "source_file": "app/api/checkout/route.js",
-      "source_location": "L5",
-      "_origin": "ast",
-      "id": "app_api_checkout_route_generatereference",
-      "community": 59,
-      "norm_label": "generatereference()"
-    },
-    {
-      "label": "POST()",
-      "file_type": "code",
-      "source_file": "app/api/checkout/route.js",
-      "source_location": "L11",
-      "_origin": "ast",
-      "id": "app_api_checkout_route_post",
-      "community": 59,
-      "norm_label": "post()"
-    },
-    {
-      "label": "route.js",
-      "file_type": "code",
-      "source_file": "app/api/orders/payment-status/route.js",
-      "source_location": "L1",
-      "_origin": "ast",
-      "id": "app_api_orders_payment_status_route",
-      "community": 60,
-      "norm_label": "route.js"
-    },
-    {
-      "label": "GET()",
-      "file_type": "code",
-      "source_file": "app/api/orders/payment-status/route.js",
-      "source_location": "L3",
-      "_origin": "ast",
-      "id": "app_api_orders_payment_status_route_get",
-      "community": 60,
-      "norm_label": "get()"
-    },
-    {
-      "label": "route.js",
-      "file_type": "code",
-      "source_file": "app/api/payments/initiate/route.js",
-      "source_location": "L1",
-      "_origin": "ast",
-      "id": "app_api_payments_initiate_route",
-      "community": 54,
-      "norm_label": "route.js"
-    },
-    {
-      "label": "irembopayHeaders()",
-      "file_type": "code",
-      "source_file": "app/api/payments/initiate/route.js",
-      "source_location": "L5",
-      "_origin": "ast",
-      "id": "app_api_payments_initiate_route_irembopayheaders",
-      "community": 54,
-      "norm_label": "irembopayheaders()"
-    },
-    {
-      "label": "POST()",
-      "file_type": "code",
-      "source_file": "app/api/payments/initiate/route.js",
-      "source_location": "L13",
-      "_origin": "ast",
-      "id": "app_api_payments_initiate_route_post",
-      "community": 54,
-      "norm_label": "post()"
-    },
-    {
-      "label": "route.js",
-      "file_type": "code",
-      "source_file": "app/api/webhooks/irembopay/route.js",
-      "source_location": "L1",
-      "_origin": "ast",
-      "id": "app_api_webhooks_irembopay_route",
-      "community": 61,
-      "norm_label": "route.js"
-    },
-    {
-      "label": "POST()",
-      "file_type": "code",
-      "source_file": "app/api/webhooks/irembopay/route.js",
-      "source_location": "L4",
-      "_origin": "ast",
-      "id": "app_api_webhooks_irembopay_route_post",
-      "community": 61,
-      "norm_label": "post()"
-    },
-    {
       "label": "layout.js",
       "file_type": "code",
       "source_file": "app/layout.js",
       "source_location": "L1",
       "_origin": "ast",
       "id": "app_layout",
-      "community": 5,
+      "community": 61,
       "norm_label": "layout.js"
     },
     {
       "label": "playfair",
       "file_type": "code",
       "source_file": "app/layout.js",
-      "source_location": "L8",
+      "source_location": "L9",
       "_origin": "ast",
       "id": "app_layout_playfair",
-      "community": 5,
+      "community": 61,
       "norm_label": "playfair"
     },
     {
       "label": "lato",
       "file_type": "code",
       "source_file": "app/layout.js",
-      "source_location": "L15",
+      "source_location": "L16",
       "_origin": "ast",
       "id": "app_layout_lato",
-      "community": 5,
+      "community": 61,
       "norm_label": "lato"
     },
     {
       "label": "metadata",
       "file_type": "code",
       "source_file": "app/layout.js",
-      "source_location": "L22",
+      "source_location": "L23",
       "_origin": "ast",
       "id": "app_layout_metadata",
-      "community": 5,
+      "community": 61,
       "norm_label": "metadata"
     },
     {
       "label": "RootLayout()",
       "file_type": "code",
       "source_file": "app/layout.js",
-      "source_location": "L31",
+      "source_location": "L34",
       "_origin": "ast",
       "id": "app_layout_rootlayout",
-      "community": 5,
+      "community": 61,
       "norm_label": "rootlayout()"
     },
     {
-      "label": "middleware.js",
+      "label": "ServiceWorkerRegister.js",
       "file_type": "code",
-      "source_file": "app/middleware.js",
+      "source_file": "components/ServiceWorkerRegister.js",
       "source_location": "L1",
       "_origin": "ast",
-      "id": "app_middleware",
-      "community": 16,
-      "norm_label": "middleware.js"
+      "id": "components_serviceworkerregister",
+      "community": 61,
+      "norm_label": "serviceworkerregister.js"
     },
     {
-      "label": "rateLimitMap",
+      "label": "ServiceWorkerRegister()",
       "file_type": "code",
-      "source_file": "app/middleware.js",
-      "source_location": "L8",
+      "source_file": "components/ServiceWorkerRegister.js",
+      "source_location": "L5",
       "_origin": "ast",
-      "id": "app_middleware_ratelimitmap",
-      "community": 16,
-      "norm_label": "ratelimitmap"
+      "id": "components_serviceworkerregister_serviceworkerregister",
+      "community": 61,
+      "norm_label": "serviceworkerregister()"
     },
     {
-      "label": "RATE_LIMIT_CONFIG",
+      "label": "manifest.json",
       "file_type": "code",
-      "source_file": "app/middleware.js",
-      "source_location": "L10",
-      "_origin": "ast",
-      "id": "app_middleware_rate_limit_config",
-      "community": 16,
-      "norm_label": "rate_limit_config"
-    },
-    {
-      "label": "getRateLimitConfig()",
-      "file_type": "code",
-      "source_file": "app/middleware.js",
-      "source_location": "L18",
-      "_origin": "ast",
-      "id": "app_middleware_getratelimitconfig",
-      "community": 16,
-      "norm_label": "getratelimitconfig()"
-    },
-    {
-      "label": "checkRateLimit()",
-      "file_type": "code",
-      "source_file": "app/middleware.js",
-      "source_location": "L25",
-      "_origin": "ast",
-      "id": "app_middleware_checkratelimit",
-      "community": 16,
-      "norm_label": "checkratelimit()"
-    },
-    {
-      "label": "middleware()",
-      "file_type": "code",
-      "source_file": "app/middleware.js",
-      "source_location": "L49",
-      "_origin": "ast",
-      "id": "app_middleware_middleware",
-      "community": 16,
-      "norm_label": "middleware()"
-    },
-    {
-      "label": "config",
-      "file_type": "code",
-      "source_file": "app/middleware.js",
-      "source_location": "L114",
-      "_origin": "ast",
-      "id": "app_middleware_config",
-      "community": 16,
-      "norm_label": "config"
-    },
-    {
-      "label": "not-found.js",
-      "file_type": "code",
-      "source_file": "app/not-found.js",
+      "source_file": "public/manifest.json",
       "source_location": "L1",
       "_origin": "ast",
-      "id": "app_not_found",
-      "community": 62,
-      "norm_label": "not-found.js"
+      "id": "public_manifest",
+      "community": 35,
+      "norm_label": "manifest.json"
     },
     {
-      "label": "NotFound()",
+      "label": "name",
       "file_type": "code",
-      "source_file": "app/not-found.js",
-      "source_location": "L7",
+      "source_file": "public/manifest.json",
+      "source_location": "L2",
       "_origin": "ast",
-      "id": "app_not_found_notfound",
-      "community": 62,
-      "norm_label": "notfound()"
+      "id": "public_manifest_name",
+      "community": 35,
+      "norm_label": "name"
     },
     {
-      "label": "ConditionalLayout.js",
+      "label": "short_name",
       "file_type": "code",
-      "source_file": "components/ConditionalLayout.js",
-      "source_location": "L1",
+      "source_file": "public/manifest.json",
+      "source_location": "L3",
       "_origin": "ast",
-      "id": "components_conditionallayout",
-      "community": 5,
-      "norm_label": "conditionallayout.js"
+      "id": "public_manifest_short_name",
+      "community": 35,
+      "norm_label": "short_name"
     },
     {
-      "label": "PaymentBadge()",
+      "label": "description",
       "file_type": "code",
-      "source_file": "components/ConditionalLayout.js",
-      "source_location": "L10",
+      "source_file": "public/manifest.json",
+      "source_location": "L4",
       "_origin": "ast",
-      "id": "components_conditionallayout_paymentbadge",
-      "community": 5,
-      "norm_label": "paymentbadge()"
+      "id": "public_manifest_description",
+      "community": 35,
+      "norm_label": "description"
     },
     {
-      "label": "Footer()",
+      "label": "start_url",
       "file_type": "code",
-      "source_file": "components/ConditionalLayout.js",
-      "source_location": "L21",
+      "source_file": "public/manifest.json",
+      "source_location": "L5",
       "_origin": "ast",
-      "id": "components_conditionallayout_footer",
-      "community": 5,
-      "norm_label": "footer()"
+      "id": "public_manifest_start_url",
+      "community": 35,
+      "norm_label": "start_url"
     },
     {
-      "label": "ConditionalLayout()",
+      "label": "display",
       "file_type": "code",
-      "source_file": "components/ConditionalLayout.js",
-      "source_location": "L75",
-      "_origin": "ast",
-      "id": "components_conditionallayout_conditionallayout",
-      "community": 5,
-      "norm_label": "conditionallayout()"
-    },
-    {
-      "label": "Header.js",
-      "file_type": "code",
-      "source_file": "components/Header.js",
-      "source_location": "L1",
-      "_origin": "ast",
-      "id": "components_header",
-      "community": 5,
-      "norm_label": "header.js"
-    },
-    {
-      "label": "Header()",
-      "file_type": "code",
-      "source_file": "components/Header.js",
-      "source_location": "L9",
-      "_origin": "ast",
-      "id": "components_header_header",
-      "community": 5,
-      "norm_label": "header()"
-    },
-    {
-      "label": "SearchIcon()",
-      "file_type": "code",
-      "source_file": "components/Header.js",
-      "source_location": "L231",
-      "_origin": "ast",
-      "id": "components_header_searchicon",
-      "community": 5,
-      "norm_label": "searchicon()"
-    },
-    {
-      "label": "SunIcon()",
-      "file_type": "code",
-      "source_file": "components/Header.js",
-      "source_location": "L239",
-      "_origin": "ast",
-      "id": "components_header_sunicon",
-      "community": 5,
-      "norm_label": "sunicon()"
-    },
-    {
-      "label": "MoonIcon()",
-      "file_type": "code",
-      "source_file": "components/Header.js",
-      "source_location": "L251",
-      "_origin": "ast",
-      "id": "components_header_moonicon",
-      "community": 5,
-      "norm_label": "moonicon()"
-    },
-    {
-      "label": "CartIcon()",
-      "file_type": "code",
-      "source_file": "components/Header.js",
-      "source_location": "L259",
-      "_origin": "ast",
-      "id": "components_header_carticon",
-      "community": 5,
-      "norm_label": "carticon()"
-    },
-    {
-      "label": "PersonIcon()",
-      "file_type": "code",
-      "source_file": "components/Header.js",
-      "source_location": "L268",
-      "_origin": "ast",
-      "id": "components_header_personicon",
-      "community": 5,
-      "norm_label": "personicon()"
-    },
-    {
-      "label": "fixes.md",
-      "file_type": "document",
-      "source_file": "fixes.md",
-      "source_location": "L1",
-      "_origin": "ast",
-      "id": "fixes",
-      "community": 49,
-      "norm_label": "fixes.md"
-    },
-    {
-      "label": "Payment API Integration \u2014 Audit Findings",
-      "file_type": "document",
-      "source_file": "fixes.md",
-      "source_location": "L1",
-      "_origin": "ast",
-      "id": "fixes_payment_api_integration_audit_findings",
-      "community": 49,
-      "norm_label": "payment api integration \u2014 audit findings"
-    },
-    {
-      "label": "Fix Status",
-      "file_type": "document",
-      "source_file": "fixes.md",
+      "source_file": "public/manifest.json",
       "source_location": "L6",
       "_origin": "ast",
-      "id": "fixes_fix_status",
-      "community": 49,
-      "norm_label": "fix status"
+      "id": "public_manifest_display",
+      "community": 35,
+      "norm_label": "display"
     },
     {
-      "label": "\ud83d\udd34 CRITICAL",
-      "file_type": "document",
-      "source_file": "fixes.md",
-      "source_location": "L30",
+      "label": "orientation",
+      "file_type": "code",
+      "source_file": "public/manifest.json",
+      "source_location": "L7",
       "_origin": "ast",
-      "id": "fixes_critical",
-      "community": 49,
-      "norm_label": "\ud83d\udd34 critical"
+      "id": "public_manifest_orientation",
+      "community": 35,
+      "norm_label": "orientation"
     },
     {
-      "label": "1. Price Manipulation \u2014 Client-Provided Amount Not Server-Verified",
-      "file_type": "document",
-      "source_file": "fixes.md",
-      "source_location": "L32",
+      "label": "background_color",
+      "file_type": "code",
+      "source_file": "public/manifest.json",
+      "source_location": "L8",
       "_origin": "ast",
-      "id": "fixes_1_price_manipulation_client_provided_amount_not_server_verified",
-      "community": 49,
-      "norm_label": "1. price manipulation \u2014 client-provided amount not server-verified"
+      "id": "public_manifest_background_color",
+      "community": 35,
+      "norm_label": "background_color"
     },
     {
-      "label": "2. Webhook Handler Missing Transactional Idempotency",
-      "file_type": "document",
-      "source_file": "fixes.md",
-      "source_location": "L71",
+      "label": "theme_color",
+      "file_type": "code",
+      "source_file": "public/manifest.json",
+      "source_location": "L9",
       "_origin": "ast",
-      "id": "fixes_2_webhook_handler_missing_transactional_idempotency",
-      "community": 49,
-      "norm_label": "2. webhook handler missing transactional idempotency"
+      "id": "public_manifest_theme_color",
+      "community": 35,
+      "norm_label": "theme_color"
     },
     {
-      "label": "3. Production Secret Keys Being Sent to Sandbox API",
-      "file_type": "document",
-      "source_file": "fixes.md",
-      "source_location": "L104",
+      "label": "icons",
+      "file_type": "code",
+      "source_file": "public/manifest.json",
+      "source_location": "L10",
       "_origin": "ast",
-      "id": "fixes_3_production_secret_keys_being_sent_to_sandbox_api",
-      "community": 49,
-      "norm_label": "3. production secret keys being sent to sandbox api"
+      "id": "public_manifest_icons",
+      "community": 35,
+      "norm_label": "icons"
     },
     {
-      "label": "\ud83d\udfe0 HIGH",
-      "file_type": "document",
-      "source_file": "fixes.md",
-      "source_location": "L136",
+      "label": "sw.js",
+      "file_type": "code",
+      "source_file": "public/sw.js",
+      "source_location": "L1",
       "_origin": "ast",
-      "id": "fixes_high",
-      "community": 49,
-      "norm_label": "\ud83d\udfe0 high"
+      "id": "public_sw",
+      "community": 60,
+      "norm_label": "sw.js"
     },
     {
-      "label": "4. Auto-Fail Race Condition with Webhook",
-      "file_type": "document",
-      "source_file": "fixes.md",
-      "source_location": "L138",
+      "label": "PRECACHE",
+      "file_type": "code",
+      "source_file": "public/sw.js",
+      "source_location": "L3",
       "_origin": "ast",
-      "id": "fixes_4_auto_fail_race_condition_with_webhook",
-      "community": 49,
-      "norm_label": "4. auto-fail race condition with webhook"
-    },
-    {
-      "label": "5. Weak Admin Password Doubles as JWT Signing Secret",
-      "file_type": "document",
-      "source_file": "fixes.md",
-      "source_location": "L167",
-      "_origin": "ast",
-      "id": "fixes_5_weak_admin_password_doubles_as_jwt_signing_secret",
-      "community": 49,
-      "norm_label": "5. weak admin password doubles as jwt signing secret"
-    },
-    {
-      "label": "6. No Server-Side Phone Validation in Payment Initiate",
-      "file_type": "document",
-      "source_file": "fixes.md",
-      "source_location": "L195",
-      "_origin": "ast",
-      "id": "fixes_6_no_server_side_phone_validation_in_payment_initiate",
-      "community": 49,
-      "norm_label": "6. no server-side phone validation in payment initiate"
-    },
-    {
-      "label": "7. Webhook Skips All Verification When Secret Key Is Missing",
-      "file_type": "document",
-      "source_file": "fixes.md",
-      "source_location": "L223",
-      "_origin": "ast",
-      "id": "fixes_7_webhook_skips_all_verification_when_secret_key_is_missing",
-      "community": 49,
-      "norm_label": "7. webhook skips all verification when secret key is missing"
-    },
-    {
-      "label": "8. Payment Initiate Has No `payment_expires_at` Check",
-      "file_type": "document",
-      "source_file": "fixes.md",
-      "source_location": "L247",
-      "_origin": "ast",
-      "id": "fixes_8_payment_initiate_has_no_payment_expires_at_check",
-      "community": 49,
-      "norm_label": "8. payment initiate has no `payment_expires_at` check"
-    },
-    {
-      "label": "\ud83d\udfe1 MEDIUM",
-      "file_type": "document",
-      "source_file": "fixes.md",
-      "source_location": "L264",
-      "_origin": "ast",
-      "id": "fixes_medium",
-      "community": 49,
-      "norm_label": "\ud83d\udfe1 medium"
-    },
-    {
-      "label": "9. Checkout Order Creation Not Wrapped in a DB Transaction",
-      "file_type": "document",
-      "source_file": "fixes.md",
-      "source_location": "L266",
-      "_origin": "ast",
-      "id": "fixes_9_checkout_order_creation_not_wrapped_in_a_db_transaction",
-      "community": 49,
-      "norm_label": "9. checkout order creation not wrapped in a db transaction"
-    },
-    {
-      "label": "10. In-Memory Rate Limiter Is Stateless on Serverless",
-      "file_type": "document",
-      "source_file": "fixes.md",
-      "source_location": "L282",
-      "_origin": "ast",
-      "id": "fixes_10_in_memory_rate_limiter_is_stateless_on_serverless",
-      "community": 49,
-      "norm_label": "10. in-memory rate limiter is stateless on serverless"
-    },
-    {
-      "label": "11. Checkout API Doesn't Validate Allowed Payment Methods",
-      "file_type": "document",
-      "source_file": "fixes.md",
-      "source_location": "L303",
-      "_origin": "ast",
-      "id": "fixes_11_checkout_api_doesn_t_validate_allowed_payment_methods",
-      "community": 49,
-      "norm_label": "11. checkout api doesn't validate allowed payment methods"
-    },
-    {
-      "label": "12. `NEXT_PUBLIC_IREMBOPAY_BASE_URL` Exposed to Browser Unnecessarily",
-      "file_type": "document",
-      "source_file": "fixes.md",
-      "source_location": "L321",
-      "_origin": "ast",
-      "id": "fixes_12_next_public_irembopay_base_url_exposed_to_browser_unnecessarily",
-      "community": 49,
-      "norm_label": "12. `next_public_irembopay_base_url` exposed to browser unnecessarily"
-    },
-    {
-      "label": "\ud83d\udfe2 LOW",
-      "file_type": "document",
-      "source_file": "fixes.md",
-      "source_location": "L336",
-      "_origin": "ast",
-      "id": "fixes_low",
-      "community": 49,
-      "norm_label": "\ud83d\udfe2 low"
-    },
-    {
-      "label": "13. Missing Input Type/Sanity Validation on Amount",
-      "file_type": "document",
-      "source_file": "fixes.md",
-      "source_location": "L338",
-      "_origin": "ast",
-      "id": "fixes_13_missing_input_type_sanity_validation_on_amount",
-      "community": 49,
-      "norm_label": "13. missing input type/sanity validation on amount"
-    },
-    {
-      "label": "14. No CSRF Protection on Checkout/Payment Endpoints",
-      "file_type": "document",
-      "source_file": "fixes.md",
-      "source_location": "L350",
-      "_origin": "ast",
-      "id": "fixes_14_no_csrf_protection_on_checkout_payment_endpoints",
-      "community": 49,
-      "norm_label": "14. no csrf protection on checkout/payment endpoints"
-    },
-    {
-      "label": "15. `cart` localStorage Key Not Versioned",
-      "file_type": "document",
-      "source_file": "fixes.md",
-      "source_location": "L360",
-      "_origin": "ast",
-      "id": "fixes_15_cart_localstorage_key_not_versioned",
-      "community": 49,
-      "norm_label": "15. `cart` localstorage key not versioned"
-    },
-    {
-      "label": "16. Checkout API Ignoring `deliveryFee` Client Field Without Warning",
-      "file_type": "document",
-      "source_file": "fixes.md",
-      "source_location": "L366",
-      "_origin": "ast",
-      "id": "fixes_16_checkout_api_ignoring_deliveryfee_client_field_without_warning",
-      "community": 49,
-      "norm_label": "16. checkout api ignoring `deliveryfee` client field without warning"
-    },
-    {
-      "label": "17. Immediate Recovery from Payment Failure Not Possible",
-      "file_type": "document",
-      "source_file": "fixes.md",
-      "source_location": "L372",
-      "_origin": "ast",
-      "id": "fixes_17_immediate_recovery_from_payment_failure_not_possible",
-      "community": 49,
-      "norm_label": "17. immediate recovery from payment failure not possible"
-    },
-    {
-      "label": "\u2705 Things Done Well",
-      "file_type": "document",
-      "source_file": "fixes.md",
-      "source_location": "L380",
-      "_origin": "ast",
-      "id": "fixes_things_done_well",
-      "community": 49,
-      "norm_label": "\u2705 things done well"
+      "id": "public_sw_precache",
+      "community": 60,
+      "norm_label": "precache"
     },
     {
       "label": "page.js",
@@ -1044,6 +514,56 @@
       "id": "app_admin_layout_adminlayout"
     },
     {
+      "label": "middleware.js",
+      "file_type": "code",
+      "source_file": "app/admin/middleware.js",
+      "source_location": "L1",
+      "_origin": "ast",
+      "community": 20,
+      "norm_label": "middleware.js",
+      "id": "app_admin_middleware"
+    },
+    {
+      "label": "JWT_SECRET",
+      "file_type": "code",
+      "source_file": "app/admin/middleware.js",
+      "source_location": "L4",
+      "_origin": "ast",
+      "community": 20,
+      "norm_label": "jwt_secret",
+      "id": "app_admin_middleware_jwt_secret"
+    },
+    {
+      "label": "isValidAdminToken()",
+      "file_type": "code",
+      "source_file": "app/admin/middleware.js",
+      "source_location": "L8",
+      "_origin": "ast",
+      "community": 20,
+      "norm_label": "isvalidadmintoken()",
+      "id": "app_admin_middleware_isvalidadmintoken"
+    },
+    {
+      "label": "middleware()",
+      "file_type": "code",
+      "source_file": "app/admin/middleware.js",
+      "source_location": "L19",
+      "_origin": "ast",
+      "community": 20,
+      "norm_label": "middleware()",
+      "id": "app_admin_middleware_middleware"
+    },
+    {
+      "label": "config",
+      "file_type": "code",
+      "source_file": "app/admin/middleware.js",
+      "source_location": "L40",
+      "_origin": "ast",
+      "community": 20,
+      "norm_label": "config",
+      "id": "app_admin_middleware_config"
+    },
+    {
       "label": "page.js",
       "file_type": "code",
       "source_file": "app/admin/page.js",
@@ -1316,10 +836,70 @@
     {
       "label": "route.js",
       "file_type": "code",
+      "source_file": "app/api/admin/auth/route.js",
+      "source_location": "L1",
+      "_origin": "ast",
+      "community": 17,
+      "norm_label": "route.js",
+      "id": "app_api_admin_auth_route"
+    },
+    {
+      "label": "getJwtSecret()",
+      "file_type": "code",
+      "source_file": "app/api/admin/auth/route.js",
+      "source_location": "L11",
+      "_origin": "ast",
+      "community": 17,
+      "norm_label": "getjwtsecret()",
+      "id": "app_api_admin_auth_route_getjwtsecret"
+    },
+    {
+      "label": "createAdminToken()",
+      "file_type": "code",
+      "source_file": "app/api/admin/auth/route.js",
+      "source_location": "L18",
+      "_origin": "ast",
+      "community": 17,
+      "norm_label": "createadmintoken()",
+      "id": "app_api_admin_auth_route_createadmintoken"
+    },
+    {
+      "label": "POST()",
+      "file_type": "code",
+      "source_file": "app/api/admin/auth/route.js",
+      "source_location": "L27",
+      "_origin": "ast",
+      "community": 17,
+      "norm_label": "post()",
+      "id": "app_api_admin_auth_route_post"
+    },
+    {
+      "label": "GET()",
+      "file_type": "code",
+      "source_file": "app/api/admin/auth/route.js",
+      "source_location": "L71",
+      "_origin": "ast",
+      "community": 17,
+      "norm_label": "get()",
+      "id": "app_api_admin_auth_route_get"
+    },
+    {
+      "label": "DELETE()",
+      "file_type": "code",
+      "source_file": "app/api/admin/auth/route.js",
+      "source_location": "L88",
+      "_origin": "ast",
+      "community": 17,
+      "norm_label": "delete()",
+      "id": "app_api_admin_auth_route_delete"
+    },
+    {
+      "label": "route.js",
+      "file_type": "code",
       "source_file": "app/api/admin/banners/route.js",
       "source_location": "L1",
       "_origin": "ast",
-      "community": 35,
+      "community": 0,
       "norm_label": "route.js",
       "id": "app_api_admin_banners_route"
     },
@@ -1329,7 +909,7 @@
       "source_file": "app/api/admin/banners/route.js",
       "source_location": "L5",
       "_origin": "ast",
-      "community": 35,
+      "community": 0,
       "norm_label": "checkadminauth()",
       "id": "app_api_admin_banners_route_checkadminauth"
     },
@@ -1339,7 +919,7 @@
       "source_file": "app/api/admin/banners/route.js",
       "source_location": "L20",
       "_origin": "ast",
-      "community": 35,
+      "community": 0,
       "norm_label": "get()",
       "id": "app_api_admin_banners_route_get"
     },
@@ -1349,7 +929,7 @@
       "source_file": "app/api/admin/banners/route.js",
       "source_location": "L30",
       "_origin": "ast",
-      "community": 35,
+      "community": 0,
       "norm_label": "post()",
       "id": "app_api_admin_banners_route_post"
     },
@@ -1359,7 +939,7 @@
       "source_file": "app/api/admin/banners/route.js",
       "source_location": "L53",
       "_origin": "ast",
-      "community": 35,
+      "community": 0,
       "norm_label": "patch()",
       "id": "app_api_admin_banners_route_patch"
     },
@@ -1369,7 +949,7 @@
       "source_file": "app/api/admin/banners/route.js",
       "source_location": "L72",
       "_origin": "ast",
-      "community": 35,
+      "community": 0,
       "norm_label": "delete()",
       "id": "app_api_admin_banners_route_delete"
     },
@@ -1459,7 +1039,7 @@
       "source_file": "app/api/admin/categories/route.js",
       "source_location": "L1",
       "_origin": "ast",
-      "community": 0,
+      "community": 44,
       "norm_label": "route.js",
       "id": "app_api_admin_categories_route"
     },
@@ -1469,7 +1049,7 @@
       "source_file": "app/api/admin/categories/route.js",
       "source_location": "L6",
       "_origin": "ast",
-      "community": 0,
+      "community": 44,
       "norm_label": "getadminuser()",
       "id": "app_api_admin_categories_route_getadminuser"
     },
@@ -1479,7 +1059,7 @@
       "source_file": "app/api/admin/categories/route.js",
       "source_location": "L16",
       "_origin": "ast",
-      "community": 0,
+      "community": 44,
       "norm_label": "get()",
       "id": "app_api_admin_categories_route_get"
     },
@@ -1489,7 +1069,7 @@
       "source_file": "app/api/admin/categories/route.js",
       "source_location": "L53",
       "_origin": "ast",
-      "community": 0,
+      "community": 44,
       "norm_label": "post()",
       "id": "app_api_admin_categories_route_post"
     },
@@ -1659,7 +1239,7 @@
       "source_file": "app/api/admin/orders/route.js",
       "source_location": "L1",
       "_origin": "ast",
-      "community": 51,
+      "community": 0,
       "norm_label": "route.js",
       "id": "app_api_admin_orders_route"
     },
@@ -1669,7 +1249,7 @@
       "source_file": "app/api/admin/orders/route.js",
       "source_location": "L6",
       "_origin": "ast",
-      "community": 51,
+      "community": 0,
       "norm_label": "getadminuser()",
       "id": "app_api_admin_orders_route_getadminuser"
     },
@@ -1679,7 +1259,7 @@
       "source_file": "app/api/admin/orders/route.js",
       "source_location": "L26",
       "_origin": "ast",
-      "community": 51,
+      "community": 0,
       "norm_label": "get()",
       "id": "app_api_admin_orders_route_get"
     },
@@ -1689,7 +1269,7 @@
       "source_file": "app/api/admin/products/[id]/route.js",
       "source_location": "L1",
       "_origin": "ast",
-      "community": 0,
+      "community": 51,
       "norm_label": "route.js",
       "id": "app_api_admin_products_id_route"
     },
@@ -1699,7 +1279,7 @@
       "source_file": "app/api/admin/products/[id]/route.js",
       "source_location": "L6",
       "_origin": "ast",
-      "community": 0,
+      "community": 51,
       "norm_label": "getadminuser()",
       "id": "app_api_admin_products_id_route_getadminuser"
     },
@@ -1709,7 +1289,7 @@
       "source_file": "app/api/admin/products/[id]/route.js",
       "source_location": "L25",
       "_origin": "ast",
-      "community": 0,
+      "community": 51,
       "norm_label": "patch()",
       "id": "app_api_admin_products_id_route_patch"
     },
@@ -2136,6 +1716,36 @@
     {
       "label": "route.js",
       "file_type": "code",
+      "source_file": "app/api/checkout/route.js",
+      "source_location": "L1",
+      "_origin": "ast",
+      "community": 59,
+      "norm_label": "route.js",
+      "id": "app_api_checkout_route"
+    },
+    {
+      "label": "generateReference()",
+      "file_type": "code",
+      "source_file": "app/api/checkout/route.js",
+      "source_location": "L5",
+      "_origin": "ast",
+      "community": 59,
+      "norm_label": "generatereference()",
+      "id": "app_api_checkout_route_generatereference"
+    },
+    {
+      "label": "POST()",
+      "file_type": "code",
+      "source_file": "app/api/checkout/route.js",
+      "source_location": "L11",
+      "_origin": "ast",
+      "community": 59,
+      "norm_label": "post()",
+      "id": "app_api_checkout_route_post"
+    },
+    {
+      "label": "route.js",
+      "file_type": "code",
       "source_file": "app/api/irembopay-api/[...path]/route.js",
       "source_location": "L1",
       "_origin": "ast",
@@ -2336,6 +1946,26 @@
     {
       "label": "route.js",
       "file_type": "code",
+      "source_file": "app/api/orders/payment-status/route.js",
+      "source_location": "L1",
+      "_origin": "ast",
+      "community": 0,
+      "norm_label": "route.js",
+      "id": "app_api_orders_payment_status_route"
+    },
+    {
+      "label": "GET()",
+      "file_type": "code",
+      "source_file": "app/api/orders/payment-status/route.js",
+      "source_location": "L3",
+      "_origin": "ast",
+      "community": 0,
+      "norm_label": "get()",
+      "id": "app_api_orders_payment_status_route_get"
+    },
+    {
+      "label": "route.js",
+      "file_type": "code",
       "source_file": "app/api/orders/track/route.js",
       "source_location": "L1",
       "_origin": "ast",
@@ -2352,6 +1982,36 @@
       "community": 0,
       "norm_label": "get()",
       "id": "app_api_orders_track_route_get"
+    },
+    {
+      "label": "route.js",
+      "file_type": "code",
+      "source_file": "app/api/payments/initiate/route.js",
+      "source_location": "L1",
+      "_origin": "ast",
+      "community": 54,
+      "norm_label": "route.js",
+      "id": "app_api_payments_initiate_route"
+    },
+    {
+      "label": "irembopayHeaders()",
+      "file_type": "code",
+      "source_file": "app/api/payments/initiate/route.js",
+      "source_location": "L5",
+      "_origin": "ast",
+      "community": 54,
+      "norm_label": "irembopayheaders()",
+      "id": "app_api_payments_initiate_route_irembopayheaders"
+    },
+    {
+      "label": "POST()",
+      "file_type": "code",
+      "source_file": "app/api/payments/initiate/route.js",
+      "source_location": "L13",
+      "_origin": "ast",
+      "community": 54,
+      "norm_label": "post()",
+      "id": "app_api_payments_initiate_route_post"
     },
     {
       "label": "route.js",
@@ -2452,6 +2112,26 @@
       "community": 0,
       "norm_label": "post()",
       "id": "app_api_reviews_token_route_post"
+    },
+    {
+      "label": "route.js",
+      "file_type": "code",
+      "source_file": "app/api/webhooks/irembopay/route.js",
+      "source_location": "L1",
+      "_origin": "ast",
+      "community": 0,
+      "norm_label": "route.js",
+      "id": "app_api_webhooks_irembopay_route"
+    },
+    {
+      "label": "POST()",
+      "file_type": "code",
+      "source_file": "app/api/webhooks/irembopay/route.js",
+      "source_location": "L4",
+      "_origin": "ast",
+      "community": 0,
+      "norm_label": "post()",
+      "id": "app_api_webhooks_irembopay_route_post"
     },
     {
       "label": "page.js",
@@ -2752,6 +2432,96 @@
       "community": 34,
       "norm_label": "loginpage()",
       "id": "app_login_page_loginpage"
+    },
+    {
+      "label": "middleware.js",
+      "file_type": "code",
+      "source_file": "app/middleware.js",
+      "source_location": "L1",
+      "_origin": "ast",
+      "community": 16,
+      "norm_label": "middleware.js",
+      "id": "app_middleware"
+    },
+    {
+      "label": "rateLimitMap",
+      "file_type": "code",
+      "source_file": "app/middleware.js",
+      "source_location": "L8",
+      "_origin": "ast",
+      "community": 16,
+      "norm_label": "ratelimitmap",
+      "id": "app_middleware_ratelimitmap"
+    },
+    {
+      "label": "RATE_LIMIT_CONFIG",
+      "file_type": "code",
+      "source_file": "app/middleware.js",
+      "source_location": "L10",
+      "_origin": "ast",
+      "community": 16,
+      "norm_label": "rate_limit_config",
+      "id": "app_middleware_rate_limit_config"
+    },
+    {
+      "label": "getRateLimitConfig()",
+      "file_type": "code",
+      "source_file": "app/middleware.js",
+      "source_location": "L18",
+      "_origin": "ast",
+      "community": 16,
+      "norm_label": "getratelimitconfig()",
+      "id": "app_middleware_getratelimitconfig"
+    },
+    {
+      "label": "checkRateLimit()",
+      "file_type": "code",
+      "source_file": "app/middleware.js",
+      "source_location": "L25",
+      "_origin": "ast",
+      "community": 16,
+      "norm_label": "checkratelimit()",
+      "id": "app_middleware_checkratelimit"
+    },
+    {
+      "label": "middleware()",
+      "file_type": "code",
+      "source_file": "app/middleware.js",
+      "source_location": "L49",
+      "_origin": "ast",
+      "community": 16,
+      "norm_label": "middleware()",
+      "id": "app_middleware_middleware"
+    },
+    {
+      "label": "config",
+      "file_type": "code",
+      "source_file": "app/middleware.js",
+      "source_location": "L114",
+      "_origin": "ast",
+      "community": 16,
+      "norm_label": "config",
+      "id": "app_middleware_config"
+    },
+    {
+      "label": "not-found.js",
+      "file_type": "code",
+      "source_file": "app/not-found.js",
+      "source_location": "L1",
+      "_origin": "ast",
+      "community": 5,
+      "norm_label": "not-found.js",
+      "id": "app_not_found"
+    },
+    {
+      "label": "NotFound()",
+      "file_type": "code",
+      "source_file": "app/not-found.js",
+      "source_location": "L7",
+      "_origin": "ast",
+      "community": 5,
+      "norm_label": "notfound()",
+      "id": "app_not_found_notfound"
     },
     {
       "label": "page.js",
@@ -3494,6 +3264,116 @@
       "id": "components_categorystrip_categorystrip"
     },
     {
+      "label": "ConditionalLayout.js",
+      "file_type": "code",
+      "source_file": "components/ConditionalLayout.js",
+      "source_location": "L1",
+      "_origin": "ast",
+      "community": 5,
+      "norm_label": "conditionallayout.js",
+      "id": "components_conditionallayout"
+    },
+    {
+      "label": "PaymentBadge()",
+      "file_type": "code",
+      "source_file": "components/ConditionalLayout.js",
+      "source_location": "L10",
+      "_origin": "ast",
+      "community": 5,
+      "norm_label": "paymentbadge()",
+      "id": "components_conditionallayout_paymentbadge"
+    },
+    {
+      "label": "Footer()",
+      "file_type": "code",
+      "source_file": "components/ConditionalLayout.js",
+      "source_location": "L21",
+      "_origin": "ast",
+      "community": 5,
+      "norm_label": "footer()",
+      "id": "components_conditionallayout_footer"
+    },
+    {
+      "label": "ConditionalLayout()",
+      "file_type": "code",
+      "source_file": "components/ConditionalLayout.js",
+      "source_location": "L75",
+      "_origin": "ast",
+      "community": 5,
+      "norm_label": "conditionallayout()",
+      "id": "components_conditionallayout_conditionallayout"
+    },
+    {
+      "label": "Header.js",
+      "file_type": "code",
+      "source_file": "components/Header.js",
+      "source_location": "L1",
+      "_origin": "ast",
+      "community": 5,
+      "norm_label": "header.js",
+      "id": "components_header"
+    },
+    {
+      "label": "Header()",
+      "file_type": "code",
+      "source_file": "components/Header.js",
+      "source_location": "L9",
+      "_origin": "ast",
+      "community": 5,
+      "norm_label": "header()",
+      "id": "components_header_header"
+    },
+    {
+      "label": "SearchIcon()",
+      "file_type": "code",
+      "source_file": "components/Header.js",
+      "source_location": "L231",
+      "_origin": "ast",
+      "community": 5,
+      "norm_label": "searchicon()",
+      "id": "components_header_searchicon"
+    },
+    {
+      "label": "SunIcon()",
+      "file_type": "code",
+      "source_file": "components/Header.js",
+      "source_location": "L239",
+      "_origin": "ast",
+      "community": 5,
+      "norm_label": "sunicon()",
+      "id": "components_header_sunicon"
+    },
+    {
+      "label": "MoonIcon()",
+      "file_type": "code",
+      "source_file": "components/Header.js",
+      "source_location": "L251",
+      "_origin": "ast",
+      "community": 5,
+      "norm_label": "moonicon()",
+      "id": "components_header_moonicon"
+    },
+    {
+      "label": "CartIcon()",
+      "file_type": "code",
+      "source_file": "components/Header.js",
+      "source_location": "L259",
+      "_origin": "ast",
+      "community": 5,
+      "norm_label": "carticon()",
+      "id": "components_header_carticon"
+    },
+    {
+      "label": "PersonIcon()",
+      "file_type": "code",
+      "source_file": "components/Header.js",
+      "source_location": "L268",
+      "_origin": "ast",
+      "community": 5,
+      "norm_label": "personicon()",
+      "id": "components_header_personicon"
+    },
+    {
       "label": "ImageGallery.js",
       "file_type": "code",
       "source_file": "components/ImageGallery.js",
@@ -3679,7 +3559,7 @@
       "source_file": "components/ThemeProvider.js",
       "source_location": "L1",
       "_origin": "ast",
-      "community": 44,
+      "community": 5,
       "norm_label": "themeprovider.js",
       "id": "components_themeprovider"
     },
@@ -3689,7 +3569,7 @@
       "source_file": "components/ThemeProvider.js",
       "source_location": "L5",
       "_origin": "ast",
-      "community": 44,
+      "community": 5,
       "norm_label": "themecontext",
       "id": "components_themeprovider_themecontext"
     },
@@ -3699,7 +3579,7 @@
       "source_file": "components/ThemeProvider.js",
       "source_location": "L7",
       "_origin": "ast",
-      "community": 44,
+      "community": 5,
       "norm_label": "getinitialtheme()",
       "id": "components_themeprovider_getinitialtheme"
     },
@@ -3709,7 +3589,7 @@
       "source_file": "components/ThemeProvider.js",
       "source_location": "L12",
       "_origin": "ast",
-      "community": 44,
+      "community": 5,
       "norm_label": "themeprovider()",
       "id": "components_themeprovider_themeprovider"
     },
@@ -3719,7 +3599,7 @@
       "source_file": "components/ThemeProvider.js",
       "source_location": "L50",
       "_origin": "ast",
-      "community": 44,
+      "community": 5,
       "norm_label": "usetheme()",
       "id": "components_themeprovider_usetheme"
     },
@@ -3809,7 +3689,7 @@
       "source_file": "components/WhatsAppWidget.js",
       "source_location": "L1",
       "_origin": "ast",
-      "community": 63,
+      "community": 5,
       "norm_label": "whatsappwidget.js",
       "id": "components_whatsappwidget"
     },
@@ -3819,7 +3699,7 @@
       "source_file": "components/WhatsAppWidget.js",
       "source_location": "L3",
       "_origin": "ast",
-      "community": 63,
+      "community": 5,
       "norm_label": "whatsappwidget()",
       "id": "components_whatsappwidget_whatsappwidget"
     },
@@ -3869,7 +3749,7 @@
       "source_file": "lib/supabase/client.js",
       "source_location": "L1",
       "_origin": "ast",
-      "community": 64,
+      "community": 5,
       "norm_label": "client.js",
       "id": "lib_supabase_client"
     },
@@ -3879,7 +3759,7 @@
       "source_file": "lib/supabase/client.js",
       "source_location": "L3",
       "_origin": "ast",
-      "community": 64,
+      "community": 5,
       "norm_label": "createclient()",
       "id": "lib_supabase_client_createclient"
     },
@@ -4640,6 +4520,16 @@
       "id": "tsconfig_exclude"
     },
     {
+      "label": "payment-audit-findings.md",
+      "file_type": "document",
+      "source_file": ".claude/memory/payment-audit-findings.md",
+      "source_location": "L1",
+      "_origin": "ast",
+      "community": 57,
+      "norm_label": "payment-audit-findings.md",
+      "id": "claude_memory_payment_audit_findings"
+    },
+    {
       "label": "CLAUDE.md",
       "file_type": "document",
       "source_file": "CLAUDE.md",
@@ -5348,230 +5238,264 @@
       "community": 41,
       "norm_label": "progress",
       "id": "todo_progress"
+    },
+    {
+      "label": "fixes.md",
+      "file_type": "document",
+      "source_file": "fixes.md",
+      "source_location": "L1",
+      "_origin": "ast",
+      "community": 49,
+      "norm_label": "fixes.md",
+      "id": "fixes"
+    },
+    {
+      "label": "Payment API Integration \u2014 Audit Findings",
+      "file_type": "document",
+      "source_file": "fixes.md",
+      "source_location": "L1",
+      "_origin": "ast",
+      "community": 49,
+      "norm_label": "payment api integration \u2014 audit findings",
+      "id": "fixes_payment_api_integration_audit_findings"
+    },
+    {
+      "label": "Fix Status",
+      "file_type": "document",
+      "source_file": "fixes.md",
+      "source_location": "L6",
+      "_origin": "ast",
+      "community": 49,
+      "norm_label": "fix status",
+      "id": "fixes_fix_status"
+    },
+    {
+      "label": "\ud83d\udd34 CRITICAL",
+      "file_type": "document",
+      "source_file": "fixes.md",
+      "source_location": "L30",
+      "_origin": "ast",
+      "community": 49,
+      "norm_label": "\ud83d\udd34 critical",
+      "id": "fixes_critical"
+    },
+    {
+      "label": "1. Price Manipulation \u2014 Client-Provided Amount Not Server-Verified",
+      "file_type": "document",
+      "source_file": "fixes.md",
+      "source_location": "L32",
+      "_origin": "ast",
+      "community": 49,
+      "norm_label": "1. price manipulation \u2014 client-provided amount not server-verified",
+      "id": "fixes_1_price_manipulation_client_provided_amount_not_server_verified"
+    },
+    {
+      "label": "2. Webhook Handler Missing Transactional Idempotency",
+      "file_type": "document",
+      "source_file": "fixes.md",
+      "source_location": "L71",
+      "_origin": "ast",
+      "community": 49,
+      "norm_label": "2. webhook handler missing transactional idempotency",
+      "id": "fixes_2_webhook_handler_missing_transactional_idempotency"
+    },
+    {
+      "label": "3. Production Secret Keys Being Sent to Sandbox API",
+      "file_type": "document",
+      "source_file": "fixes.md",
+      "source_location": "L104",
+      "_origin": "ast",
+      "community": 49,
+      "norm_label": "3. production secret keys being sent to sandbox api",
+      "id": "fixes_3_production_secret_keys_being_sent_to_sandbox_api"
+    },
+    {
+      "label": "\ud83d\udfe0 HIGH",
+      "file_type": "document",
+      "source_file": "fixes.md",
+      "source_location": "L136",
+      "_origin": "ast",
+      "community": 49,
+      "norm_label": "\ud83d\udfe0 high",
+      "id": "fixes_high"
+    },
+    {
+      "label": "4. Auto-Fail Race Condition with Webhook",
+      "file_type": "document",
+      "source_file": "fixes.md",
+      "source_location": "L138",
+      "_origin": "ast",
+      "community": 49,
+      "norm_label": "4. auto-fail race condition with webhook",
+      "id": "fixes_4_auto_fail_race_condition_with_webhook"
+    },
+    {
+      "label": "5. Weak Admin Password Doubles as JWT Signing Secret",
+      "file_type": "document",
+      "source_file": "fixes.md",
+      "source_location": "L167",
+      "_origin": "ast",
+      "community": 49,
+      "norm_label": "5. weak admin password doubles as jwt signing secret",
+      "id": "fixes_5_weak_admin_password_doubles_as_jwt_signing_secret"
+    },
+    {
+      "label": "6. No Server-Side Phone Validation in Payment Initiate",
+      "file_type": "document",
+      "source_file": "fixes.md",
+      "source_location": "L195",
+      "_origin": "ast",
+      "community": 49,
+      "norm_label": "6. no server-side phone validation in payment initiate",
+      "id": "fixes_6_no_server_side_phone_validation_in_payment_initiate"
+    },
+    {
+      "label": "7. Webhook Skips All Verification When Secret Key Is Missing",
+      "file_type": "document",
+      "source_file": "fixes.md",
+      "source_location": "L223",
+      "_origin": "ast",
+      "community": 49,
+      "norm_label": "7. webhook skips all verification when secret key is missing",
+      "id": "fixes_7_webhook_skips_all_verification_when_secret_key_is_missing"
+    },
+    {
+      "label": "8. Payment Initiate Has No `payment_expires_at` Check",
+      "file_type": "document",
+      "source_file": "fixes.md",
+      "source_location": "L247",
+      "_origin": "ast",
+      "community": 49,
+      "norm_label": "8. payment initiate has no `payment_expires_at` check",
+      "id": "fixes_8_payment_initiate_has_no_payment_expires_at_check"
+    },
+    {
+      "label": "\ud83d\udfe1 MEDIUM",
+      "file_type": "document",
+      "source_file": "fixes.md",
+      "source_location": "L264",
+      "_origin": "ast",
+      "community": 49,
+      "norm_label": "\ud83d\udfe1 medium",
+      "id": "fixes_medium"
+    },
+    {
+      "label": "9. Checkout Order Creation Not Wrapped in a DB Transaction",
+      "file_type": "document",
+      "source_file": "fixes.md",
+      "source_location": "L266",
+      "_origin": "ast",
+      "community": 49,
+      "norm_label": "9. checkout order creation not wrapped in a db transaction",
+      "id": "fixes_9_checkout_order_creation_not_wrapped_in_a_db_transaction"
+    },
+    {
+      "label": "10. In-Memory Rate Limiter Is Stateless on Serverless",
+      "file_type": "document",
+      "source_file": "fixes.md",
+      "source_location": "L282",
+      "_origin": "ast",
+      "community": 49,
+      "norm_label": "10. in-memory rate limiter is stateless on serverless",
+      "id": "fixes_10_in_memory_rate_limiter_is_stateless_on_serverless"
+    },
+    {
+      "label": "11. Checkout API Doesn't Validate Allowed Payment Methods",
+      "file_type": "document",
+      "source_file": "fixes.md",
+      "source_location": "L303",
+      "_origin": "ast",
+      "community": 49,
+      "norm_label": "11. checkout api doesn't validate allowed payment methods",
+      "id": "fixes_11_checkout_api_doesn_t_validate_allowed_payment_methods"
+    },
+    {
+      "label": "12. `NEXT_PUBLIC_IREMBOPAY_BASE_URL` Exposed to Browser Unnecessarily",
+      "file_type": "document",
+      "source_file": "fixes.md",
+      "source_location": "L321",
+      "_origin": "ast",
+      "community": 49,
+      "norm_label": "12. `next_public_irembopay_base_url` exposed to browser unnecessarily",
+      "id": "fixes_12_next_public_irembopay_base_url_exposed_to_browser_unnecessarily"
+    },
+    {
+      "label": "\ud83d\udfe2 LOW",
+      "file_type": "document",
+      "source_file": "fixes.md",
+      "source_location": "L336",
+      "_origin": "ast",
+      "community": 49,
+      "norm_label": "\ud83d\udfe2 low",
+      "id": "fixes_low"
+    },
+    {
+      "label": "13. Missing Input Type/Sanity Validation on Amount",
+      "file_type": "document",
+      "source_file": "fixes.md",
+      "source_location": "L338",
+      "_origin": "ast",
+      "community": 49,
+      "norm_label": "13. missing input type/sanity validation on amount",
+      "id": "fixes_13_missing_input_type_sanity_validation_on_amount"
+    },
+    {
+      "label": "14. No CSRF Protection on Checkout/Payment Endpoints",
+      "file_type": "document",
+      "source_file": "fixes.md",
+      "source_location": "L350",
+      "_origin": "ast",
+      "community": 49,
+      "norm_label": "14. no csrf protection on checkout/payment endpoints",
+      "id": "fixes_14_no_csrf_protection_on_checkout_payment_endpoints"
+    },
+    {
+      "label": "15. `cart` localStorage Key Not Versioned",
+      "file_type": "document",
+      "source_file": "fixes.md",
+      "source_location": "L360",
+      "_origin": "ast",
+      "community": 49,
+      "norm_label": "15. `cart` localstorage key not versioned",
+      "id": "fixes_15_cart_localstorage_key_not_versioned"
+    },
+    {
+      "label": "16. Checkout API Ignoring `deliveryFee` Client Field Without Warning",
+      "file_type": "document",
+      "source_file": "fixes.md",
+      "source_location": "L366",
+      "_origin": "ast",
+      "community": 49,
+      "norm_label": "16. checkout api ignoring `deliveryfee` client field without warning",
+      "id": "fixes_16_checkout_api_ignoring_deliveryfee_client_field_without_warning"
+    },
+    {
+      "label": "17. Immediate Recovery from Payment Failure Not Possible",
+      "file_type": "document",
+      "source_file": "fixes.md",
+      "source_location": "L372",
+      "_origin": "ast",
+      "community": 49,
+      "norm_label": "17. immediate recovery from payment failure not possible",
+      "id": "fixes_17_immediate_recovery_from_payment_failure_not_possible"
+    },
+    {
+      "label": "\u2705 Things Done Well",
+      "file_type": "document",
+      "source_file": "fixes.md",
+      "source_location": "L380",
+      "_origin": "ast",
+      "community": 49,
+      "norm_label": "\u2705 things done well",
+      "id": "fixes_things_done_well"
     }
   ],
   "links": [
     {
       "relation": "contains",
       "confidence": "EXTRACTED",
-      "source_file": "app/admin/middleware.js",
-      "source_location": "L40",
-      "weight": 1.0,
-      "source": "app_admin_middleware",
-      "target": "app_admin_middleware_config",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "app/admin/middleware.js",
-      "source_location": "L8",
-      "weight": 1.0,
-      "source": "app_admin_middleware",
-      "target": "app_admin_middleware_isvalidadmintoken",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "app/admin/middleware.js",
-      "source_location": "L4",
-      "weight": 1.0,
-      "source": "app_admin_middleware",
-      "target": "app_admin_middleware_jwt_secret",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "app/admin/middleware.js",
-      "source_location": "L19",
-      "weight": 1.0,
-      "source": "app_admin_middleware",
-      "target": "app_admin_middleware_middleware",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "calls",
-      "context": "call",
-      "confidence": "EXTRACTED",
-      "source_file": "app/admin/middleware.js",
-      "source_location": "L28",
-      "weight": 1.0,
-      "source": "app_admin_middleware_middleware",
-      "target": "app_admin_middleware_isvalidadmintoken",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "app/api/admin/auth/route.js",
-      "source_location": "L18",
-      "weight": 1.0,
-      "source": "app_api_admin_auth_route",
-      "target": "app_api_admin_auth_route_createadmintoken",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "app/api/admin/auth/route.js",
-      "source_location": "L88",
-      "weight": 1.0,
-      "source": "app_api_admin_auth_route",
-      "target": "app_api_admin_auth_route_delete",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "app/api/admin/auth/route.js",
-      "source_location": "L71",
-      "weight": 1.0,
-      "source": "app_api_admin_auth_route",
-      "target": "app_api_admin_auth_route_get",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "app/api/admin/auth/route.js",
-      "source_location": "L11",
-      "weight": 1.0,
-      "source": "app_api_admin_auth_route",
-      "target": "app_api_admin_auth_route_getjwtsecret",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "app/api/admin/auth/route.js",
-      "source_location": "L27",
-      "weight": 1.0,
-      "source": "app_api_admin_auth_route",
-      "target": "app_api_admin_auth_route_post",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "calls",
-      "context": "call",
-      "confidence": "EXTRACTED",
-      "source_file": "app/api/admin/auth/route.js",
-      "source_location": "L23",
-      "weight": 1.0,
-      "source": "app_api_admin_auth_route_createadmintoken",
-      "target": "app_api_admin_auth_route_getjwtsecret",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "calls",
-      "context": "call",
-      "confidence": "EXTRACTED",
-      "source_file": "app/api/admin/auth/route.js",
-      "source_location": "L77",
-      "weight": 1.0,
-      "source": "app_api_admin_auth_route_get",
-      "target": "app_api_admin_auth_route_getjwtsecret",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "calls",
-      "context": "call",
-      "confidence": "EXTRACTED",
-      "source_file": "app/api/admin/auth/route.js",
-      "source_location": "L52",
-      "weight": 1.0,
-      "source": "app_api_admin_auth_route_post",
-      "target": "app_api_admin_auth_route_createadmintoken",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "app/api/checkout/route.js",
-      "source_location": "L5",
-      "weight": 1.0,
-      "source": "app_api_checkout_route",
-      "target": "app_api_checkout_route_generatereference",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "app/api/checkout/route.js",
-      "source_location": "L11",
-      "weight": 1.0,
-      "source": "app_api_checkout_route",
-      "target": "app_api_checkout_route_post",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "calls",
-      "context": "call",
-      "confidence": "EXTRACTED",
-      "source_file": "app/api/checkout/route.js",
-      "source_location": "L145",
-      "weight": 1.0,
-      "source": "app_api_checkout_route_post",
-      "target": "app_api_checkout_route_generatereference",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "app/api/orders/payment-status/route.js",
-      "source_location": "L3",
-      "weight": 1.0,
-      "source": "app_api_orders_payment_status_route",
-      "target": "app_api_orders_payment_status_route_get",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "app/api/payments/initiate/route.js",
-      "source_location": "L5",
-      "weight": 1.0,
-      "source": "app_api_payments_initiate_route",
-      "target": "app_api_payments_initiate_route_irembopayheaders",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "app/api/payments/initiate/route.js",
-      "source_location": "L13",
-      "weight": 1.0,
-      "source": "app_api_payments_initiate_route",
-      "target": "app_api_payments_initiate_route_post",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "calls",
-      "context": "call",
-      "confidence": "EXTRACTED",
-      "source_file": "app/api/payments/initiate/route.js",
-      "source_location": "L70",
-      "weight": 1.0,
-      "source": "app_api_payments_initiate_route_post",
-      "target": "app_api_payments_initiate_route_irembopayheaders",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "app/api/webhooks/irembopay/route.js",
-      "source_location": "L4",
-      "weight": 1.0,
-      "source": "app_api_webhooks_irembopay_route",
-      "target": "app_api_webhooks_irembopay_route_post",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
       "source_file": "app/layout.js",
-      "source_location": "L15",
+      "source_location": "L16",
       "weight": 1.0,
       "source": "app_layout",
       "target": "app_layout_lato",
@@ -5581,7 +5505,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "app/layout.js",
-      "source_location": "L22",
+      "source_location": "L23",
       "weight": 1.0,
       "source": "app_layout",
       "target": "app_layout_metadata",
@@ -5591,7 +5515,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "app/layout.js",
-      "source_location": "L8",
+      "source_location": "L9",
       "weight": 1.0,
       "source": "app_layout",
       "target": "app_layout_playfair",
@@ -5601,7 +5525,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "app/layout.js",
-      "source_location": "L31",
+      "source_location": "L34",
       "weight": 1.0,
       "source": "app_layout",
       "target": "app_layout_rootlayout",
@@ -5612,10 +5536,10 @@
       "context": "import",
       "confidence": "EXTRACTED",
       "source_file": "app/layout.js",
-      "source_location": "L5",
+      "source_location": "L6",
       "weight": 1.0,
       "source": "app_layout",
-      "target": "components_conditionallayout",
+      "target": "components_serviceworkerregister",
       "confidence_score": 1.0
     },
     {
@@ -5623,454 +5547,120 @@
       "context": "import",
       "confidence": "EXTRACTED",
       "source_file": "app/layout.js",
-      "source_location": "L5",
-      "weight": 1.0,
-      "source": "app_layout",
-      "target": "components_conditionallayout_conditionallayout",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "app/middleware.js",
-      "source_location": "L25",
-      "weight": 1.0,
-      "source": "app_middleware",
-      "target": "app_middleware_checkratelimit",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "app/middleware.js",
-      "source_location": "L114",
-      "weight": 1.0,
-      "source": "app_middleware",
-      "target": "app_middleware_config",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "app/middleware.js",
-      "source_location": "L18",
-      "weight": 1.0,
-      "source": "app_middleware",
-      "target": "app_middleware_getratelimitconfig",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "app/middleware.js",
-      "source_location": "L49",
-      "weight": 1.0,
-      "source": "app_middleware",
-      "target": "app_middleware_middleware",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "app/middleware.js",
-      "source_location": "L10",
-      "weight": 1.0,
-      "source": "app_middleware",
-      "target": "app_middleware_rate_limit_config",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "app/middleware.js",
-      "source_location": "L8",
-      "weight": 1.0,
-      "source": "app_middleware",
-      "target": "app_middleware_ratelimitmap",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "calls",
-      "context": "call",
-      "confidence": "EXTRACTED",
-      "source_file": "app/middleware.js",
-      "source_location": "L81",
-      "weight": 1.0,
-      "source": "app_middleware_middleware",
-      "target": "app_middleware_getratelimitconfig",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "calls",
-      "context": "call",
-      "confidence": "EXTRACTED",
-      "source_file": "app/middleware.js",
-      "source_location": "L82",
-      "weight": 1.0,
-      "source": "app_middleware_middleware",
-      "target": "app_middleware_checkratelimit",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "app/not-found.js",
-      "source_location": "L7",
-      "weight": 1.0,
-      "source": "app_not_found",
-      "target": "app_not_found_notfound",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "components/ConditionalLayout.js",
-      "source_location": "L75",
-      "weight": 1.0,
-      "source": "components_conditionallayout",
-      "target": "components_conditionallayout_conditionallayout",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "components/ConditionalLayout.js",
-      "source_location": "L21",
-      "weight": 1.0,
-      "source": "components_conditionallayout",
-      "target": "components_conditionallayout_footer",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "components/ConditionalLayout.js",
-      "source_location": "L10",
-      "weight": 1.0,
-      "source": "components_conditionallayout",
-      "target": "components_conditionallayout_paymentbadge",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "imports_from",
-      "context": "import",
-      "confidence": "EXTRACTED",
-      "source_file": "components/ConditionalLayout.js",
-      "source_location": "L5",
-      "weight": 1.0,
-      "source": "components_conditionallayout",
-      "target": "components_header",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "imports",
-      "context": "import",
-      "confidence": "EXTRACTED",
-      "source_file": "components/ConditionalLayout.js",
-      "source_location": "L5",
-      "weight": 1.0,
-      "source": "components_conditionallayout",
-      "target": "components_header_header",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "components/Header.js",
-      "source_location": "L259",
-      "weight": 1.0,
-      "source": "components_header",
-      "target": "components_header_carticon",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "components/Header.js",
-      "source_location": "L9",
-      "weight": 1.0,
-      "source": "components_header",
-      "target": "components_header_header",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "components/Header.js",
-      "source_location": "L251",
-      "weight": 1.0,
-      "source": "components_header",
-      "target": "components_header_moonicon",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "components/Header.js",
-      "source_location": "L268",
-      "weight": 1.0,
-      "source": "components_header",
-      "target": "components_header_personicon",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "components/Header.js",
-      "source_location": "L231",
-      "weight": 1.0,
-      "source": "components_header",
-      "target": "components_header_searchicon",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "components/Header.js",
-      "source_location": "L239",
-      "weight": 1.0,
-      "source": "components_header",
-      "target": "components_header_sunicon",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "fixes.md",
-      "source_location": "L1",
-      "weight": 1.0,
-      "source": "fixes",
-      "target": "fixes_payment_api_integration_audit_findings",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "fixes.md",
-      "source_location": "L30",
-      "weight": 1.0,
-      "source": "fixes_payment_api_integration_audit_findings",
-      "target": "fixes_critical",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "fixes.md",
       "source_location": "L6",
       "weight": 1.0,
-      "source": "fixes_payment_api_integration_audit_findings",
-      "target": "fixes_fix_status",
+      "source": "app_layout",
+      "target": "components_serviceworkerregister_serviceworkerregister",
       "confidence_score": 1.0
     },
     {
       "relation": "contains",
       "confidence": "EXTRACTED",
-      "source_file": "fixes.md",
-      "source_location": "L136",
+      "source_file": "components/ServiceWorkerRegister.js",
+      "source_location": "L5",
       "weight": 1.0,
-      "source": "fixes_payment_api_integration_audit_findings",
-      "target": "fixes_high",
+      "source": "components_serviceworkerregister",
+      "target": "components_serviceworkerregister_serviceworkerregister",
       "confidence_score": 1.0
     },
     {
       "relation": "contains",
       "confidence": "EXTRACTED",
-      "source_file": "fixes.md",
-      "source_location": "L336",
+      "source_file": "public/manifest.json",
+      "source_location": "L8",
       "weight": 1.0,
-      "source": "fixes_payment_api_integration_audit_findings",
-      "target": "fixes_low",
+      "source": "public_manifest",
+      "target": "public_manifest_background_color",
       "confidence_score": 1.0
     },
     {
       "relation": "contains",
       "confidence": "EXTRACTED",
-      "source_file": "fixes.md",
-      "source_location": "L264",
+      "source_file": "public/manifest.json",
+      "source_location": "L4",
       "weight": 1.0,
-      "source": "fixes_payment_api_integration_audit_findings",
-      "target": "fixes_medium",
+      "source": "public_manifest",
+      "target": "public_manifest_description",
       "confidence_score": 1.0
     },
     {
       "relation": "contains",
       "confidence": "EXTRACTED",
-      "source_file": "fixes.md",
-      "source_location": "L380",
+      "source_file": "public/manifest.json",
+      "source_location": "L6",
       "weight": 1.0,
-      "source": "fixes_payment_api_integration_audit_findings",
-      "target": "fixes_things_done_well",
+      "source": "public_manifest",
+      "target": "public_manifest_display",
       "confidence_score": 1.0
     },
     {
       "relation": "contains",
       "confidence": "EXTRACTED",
-      "source_file": "fixes.md",
-      "source_location": "L32",
+      "source_file": "public/manifest.json",
+      "source_location": "L10",
       "weight": 1.0,
-      "source": "fixes_critical",
-      "target": "fixes_1_price_manipulation_client_provided_amount_not_server_verified",
+      "source": "public_manifest",
+      "target": "public_manifest_icons",
       "confidence_score": 1.0
     },
     {
       "relation": "contains",
       "confidence": "EXTRACTED",
-      "source_file": "fixes.md",
-      "source_location": "L71",
+      "source_file": "public/manifest.json",
+      "source_location": "L2",
       "weight": 1.0,
-      "source": "fixes_critical",
-      "target": "fixes_2_webhook_handler_missing_transactional_idempotency",
+      "source": "public_manifest",
+      "target": "public_manifest_name",
       "confidence_score": 1.0
     },
     {
       "relation": "contains",
       "confidence": "EXTRACTED",
-      "source_file": "fixes.md",
-      "source_location": "L104",
+      "source_file": "public/manifest.json",
+      "source_location": "L7",
       "weight": 1.0,
-      "source": "fixes_critical",
-      "target": "fixes_3_production_secret_keys_being_sent_to_sandbox_api",
+      "source": "public_manifest",
+      "target": "public_manifest_orientation",
       "confidence_score": 1.0
     },
     {
       "relation": "contains",
       "confidence": "EXTRACTED",
-      "source_file": "fixes.md",
-      "source_location": "L138",
+      "source_file": "public/manifest.json",
+      "source_location": "L3",
       "weight": 1.0,
-      "source": "fixes_high",
-      "target": "fixes_4_auto_fail_race_condition_with_webhook",
+      "source": "public_manifest",
+      "target": "public_manifest_short_name",
       "confidence_score": 1.0
     },
     {
       "relation": "contains",
       "confidence": "EXTRACTED",
-      "source_file": "fixes.md",
-      "source_location": "L167",
+      "source_file": "public/manifest.json",
+      "source_location": "L5",
       "weight": 1.0,
-      "source": "fixes_high",
-      "target": "fixes_5_weak_admin_password_doubles_as_jwt_signing_secret",
+      "source": "public_manifest",
+      "target": "public_manifest_start_url",
       "confidence_score": 1.0
     },
     {
       "relation": "contains",
       "confidence": "EXTRACTED",
-      "source_file": "fixes.md",
-      "source_location": "L195",
+      "source_file": "public/manifest.json",
+      "source_location": "L9",
       "weight": 1.0,
-      "source": "fixes_high",
-      "target": "fixes_6_no_server_side_phone_validation_in_payment_initiate",
+      "source": "public_manifest",
+      "target": "public_manifest_theme_color",
       "confidence_score": 1.0
     },
     {
       "relation": "contains",
       "confidence": "EXTRACTED",
-      "source_file": "fixes.md",
-      "source_location": "L223",
+      "source_file": "public/sw.js",
+      "source_location": "L3",
       "weight": 1.0,
-      "source": "fixes_high",
-      "target": "fixes_7_webhook_skips_all_verification_when_secret_key_is_missing",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "fixes.md",
-      "source_location": "L247",
-      "weight": 1.0,
-      "source": "fixes_high",
-      "target": "fixes_8_payment_initiate_has_no_payment_expires_at_check",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "fixes.md",
-      "source_location": "L282",
-      "weight": 1.0,
-      "source": "fixes_medium",
-      "target": "fixes_10_in_memory_rate_limiter_is_stateless_on_serverless",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "fixes.md",
-      "source_location": "L303",
-      "weight": 1.0,
-      "source": "fixes_medium",
-      "target": "fixes_11_checkout_api_doesn_t_validate_allowed_payment_methods",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "fixes.md",
-      "source_location": "L321",
-      "weight": 1.0,
-      "source": "fixes_medium",
-      "target": "fixes_12_next_public_irembopay_base_url_exposed_to_browser_unnecessarily",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "fixes.md",
-      "source_location": "L266",
-      "weight": 1.0,
-      "source": "fixes_medium",
-      "target": "fixes_9_checkout_order_creation_not_wrapped_in_a_db_transaction",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "fixes.md",
-      "source_location": "L338",
-      "weight": 1.0,
-      "source": "fixes_low",
-      "target": "fixes_13_missing_input_type_sanity_validation_on_amount",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "fixes.md",
-      "source_location": "L350",
-      "weight": 1.0,
-      "source": "fixes_low",
-      "target": "fixes_14_no_csrf_protection_on_checkout_payment_endpoints",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "fixes.md",
-      "source_location": "L360",
-      "weight": 1.0,
-      "source": "fixes_low",
-      "target": "fixes_15_cart_localstorage_key_not_versioned",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "fixes.md",
-      "source_location": "L366",
-      "weight": 1.0,
-      "source": "fixes_low",
-      "target": "fixes_16_checkout_api_ignoring_deliveryfee_client_field_without_warning",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "fixes.md",
-      "source_location": "L372",
-      "weight": 1.0,
-      "source": "fixes_low",
-      "target": "fixes_17_immediate_recovery_from_payment_failure_not_possible",
+      "source": "public_sw",
+      "target": "public_sw_precache",
       "confidence_score": 1.0
     },
     {
@@ -6928,6 +6518,57 @@
     {
       "relation": "contains",
       "confidence": "EXTRACTED",
+      "source_file": "app/admin/middleware.js",
+      "source_location": "L40",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "app_admin_middleware",
+      "target": "app_admin_middleware_config"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "app/admin/middleware.js",
+      "source_location": "L8",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "app_admin_middleware",
+      "target": "app_admin_middleware_isvalidadmintoken"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "app/admin/middleware.js",
+      "source_location": "L4",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "app_admin_middleware",
+      "target": "app_admin_middleware_jwt_secret"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "app/admin/middleware.js",
+      "source_location": "L19",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "app_admin_middleware",
+      "target": "app_admin_middleware_middleware"
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "app/admin/middleware.js",
+      "source_location": "L28",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "app_admin_middleware_middleware",
+      "target": "app_admin_middleware_isvalidadmintoken"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
       "source_file": "app/admin/page.js",
       "source_location": "L236",
       "weight": 1.0,
@@ -7466,6 +7107,89 @@
       "weight": 1.0,
       "source": "app_api_admin_analytics_route_get",
       "target": "lib_supabase_server_createserviceclient"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "app/api/admin/auth/route.js",
+      "source_location": "L18",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "app_api_admin_auth_route",
+      "target": "app_api_admin_auth_route_createadmintoken"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "app/api/admin/auth/route.js",
+      "source_location": "L88",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "app_api_admin_auth_route",
+      "target": "app_api_admin_auth_route_delete"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "app/api/admin/auth/route.js",
+      "source_location": "L71",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "app_api_admin_auth_route",
+      "target": "app_api_admin_auth_route_get"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "app/api/admin/auth/route.js",
+      "source_location": "L11",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "app_api_admin_auth_route",
+      "target": "app_api_admin_auth_route_getjwtsecret"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "app/api/admin/auth/route.js",
+      "source_location": "L27",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "app_api_admin_auth_route",
+      "target": "app_api_admin_auth_route_post"
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "app/api/admin/auth/route.js",
+      "source_location": "L23",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "app_api_admin_auth_route_createadmintoken",
+      "target": "app_api_admin_auth_route_getjwtsecret"
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "app/api/admin/auth/route.js",
+      "source_location": "L77",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "app_api_admin_auth_route_get",
+      "target": "app_api_admin_auth_route_getjwtsecret"
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "app/api/admin/auth/route.js",
+      "source_location": "L52",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "app_api_admin_auth_route_post",
+      "target": "app_api_admin_auth_route_createadmintoken"
     },
     {
       "relation": "contains",
@@ -9435,6 +9159,81 @@
     {
       "relation": "contains",
       "confidence": "EXTRACTED",
+      "source_file": "app/api/checkout/route.js",
+      "source_location": "L5",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "app_api_checkout_route",
+      "target": "app_api_checkout_route_generatereference"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "app/api/checkout/route.js",
+      "source_location": "L11",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "app_api_checkout_route",
+      "target": "app_api_checkout_route_post"
+    },
+    {
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "app/api/checkout/route.js",
+      "source_location": "L2",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "app_api_checkout_route",
+      "target": "lib_supabase_server"
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "app/api/checkout/route.js",
+      "source_location": "L2",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "app_api_checkout_route",
+      "target": "lib_supabase_server_createserversupabaseclient"
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "app/api/checkout/route.js",
+      "source_location": "L1",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "app_api_checkout_route",
+      "target": "lib_supabase_server_createserviceclient"
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "app/api/checkout/route.js",
+      "source_location": "L145",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "app_api_checkout_route_post",
+      "target": "app_api_checkout_route_generatereference"
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "app/api/checkout/route.js",
+      "source_location": "L33",
+      "weight": 1.0,
+      "source": "app_api_checkout_route_post",
+      "target": "lib_supabase_server_createserviceclient"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
       "source_file": "app/api/irembopay-api/[...path]/route.js",
       "source_location": "L29",
       "weight": 1.0,
@@ -9683,6 +9482,49 @@
     {
       "relation": "contains",
       "confidence": "EXTRACTED",
+      "source_file": "app/api/orders/payment-status/route.js",
+      "source_location": "L3",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "app_api_orders_payment_status_route",
+      "target": "app_api_orders_payment_status_route_get"
+    },
+    {
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "app/api/orders/payment-status/route.js",
+      "source_location": "L1",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "app_api_orders_payment_status_route",
+      "target": "lib_supabase_server"
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "app/api/orders/payment-status/route.js",
+      "source_location": "L1",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "app_api_orders_payment_status_route",
+      "target": "lib_supabase_server_createserviceclient"
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "app/api/orders/payment-status/route.js",
+      "source_location": "L13",
+      "weight": 1.0,
+      "source": "app_api_orders_payment_status_route_get",
+      "target": "lib_supabase_server_createserviceclient"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
       "source_file": "app/api/orders/track/route.js",
       "source_location": "L3",
       "weight": 1.0,
@@ -9721,6 +9563,70 @@
       "source_location": "L16",
       "weight": 1.0,
       "source": "app_api_orders_track_route_get",
+      "target": "lib_supabase_server_createserviceclient"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "app/api/payments/initiate/route.js",
+      "source_location": "L5",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "app_api_payments_initiate_route",
+      "target": "app_api_payments_initiate_route_irembopayheaders"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "app/api/payments/initiate/route.js",
+      "source_location": "L13",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "app_api_payments_initiate_route",
+      "target": "app_api_payments_initiate_route_post"
+    },
+    {
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "app/api/payments/initiate/route.js",
+      "source_location": "L1",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "app_api_payments_initiate_route",
+      "target": "lib_supabase_server"
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "app/api/payments/initiate/route.js",
+      "source_location": "L1",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "app_api_payments_initiate_route",
+      "target": "lib_supabase_server_createserviceclient"
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "app/api/payments/initiate/route.js",
+      "source_location": "L70",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "app_api_payments_initiate_route_post",
+      "target": "app_api_payments_initiate_route_irembopayheaders"
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "app/api/payments/initiate/route.js",
+      "source_location": "L37",
+      "weight": 1.0,
+      "source": "app_api_payments_initiate_route_post",
       "target": "lib_supabase_server_createserviceclient"
     },
     {
@@ -9957,6 +9863,49 @@
       "source_location": "L41",
       "weight": 1.0,
       "source": "app_api_reviews_token_route_post",
+      "target": "lib_supabase_server_createserviceclient"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "app/api/webhooks/irembopay/route.js",
+      "source_location": "L4",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "app_api_webhooks_irembopay_route",
+      "target": "app_api_webhooks_irembopay_route_post"
+    },
+    {
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "app/api/webhooks/irembopay/route.js",
+      "source_location": "L1",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "app_api_webhooks_irembopay_route",
+      "target": "lib_supabase_server"
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "app/api/webhooks/irembopay/route.js",
+      "source_location": "L1",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "app_api_webhooks_irembopay_route",
+      "target": "lib_supabase_server_createserviceclient"
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "app/api/webhooks/irembopay/route.js",
+      "source_location": "L67",
+      "weight": 1.0,
+      "source": "app_api_webhooks_irembopay_route_post",
       "target": "lib_supabase_server_createserviceclient"
     },
     {
@@ -10354,6 +10303,131 @@
       "confidence_score": 1.0,
       "source": "app_login_page",
       "target": "app_login_page_loginpage"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "app/middleware.js",
+      "source_location": "L25",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "app_middleware",
+      "target": "app_middleware_checkratelimit"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "app/middleware.js",
+      "source_location": "L114",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "app_middleware",
+      "target": "app_middleware_config"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "app/middleware.js",
+      "source_location": "L18",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "app_middleware",
+      "target": "app_middleware_getratelimitconfig"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "app/middleware.js",
+      "source_location": "L49",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "app_middleware",
+      "target": "app_middleware_middleware"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "app/middleware.js",
+      "source_location": "L10",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "app_middleware",
+      "target": "app_middleware_rate_limit_config"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "app/middleware.js",
+      "source_location": "L8",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "app_middleware",
+      "target": "app_middleware_ratelimitmap"
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "app/middleware.js",
+      "source_location": "L81",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "app_middleware_middleware",
+      "target": "app_middleware_getratelimitconfig"
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "app/middleware.js",
+      "source_location": "L82",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "app_middleware_middleware",
+      "target": "app_middleware_checkratelimit"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "app/not-found.js",
+      "source_location": "L7",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "app_not_found",
+      "target": "app_not_found_notfound"
+    },
+    {
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "app/not-found.js",
+      "source_location": "L5",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "app_not_found",
+      "target": "components_themeprovider"
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "app/not-found.js",
+      "source_location": "L5",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "app_not_found",
+      "target": "components_themeprovider_usetheme"
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "app/not-found.js",
+      "source_location": "L10",
+      "weight": 1.0,
+      "source": "app_not_found_notfound",
+      "target": "components_themeprovider_usetheme"
     },
     {
       "relation": "contains",
@@ -11416,6 +11490,17 @@
       "relation": "imports_from",
       "context": "import",
       "confidence": "EXTRACTED",
+      "source_file": "components/Header.js",
+      "source_location": "L6",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "components_header",
+      "target": "components_cartcontext"
+    },
+    {
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
       "source_file": "components/ProductGrid.js",
       "source_location": "L6",
       "weight": 1.0,
@@ -11465,6 +11550,28 @@
       "source_location": "L7",
       "weight": 1.0,
       "source": "components_cartheader_cartheader",
+      "target": "components_cartcontext_usecart"
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "components/Header.js",
+      "source_location": "L6",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "components_header",
+      "target": "components_cartcontext_usecart"
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "components/Header.js",
+      "source_location": "L11",
+      "weight": 1.0,
+      "source": "components_header_header",
       "target": "components_cartcontext_usecart"
     },
     {
@@ -11550,6 +11657,239 @@
       "confidence_score": 1.0,
       "source": "components_categorystrip",
       "target": "components_categorystrip_cats"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "components/ConditionalLayout.js",
+      "source_location": "L75",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "components_conditionallayout",
+      "target": "components_conditionallayout_conditionallayout"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "components/ConditionalLayout.js",
+      "source_location": "L21",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "components_conditionallayout",
+      "target": "components_conditionallayout_footer"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "components/ConditionalLayout.js",
+      "source_location": "L10",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "components_conditionallayout",
+      "target": "components_conditionallayout_paymentbadge"
+    },
+    {
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "components/ConditionalLayout.js",
+      "source_location": "L5",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "components_conditionallayout",
+      "target": "components_header"
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "components/ConditionalLayout.js",
+      "source_location": "L5",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "components_conditionallayout",
+      "target": "components_header_header"
+    },
+    {
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "components/ConditionalLayout.js",
+      "source_location": "L4",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "components_conditionallayout",
+      "target": "components_themeprovider"
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "components/ConditionalLayout.js",
+      "source_location": "L4",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "components_conditionallayout",
+      "target": "components_themeprovider_usetheme"
+    },
+    {
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "components/ConditionalLayout.js",
+      "source_location": "L6",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "components_conditionallayout",
+      "target": "components_whatsappwidget"
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "components/ConditionalLayout.js",
+      "source_location": "L6",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "components_conditionallayout",
+      "target": "components_whatsappwidget_whatsappwidget"
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "components/ConditionalLayout.js",
+      "source_location": "L22",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "components_conditionallayout_footer",
+      "target": "components_themeprovider_usetheme"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "components/Header.js",
+      "source_location": "L259",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "components_header",
+      "target": "components_header_carticon"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "components/Header.js",
+      "source_location": "L9",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "components_header",
+      "target": "components_header_header"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "components/Header.js",
+      "source_location": "L251",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "components_header",
+      "target": "components_header_moonicon"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "components/Header.js",
+      "source_location": "L268",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "components_header",
+      "target": "components_header_personicon"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "components/Header.js",
+      "source_location": "L231",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "components_header",
+      "target": "components_header_searchicon"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "components/Header.js",
+      "source_location": "L239",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "components_header",
+      "target": "components_header_sunicon"
+    },
+    {
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "components/Header.js",
+      "source_location": "L5",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "components_header",
+      "target": "components_themeprovider"
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "components/Header.js",
+      "source_location": "L5",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "components_header",
+      "target": "components_themeprovider_usetheme"
+    },
+    {
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "components/Header.js",
+      "source_location": "L7",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "components_header",
+      "target": "lib_supabase_client"
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "components/Header.js",
+      "source_location": "L7",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "components_header",
+      "target": "lib_supabase_client_createclient"
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "components/Header.js",
+      "source_location": "L10",
+      "weight": 1.0,
+      "source": "components_header_header",
+      "target": "components_themeprovider_usetheme"
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "components/Header.js",
+      "source_location": "L17",
+      "weight": 1.0,
+      "source": "components_header_header",
+      "target": "lib_supabase_client_createclient"
     },
     {
       "relation": "contains",
@@ -13325,8 +13665,248 @@
       "confidence_score": 1.0,
       "source": "todo_remaining",
       "target": "todo_6_optional_polish"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "fixes.md",
+      "source_location": "L1",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "fixes",
+      "target": "fixes_payment_api_integration_audit_findings"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "fixes.md",
+      "source_location": "L30",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "fixes_payment_api_integration_audit_findings",
+      "target": "fixes_critical"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "fixes.md",
+      "source_location": "L6",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "fixes_payment_api_integration_audit_findings",
+      "target": "fixes_fix_status"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "fixes.md",
+      "source_location": "L136",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "fixes_payment_api_integration_audit_findings",
+      "target": "fixes_high"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "fixes.md",
+      "source_location": "L336",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "fixes_payment_api_integration_audit_findings",
+      "target": "fixes_low"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "fixes.md",
+      "source_location": "L264",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "fixes_payment_api_integration_audit_findings",
+      "target": "fixes_medium"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "fixes.md",
+      "source_location": "L380",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "fixes_payment_api_integration_audit_findings",
+      "target": "fixes_things_done_well"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "fixes.md",
+      "source_location": "L32",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "fixes_critical",
+      "target": "fixes_1_price_manipulation_client_provided_amount_not_server_verified"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "fixes.md",
+      "source_location": "L71",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "fixes_critical",
+      "target": "fixes_2_webhook_handler_missing_transactional_idempotency"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "fixes.md",
+      "source_location": "L104",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "fixes_critical",
+      "target": "fixes_3_production_secret_keys_being_sent_to_sandbox_api"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "fixes.md",
+      "source_location": "L138",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "fixes_high",
+      "target": "fixes_4_auto_fail_race_condition_with_webhook"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "fixes.md",
+      "source_location": "L167",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "fixes_high",
+      "target": "fixes_5_weak_admin_password_doubles_as_jwt_signing_secret"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "fixes.md",
+      "source_location": "L195",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "fixes_high",
+      "target": "fixes_6_no_server_side_phone_validation_in_payment_initiate"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "fixes.md",
+      "source_location": "L223",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "fixes_high",
+      "target": "fixes_7_webhook_skips_all_verification_when_secret_key_is_missing"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "fixes.md",
+      "source_location": "L247",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "fixes_high",
+      "target": "fixes_8_payment_initiate_has_no_payment_expires_at_check"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "fixes.md",
+      "source_location": "L282",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "fixes_medium",
+      "target": "fixes_10_in_memory_rate_limiter_is_stateless_on_serverless"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "fixes.md",
+      "source_location": "L303",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "fixes_medium",
+      "target": "fixes_11_checkout_api_doesn_t_validate_allowed_payment_methods"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "fixes.md",
+      "source_location": "L321",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "fixes_medium",
+      "target": "fixes_12_next_public_irembopay_base_url_exposed_to_browser_unnecessarily"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "fixes.md",
+      "source_location": "L266",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "fixes_medium",
+      "target": "fixes_9_checkout_order_creation_not_wrapped_in_a_db_transaction"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "fixes.md",
+      "source_location": "L338",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "fixes_low",
+      "target": "fixes_13_missing_input_type_sanity_validation_on_amount"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "fixes.md",
+      "source_location": "L350",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "fixes_low",
+      "target": "fixes_14_no_csrf_protection_on_checkout_payment_endpoints"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "fixes.md",
+      "source_location": "L360",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "fixes_low",
+      "target": "fixes_15_cart_localstorage_key_not_versioned"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "fixes.md",
+      "source_location": "L366",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "fixes_low",
+      "target": "fixes_16_checkout_api_ignoring_deliveryfee_client_field_without_warning"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "fixes.md",
+      "source_location": "L372",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "fixes_low",
+      "target": "fixes_17_immediate_recovery_from_payment_failure_not_possible"
     }
   ],
   "hyperedges": [],
-  "built_at_commit": "3932c4d42c851589dbcd28934c218c758ce5511f"
+  "built_at_commit": "b8a5e5e024d2675abe4e46f8da1724dd4331bdb3"
 }
