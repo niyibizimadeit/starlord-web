@@ -1,4 +1,4 @@
-# IremboPay Payment Integration TODO.
+# IremboPay Payment Integration TODO.(almost)
 
 **Status**: Core infrastructure complete. Checkout flow, webhook handler, stock reservation, and polling UI all implemented. Pending: IremboPay sandbox credentials to wire up the actual API call.
 
