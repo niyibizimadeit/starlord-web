@@ -5,8 +5,8 @@
     "semantic_hash": "7583f1d34506a2b83ce1a762b1069a23"
   },
   ".claude/settings.local.json": {
-    "mtime": 1793163261.125621,
-    "ast_hash": "fb37812f38c9502442a99a9d5febf936",
+    "mtime": 1793173037.5142884,
+    "ast_hash": "b88e491a69734f56f0c6712016febaaa",
     "semantic_hash": ""
   },
   "app/about/page.js": {
@@ -190,9 +190,9 @@
     "semantic_hash": "00f9673b6fdb42ba126f713819ba46cf"
   },
   "app/api/banners/route.js": {
-    "mtime": 1773785721.433685,
-    "ast_hash": "a84a10465d34ef800784d29cb28ec78a",
-    "semantic_hash": "a84a10465d34ef800784d29cb28ec78a"
+    "mtime": 1793173544.740872,
+    "ast_hash": "370117365bb7ce2de06fe40196983eac",
+    "semantic_hash": ""
   },
   "app/api/checkout/route.js": {
     "mtime": 1785409510.175393,
@@ -315,9 +315,9 @@
     "semantic_hash": ""
   },
   "app/page.js": {
-    "mtime": 1780458031.5228584,
-    "ast_hash": "ba63be71bd32f486f534ae09819075ff",
-    "semantic_hash": "ba63be71bd32f486f534ae09819075ff"
+    "mtime": 1793173544.7374828,
+    "ast_hash": "92803e4a55c7d404c1a1f4ebe005d25b",
+    "semantic_hash": ""
   },
   "app/products/[id]/page.js": {
     "mtime": 1779103334.589064,
@@ -375,9 +375,9 @@
     "semantic_hash": "cb1fc752d71408a04f51eb6f1e74a2e3"
   },
   "components/BannerSlider.js": {
-    "mtime": 1775377003.913829,
-    "ast_hash": "6b7b6e89351da478fb4ba926836f1bb5",
-    "semantic_hash": "6b7b6e89351da478fb4ba926836f1bb5"
+    "mtime": 1793173550.8631868,
+    "ast_hash": "ac4fea1754d967c8e464a3942926a12b",
+    "semantic_hash": ""
   },
   "components/CartContext.js": {
     "mtime": 1783948256.8418617,
@@ -475,9 +475,9 @@
     "semantic_hash": "ed9f82ec9316dbd8df1a8b4fdceb005f"
   },
   "next.config.ts": {
-    "mtime": 1783576066.4835937,
-    "ast_hash": "1475257a345ffc8204bdc8eab4ed90e1",
-    "semantic_hash": "1475257a345ffc8204bdc8eab4ed90e1"
+    "mtime": 1793173706.8231964,
+    "ast_hash": "7658b34bb15f530a57fb53fc8a1c88ed",
+    "semantic_hash": ""
   },
   "package.json": {
     "mtime": 1793163273.203656,
@@ -637,6 +637,11 @@
   "components/LoadingScreen.js": {
     "mtime": 1786474902.1918259,
     "ast_hash": "7587c07665582ab3940b56f06490417c",
+    "semantic_hash": ""
+  },
+  "lib/banners.js": {
+    "mtime": 1793173544.733026,
+    "ast_hash": "64583f9d37eb98a6ed1d1d4ee400127b",
     "semantic_hash": ""
   }
 }

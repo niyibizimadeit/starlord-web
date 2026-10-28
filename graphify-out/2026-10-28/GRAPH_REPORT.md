@@ -1,16 +1,16 @@
 # Graph Report - starlord-web  (2026-10-28)
 
 ## Corpus Check
-- 114 files · ~91,821 words
+- 115 files · ~91,864 words
 - Verdict: corpus is large enough that graph structure adds value.
 
 ## Summary
-- 553 nodes · 809 edges · 64 communities (40 shown, 24 thin omitted)
+- 555 nodes · 829 edges · 62 communities (39 shown, 23 thin omitted)
 - Extraction: 100% EXTRACTED · 0% INFERRED · 0% AMBIGUOUS
 - Token cost: 0 input · 0 output
 
 ## Graph Freshness
-- Built from commit: `63769d89`
+- Built from commit: `b80b9259`
 - Run `git rev-parse HEAD` and compare to check if the graph is stale.
 - Run `graphify update .` after code changes (no API cost).
 
@@ -70,13 +70,12 @@
 - route.js
 - route.js
 - route.js
-- layout.js
 
 ## God Nodes (most connected - your core abstractions)
 1. `createServiceClient()` - 98 edges
 2. `createServerSupabaseClient()` - 30 edges
 3. `compilerOptions` - 16 edges
-4. `useCart()` - 13 edges
+4. `useCart()` - 15 edges
 5. `StarlordGroup Web - starlordgroup.rw(live site)` - 11 edges
 6. `IremboPay Pre-Production Testing Checklist` - 10 edges
 7. `AdminPage()` - 9 edges
@@ -91,51 +90,51 @@
   app/api/reviews/route.js → lib/supabase/server.js
 - `generateMetadata()` --calls--> `createServiceClient()`  [EXTRACTED]
   app/products/[id]/page.js → lib/supabase/server.js
-- `printShippingLabel()` --references--> `qrcode`  [EXTRACTED]
-  app/admin/AdminHelpers.js → package.json
+- `AccountPage()` --calls--> `createServerSupabaseClient()`  [EXTRACTED]
+  app/account/page.js → lib/supabase/server.js
 - `AccountPage()` --calls--> `createServiceClient()`  [EXTRACTED]
   app/account/page.js → lib/supabase/server.js
 
 ## Import Cycles
 - None detected.
 
-## Communities (64 total, 24 thin omitted)
+## Communities (62 total, 23 thin omitted)
 
 ### Community 0 - "createServiceClient"
-Cohesion: 0.12
-Nodes (15): GET(), getAdminUser(), POST(), POST(), GET(), GET(), GET(), GET() (+7 more)
+Cohesion: 0.13
+Nodes (13): GET(), getAdminUser(), POST(), GET(), GET(), GET(), GET(), GET() (+5 more)
 
 ### Community 1 - "useCart"
-Cohesion: 0.09
-Nodes (24): CartPage(), formatRWF(), formatRWF(), metadata, OnSalePage(), CheckoutPage(), formatRWF(), IMPORTANT: we do NOT clearCart()/setStep(3) here anymore. (+16 more)
+Cohesion: 0.07
+Nodes (31): CartPage(), formatRWF(), formatRWF(), metadata, OnSalePage(), CheckoutPage(), formatRWF(), IMPORTANT: we do NOT clearCart()/setStep(3) here anymore. (+23 more)
 
 ### Community 2 - "dependencies"
 Cohesion: 0.06
 Nodes (34): browserslist, dependencies, @aws-sdk/client-s3, jose, next, qrcode, react, react-dom (+26 more)
 
 ### Community 3 - "server.js"
-Cohesion: 0.13
-Nodes (15): AccountPage(), POST(), POST(), POST(), POST(), POST(), POST(), POST() (+7 more)
+Cohesion: 0.15
+Nodes (13): POST(), POST(), POST(), POST(), POST(), POST(), POST(), POST() (+5 more)
 
 ### Community 4 - "page.js"
 Cohesion: 0.19
 Nodes (25): adminLogin(), apiFetch(), apiMutate(), BarChart(), CategoryModal(), downloadCSV(), formatDate(), formatRWF() (+17 more)
 
 ### Community 5 - "Header.js"
-Cohesion: 0.12
-Nodes (10): NotFound(), Footer(), Header(), LoadingScreen(), getInitialTheme(), ThemeContext, ThemeProvider(), useTheme() (+2 more)
+Cohesion: 0.09
+Nodes (16): lato, metadata, playfair, viewport, NotFound(), ConditionalLayout(), Footer(), Header() (+8 more)
 
 ### Community 6 - "compilerOptions"
 Cohesion: 0.06
 Nodes (28): 1. Prerequisites, 2. Clone & Deps, 3. Supabase Setup, 4. Run, Clone & Run (5 mins), 🤝 Contributing, ☁️ Deployment (Vercel), 🔧 Development Workflow (+20 more)
 
 ### Community 7 - "AccountClient.js"
-Cohesion: 0.20
-Nodes (9): AddressesTab(), formatDate(), formatRWF(), inputStyle(), labelStyle, OrderCard(), ProfileTab(), SecurityTab() (+1 more)
+Cohesion: 0.16
+Nodes (11): AccountPage(), AccountClient(), AddressesTab(), formatDate(), formatRWF(), inputStyle(), labelStyle, OrderCard() (+3 more)
 
 ### Community 8 - "page.js"
-Cohesion: 0.13
-Nodes (12): getNavCategories(), getProducts(), HomePage(), getCategories(), getProducts(), metadata, ProductsPage(), BannerSlider() (+4 more)
+Cohesion: 0.19
+Nodes (7): GET(), getNavCategories(), getProducts(), HomePage(), BannerSlider(), TrustBar(), getBanners()
 
 ### Community 9 - "route.js"
 Cohesion: 0.31
@@ -225,29 +224,29 @@ Nodes (4): DELETE(), getUser(), PATCH(), POST()
 Cohesion: 0.83
 Nodes (3): fail(), pass(), test-security.sh script
 
-### Community 62 - "layout.js"
-Cohesion: 0.33
-Nodes (4): lato, metadata, playfair, viewport
+### Community 59 - "route.js"
+Cohesion: 0.83
+Nodes (3): GET(), getAdminUser(), POST()
 
 ## Knowledge Gaps
-- **164 isolated node(s):** `playfair`, `lato`, `metadata`, `viewport`, `name` (+159 more)
+- **164 isolated node(s):** `metadata`, `metadata`, `viewport`, `JWT_SECRET`, `config` (+159 more)
   These have ≤1 connection - possible missing edges or undocumented components.
-- **24 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
+- **23 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
 
 ## Suggested Questions
 _Questions this graph is uniquely positioned to answer:_
 
-- **Why does `createServiceClient()` connect `createServiceClient` to `useCart`, `server.js`, `page.js`, `route.js`, `route.js`, `route.js`, `route.js`, `route.js`, `route.js`, `route.js`, `route.js`, `route.js`, `route.js`, `route.js`, `route.js`, `route.js`, `route.js`, `route.js`, `route.js`, `route.js`?**
-  _High betweenness centrality (0.109) - this node is a cross-community bridge._
+- **Why does `createServiceClient()` connect `createServiceClient` to `useCart`, `server.js`, `AccountClient.js`, `page.js`, `route.js`, `route.js`, `route.js`, `route.js`, `route.js`, `route.js`, `route.js`, `route.js`, `route.js`, `route.js`, `route.js`, `route.js`, `route.js`, `route.js`, `route.js`, `route.js`, `route.js`?**
+  _High betweenness centrality (0.111) - this node is a cross-community bridge._
 - **Why does `useCart()` connect `useCart` to `Header.js`?**
-  _High betweenness centrality (0.036) - this node is a cross-community bridge._
-- **What connects `playfair`, `lato`, `metadata` to the rest of the system?**
+  _High betweenness centrality (0.028) - this node is a cross-community bridge._
+- **Why does `createServerSupabaseClient()` connect `server.js` to `route.js`, `useCart`, `route.js`, `AccountClient.js`?**
+  _High betweenness centrality (0.014) - this node is a cross-community bridge._
+- **What connects `metadata`, `metadata`, `viewport` to the rest of the system?**
   _172 weakly-connected nodes found - possible documentation gaps or missing edges._
 - **Should `createServiceClient` be split into smaller, more focused modules?**
-  _Cohesion score 0.12307692307692308 - nodes in this community are weakly interconnected._
+  _Cohesion score 0.13438735177865613 - nodes in this community are weakly interconnected._
 - **Should `useCart` be split into smaller, more focused modules?**
-  _Cohesion score 0.0945945945945946 - nodes in this community are weakly interconnected._
+  _Cohesion score 0.07400555041628122 - nodes in this community are weakly interconnected._
 - **Should `dependencies` be split into smaller, more focused modules?**
   _Cohesion score 0.05714285714285714 - nodes in this community are weakly interconnected._
-- **Should `server.js` be split into smaller, more focused modules?**
-  _Cohesion score 0.1349206349206349 - nodes in this community are weakly interconnected._
