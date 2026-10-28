@@ -5,8 +5,8 @@
     "semantic_hash": "7583f1d34506a2b83ce1a762b1069a23"
   },
   ".claude/settings.local.json": {
-    "mtime": 1785409078.1905382,
-    "ast_hash": "c34243ebc8b400e714b72755c6408ed1",
+    "mtime": 1793163261.125621,
+    "ast_hash": "fb37812f38c9502442a99a9d5febf936",
     "semantic_hash": ""
   },
   "app/about/page.js": {
@@ -295,8 +295,8 @@
     "semantic_hash": "4c33ecab6bb99a8a7cf76a49577c53a4"
   },
   "app/layout.js": {
-    "mtime": 1786474955.8143253,
-    "ast_hash": "ef618c1494ed6fadfba20045409c3539",
+    "mtime": 1793162871.4445958,
+    "ast_hash": "becf95219681de5d3db3ba1fbdb9e094",
     "semantic_hash": ""
   },
   "app/login/page.js": {
@@ -410,9 +410,9 @@
     "semantic_hash": "443b7985c628429a70827de3e7d1f1b4"
   },
   "components/ProductGrid.js": {
-    "mtime": 1779102323.4553022,
-    "ast_hash": "a32a3836ec3c178d63c7f600953f3b45",
-    "semantic_hash": "a32a3836ec3c178d63c7f600953f3b45"
+    "mtime": 1793163233.0582395,
+    "ast_hash": "0974b6acdb4dae664e8d329af412782d",
+    "semantic_hash": ""
   },
   "components/ProductPageClient.js": {
     "mtime": 1779103317.4420898,
@@ -480,8 +480,8 @@
     "semantic_hash": "1475257a345ffc8204bdc8eab4ed90e1"
   },
   "package.json": {
-    "mtime": 1783825756.9080803,
-    "ast_hash": "38176e8a38b4bfd7c1f9eb05d2dd4e5e",
+    "mtime": 1793163273.203656,
+    "ast_hash": "24077491a94a036c954ce754fb9d6c4c",
     "semantic_hash": ""
   },
   "postcss.config.mjs": {

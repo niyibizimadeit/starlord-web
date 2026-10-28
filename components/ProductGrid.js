@@ -12,7 +12,7 @@ function formatRWF(n) {
   return `${Number(n).toLocaleString()} RWF`;
 }
 
-function ProductCard({ product, onOpenModal }) {
+function ProductCard({ product, onOpenModal, eager }) {
   const discount = product.old_price
     ? Math.round((1 - product.price / product.old_price) * 100)
     : null;
@@ -35,6 +35,7 @@ function ProductCard({ product, onOpenModal }) {
               alt={product.name}
               fill
               sizes="(max-width: 767px) 50vw, (max-width: 1280px) 33vw, 280px"
+              loading={eager ? 'eager' : 'lazy'}
               className={styles.productImage}
             />
           ) : (
@@ -310,8 +311,13 @@ export default function ProductGrid({
         {visible.length > 0 ? (
           <>
             <div className={styles.productGrid}>
-              {visible.map(product => (
-                <ProductCard key={product.id} product={product} onOpenModal={openQtyModal} />
+              {visible.map((product, index) => (
+                <ProductCard
+                  key={product.id}
+                  product={product}
+                  onOpenModal={openQtyModal}
+                  eager={index === 0}
+                />
               ))}
             </div>
             <div ref={sentinelRef} style={{ height: 1 }} />

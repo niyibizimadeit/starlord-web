@@ -30,6 +30,9 @@ export const metadata = {
     icon: '/icon.png',
     apple: '/apple-icon.png',
   },
+};
+
+export const viewport = {
   themeColor: '#1A1814',
 };
 
