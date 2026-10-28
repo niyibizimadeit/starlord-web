@@ -5,12 +5,12 @@
 - Verdict: corpus is large enough that graph structure adds value.
 
 ## Summary
-- 555 nodes · 818 edges · 63 communities (40 shown, 23 thin omitted)
+- 555 nodes · 817 edges · 63 communities (40 shown, 23 thin omitted)
 - Extraction: 100% EXTRACTED · 0% INFERRED · 0% AMBIGUOUS
 - Token cost: 0 input · 0 output
 
 ## Graph Freshness
-- Built from commit: `a8b1492f`
+- Built from commit: `84165f52`
 - Run `git rev-parse HEAD` and compare to check if the graph is stale.
 - Run `graphify update .` after code changes (no API cost).
 
@@ -81,7 +81,7 @@
 7. `AdminPage()` - 9 edges
 8. `useTheme()` - 9 edges
 9. `StarlordGroup Web - Complete Developer Onboarding Guide` - 9 edges
-10. `formatRWF()` - 7 edges
+10. `📋 Remaining` - 7 edges
 
 ## Surprising Connections (you probably didn't know these)
 - `GET()` --calls--> `createServiceClient()`  [EXTRACTED]
@@ -125,8 +125,8 @@ Cohesion: 0.09
 Nodes (16): lato, metadata, playfair, viewport, NotFound(), ConditionalLayout(), Footer(), Header() (+8 more)
 
 ### Community 6 - "compilerOptions"
-Cohesion: 0.06
-Nodes (28): 1. Prerequisites, 2. Clone & Deps, 3. Supabase Setup, 4. Run, Clone & Run (5 mins), 🤝 Contributing, ☁️ Deployment (Vercel), 🔧 Development Workflow (+20 more)
+Cohesion: 0.05
+Nodes (36): 1. Prerequisites, 2. Clone & Deps, 3. Supabase Setup, 4. Run, Clone & Run (5 mins), 🤝 Contributing, ☁️ Deployment (Vercel), 🔧 Development Workflow (+28 more)
 
 ### Community 7 - "AccountClient.js"
 Cohesion: 0.16
@@ -193,8 +193,8 @@ Cohesion: 0.11
 Nodes (18): 1.1 Successful Payment, 1.2 Failed Payment, 1.3 Expired Payment, 1. MTN Mobile Money (Push Payment), 2.1 Successful Payment, 2.2 Failed Payment, 2. Airtel Money (Push Payment), 3.1 Successful Visa Payment (+10 more)
 
 ### Community 43 - "StarlordGroup Web - starlordgroup.rw(live site)"
-Cohesion: 0.11
-Nodes (19): 1. Clone & Install, 2. Environment Variables, 3. Run Dev Server, 🙌 Acknowledgments, Admin Dashboard:, 🤝 Contributing, ☁️ Deployment, 🔒 Environment Variables Reference (+11 more)
+Cohesion: 0.17
+Nodes (11): 1. Sandbox Access (blocker), 2. Confirm API shape (unblock `/api/payments/initiate`), 3. Wire up `/api/payments/initiate` (~30 min once sandbox confirmed), 4. Webhook testing, 5. Prod rollout, 6. Optional polish, ✅ Completed, IremboPay Payment Integration TODO.(almost) (+3 more)
 
 ### Community 44 - "route.js"
 Cohesion: 0.53
@@ -229,7 +229,7 @@ Cohesion: 0.83
 Nodes (3): GET(), getAdminUser(), POST()
 
 ## Knowledge Gaps
-- **164 isolated node(s):** `nextConfig`, `metadata`, `metadata`, `viewport`, `JWT_SECRET` (+159 more)
+- **164 isolated node(s):** `✅ Completed`, `1. Sandbox Access (blocker)`, `2. Confirm API shape (unblock `/api/payments/initiate`)`, `3. Wire up `/api/payments/initiate` (~30 min once sandbox confirmed)`, `4. Webhook testing` (+159 more)
   These have ≤1 connection - possible missing edges or undocumented components.
 - **23 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
 
@@ -242,7 +242,7 @@ _Questions this graph is uniquely positioned to answer:_
   _High betweenness centrality (0.026) - this node is a cross-community bridge._
 - **Why does `createServerSupabaseClient()` connect `server.js` to `route.js`, `useCart`, `route.js`, `AccountClient.js`?**
   _High betweenness centrality (0.014) - this node is a cross-community bridge._
-- **What connects `nextConfig`, `metadata`, `metadata` to the rest of the system?**
+- **What connects `✅ Completed`, `1. Sandbox Access (blocker)`, `2. Confirm API shape (unblock `/api/payments/initiate`)` to the rest of the system?**
   _172 weakly-connected nodes found - possible documentation gaps or missing edges._
 - **Should `createServiceClient` be split into smaller, more focused modules?**
   _Cohesion score 0.13438735177865613 - nodes in this community are weakly interconnected._

@@ -4,14 +4,134 @@
   "graph": {},
   "nodes": [
     {
+      "label": "Todo.md",
+      "file_type": "document",
+      "source_file": "Todo.md",
+      "source_location": "L1",
+      "_origin": "ast",
+      "id": "todo",
+      "community": 43,
+      "norm_label": "todo.md"
+    },
+    {
+      "label": "IremboPay Payment Integration TODO.(almost)",
+      "file_type": "document",
+      "source_file": "Todo.md",
+      "source_location": "L1",
+      "_origin": "ast",
+      "id": "todo_irembopay_payment_integration_todo_almost",
+      "community": 43,
+      "norm_label": "irembopay payment integration todo.(almost)"
+    },
+    {
+      "label": "\u2705 Completed",
+      "file_type": "document",
+      "source_file": "Todo.md",
+      "source_location": "L5",
+      "_origin": "ast",
+      "id": "todo_completed",
+      "community": 43,
+      "norm_label": "\u2705 completed"
+    },
+    {
+      "label": "\ud83d\udccb Remaining",
+      "file_type": "document",
+      "source_file": "Todo.md",
+      "source_location": "L16",
+      "_origin": "ast",
+      "id": "todo_remaining",
+      "community": 43,
+      "norm_label": "\ud83d\udccb remaining"
+    },
+    {
+      "label": "1. Sandbox Access (blocker)",
+      "file_type": "document",
+      "source_file": "Todo.md",
+      "source_location": "L18",
+      "_origin": "ast",
+      "id": "todo_1_sandbox_access_blocker",
+      "community": 43,
+      "norm_label": "1. sandbox access (blocker)"
+    },
+    {
+      "label": "2. Confirm API shape (unblock `/api/payments/initiate`)",
+      "file_type": "document",
+      "source_file": "Todo.md",
+      "source_location": "L22",
+      "_origin": "ast",
+      "id": "todo_2_confirm_api_shape_unblock_api_payments_initiate",
+      "community": 43,
+      "norm_label": "2. confirm api shape (unblock `/api/payments/initiate`)"
+    },
+    {
+      "label": "3. Wire up `/api/payments/initiate` (~30 min once sandbox confirmed)",
+      "file_type": "document",
+      "source_file": "Todo.md",
+      "source_location": "L34",
+      "_origin": "ast",
+      "id": "todo_3_wire_up_api_payments_initiate_30_min_once_sandbox_confirmed",
+      "community": 43,
+      "norm_label": "3. wire up `/api/payments/initiate` (~30 min once sandbox confirmed)"
+    },
+    {
+      "label": "4. Webhook testing",
+      "file_type": "document",
+      "source_file": "Todo.md",
+      "source_location": "L38",
+      "_origin": "ast",
+      "id": "todo_4_webhook_testing",
+      "community": 43,
+      "norm_label": "4. webhook testing"
+    },
+    {
+      "label": "5. Prod rollout",
+      "file_type": "document",
+      "source_file": "Todo.md",
+      "source_location": "L43",
+      "_origin": "ast",
+      "id": "todo_5_prod_rollout",
+      "community": 43,
+      "norm_label": "5. prod rollout"
+    },
+    {
+      "label": "6. Optional polish",
+      "file_type": "document",
+      "source_file": "Todo.md",
+      "source_location": "L49",
+      "_origin": "ast",
+      "id": "todo_6_optional_polish",
+      "community": 43,
+      "norm_label": "6. optional polish"
+    },
+    {
+      "label": "\ud83d\udea8 Known risks",
+      "file_type": "document",
+      "source_file": "Todo.md",
+      "source_location": "L54",
+      "_origin": "ast",
+      "id": "todo_known_risks",
+      "community": 43,
+      "norm_label": "\ud83d\udea8 known risks"
+    },
+    {
+      "label": "Progress",
+      "file_type": "document",
+      "source_file": "Todo.md",
+      "source_location": "L58",
+      "_origin": "ast",
+      "id": "todo_progress",
+      "community": 43,
+      "norm_label": "progress"
+    },
+    {
       "label": "route.js",
       "file_type": "code",
       "source_file": "app/api/banners/route.js",
       "source_location": "L1",
       "_origin": "ast",
-      "id": "app_api_banners_route",
       "community": 8,
-      "norm_label": "route.js"
+      "norm_label": "route.js",
+      "id": "app_api_banners_route"
     },
     {
       "label": "GET()",
@@ -19,9 +139,9 @@
       "source_file": "app/api/banners/route.js",
       "source_location": "L3",
       "_origin": "ast",
-      "id": "app_api_banners_route_get",
       "community": 8,
-      "norm_label": "get()"
+      "norm_label": "get()",
+      "id": "app_api_banners_route_get"
     },
     {
       "label": "page.js",
@@ -29,9 +149,9 @@
       "source_file": "app/page.js",
       "source_location": "L1",
       "_origin": "ast",
-      "id": "app_page",
       "community": 8,
-      "norm_label": "page.js"
+      "norm_label": "page.js",
+      "id": "app_page"
     },
     {
       "label": "getNavCategories()",
@@ -39,9 +159,9 @@
       "source_file": "app/page.js",
       "source_location": "L9",
       "_origin": "ast",
-      "id": "app_page_getnavcategories",
       "community": 8,
-      "norm_label": "getnavcategories()"
+      "norm_label": "getnavcategories()",
+      "id": "app_page_getnavcategories"
     },
     {
       "label": "getProducts()",
@@ -49,9 +169,9 @@
       "source_file": "app/page.js",
       "source_location": "L21",
       "_origin": "ast",
-      "id": "app_page_getproducts",
       "community": 8,
-      "norm_label": "getproducts()"
+      "norm_label": "getproducts()",
+      "id": "app_page_getproducts"
     },
     {
       "label": "HomePage()",
@@ -59,9 +179,9 @@
       "source_file": "app/page.js",
       "source_location": "L44",
       "_origin": "ast",
-      "id": "app_page_homepage",
       "community": 8,
-      "norm_label": "homepage()"
+      "norm_label": "homepage()",
+      "id": "app_page_homepage"
     },
     {
       "label": "BannerSlider.js",
@@ -69,9 +189,9 @@
       "source_file": "components/BannerSlider.js",
       "source_location": "L1",
       "_origin": "ast",
-      "id": "components_bannerslider",
       "community": 8,
-      "norm_label": "bannerslider.js"
+      "norm_label": "bannerslider.js",
+      "id": "components_bannerslider"
     },
     {
       "label": "BannerSlider()",
@@ -79,9 +199,9 @@
       "source_file": "components/BannerSlider.js",
       "source_location": "L7",
       "_origin": "ast",
-      "id": "components_bannerslider_bannerslider",
       "community": 8,
-      "norm_label": "bannerslider()"
+      "norm_label": "bannerslider()",
+      "id": "components_bannerslider_bannerslider"
     },
     {
       "label": "banners.js",
@@ -89,9 +209,9 @@
       "source_file": "lib/banners.js",
       "source_location": "L1",
       "_origin": "ast",
-      "id": "lib_banners",
       "community": 8,
-      "norm_label": "banners.js"
+      "norm_label": "banners.js",
+      "id": "lib_banners"
     },
     {
       "label": "getBanners()",
@@ -99,9 +219,9 @@
       "source_file": "lib/banners.js",
       "source_location": "L3",
       "_origin": "ast",
-      "id": "lib_banners_getbanners",
       "community": 8,
-      "norm_label": "getbanners()"
+      "norm_label": "getbanners()",
+      "id": "lib_banners_getbanners"
     },
     {
       "label": "next.config.ts",
@@ -109,9 +229,9 @@
       "source_file": "next.config.ts",
       "source_location": "L1",
       "_origin": "ast",
-      "id": "next_config",
       "community": 39,
-      "norm_label": "next.config.ts"
+      "norm_label": "next.config.ts",
+      "id": "next_config"
     },
     {
       "label": "nextConfig",
@@ -119,9 +239,9 @@
       "source_file": "next.config.ts",
       "source_location": "L3",
       "_origin": "ast",
-      "id": "next_config_nextconfig",
       "community": 39,
-      "norm_label": "nextconfig"
+      "norm_label": "nextconfig",
+      "id": "next_config_nextconfig"
     },
     {
       "label": "page.js",
@@ -5015,7 +5135,7 @@
       "source_file": "README.md",
       "source_location": "L1",
       "_origin": "ast",
-      "community": 43,
+      "community": 6,
       "norm_label": "starlordgroup web - starlordgroup.rw(live site)",
       "id": "users_mac_desktop_starlordgroup_starlord_web_readme_starlordgroup_web_starlordgroup_rw_live_site"
     },
@@ -5025,7 +5145,7 @@
       "source_file": "README.md",
       "source_location": "L3",
       "_origin": "ast",
-      "community": 43,
+      "community": 6,
       "norm_label": "\ud83c\udf1f project overview",
       "id": "users_mac_desktop_starlordgroup_starlord_web_readme_project_overview"
     },
@@ -5035,7 +5155,7 @@
       "source_file": "README.md",
       "source_location": "L15",
       "_origin": "ast",
-      "community": 43,
+      "community": 6,
       "norm_label": "\ud83d\ude80 key features",
       "id": "users_mac_desktop_starlordgroup_starlord_web_readme_key_features"
     },
@@ -5045,7 +5165,7 @@
       "source_file": "README.md",
       "source_location": "L17",
       "_origin": "ast",
-      "community": 43,
+      "community": 6,
       "norm_label": "user-facing:",
       "id": "users_mac_desktop_starlordgroup_starlord_web_readme_user_facing"
     },
@@ -5055,7 +5175,7 @@
       "source_file": "README.md",
       "source_location": "L26",
       "_origin": "ast",
-      "community": 43,
+      "community": 6,
       "norm_label": "admin dashboard:",
       "id": "users_mac_desktop_starlordgroup_starlord_web_readme_admin_dashboard"
     },
@@ -5065,7 +5185,7 @@
       "source_file": "README.md",
       "source_location": "L34",
       "_origin": "ast",
-      "community": 43,
+      "community": 6,
       "norm_label": "note on payments:",
       "id": "users_mac_desktop_starlordgroup_starlord_web_readme_note_on_payments"
     },
@@ -5075,7 +5195,7 @@
       "source_file": "README.md",
       "source_location": "L37",
       "_origin": "ast",
-      "community": 43,
+      "community": 6,
       "norm_label": "\ud83c\udfd7\ufe0f tech stack & architecture",
       "id": "users_mac_desktop_starlordgroup_starlord_web_readme_tech_stack_architecture"
     },
@@ -5085,7 +5205,7 @@
       "source_file": "README.md",
       "source_location": "L57",
       "_origin": "ast",
-      "community": 43,
+      "community": 6,
       "norm_label": "\ud83d\udcc1 folder structure & descriptions",
       "id": "users_mac_desktop_starlordgroup_starlord_web_readme_folder_structure_descriptions"
     },
@@ -5095,7 +5215,7 @@
       "source_file": "README.md",
       "source_location": "L63",
       "_origin": "ast",
-      "community": 43,
+      "community": 6,
       "norm_label": "\ud83d\udee0\ufe0f getting started (local development)",
       "id": "users_mac_desktop_starlordgroup_starlord_web_readme_getting_started_local_development"
     },
@@ -5105,7 +5225,7 @@
       "source_file": "README.md",
       "source_location": "L65",
       "_origin": "ast",
-      "community": 43,
+      "community": 6,
       "norm_label": "prerequisites",
       "id": "users_mac_desktop_starlordgroup_starlord_web_readme_prerequisites"
     },
@@ -5115,7 +5235,7 @@
       "source_file": "README.md",
       "source_location": "L69",
       "_origin": "ast",
-      "community": 43,
+      "community": 6,
       "norm_label": "1. clone & install",
       "id": "users_mac_desktop_starlordgroup_starlord_web_readme_1_clone_install"
     },
@@ -5125,7 +5245,7 @@
       "source_file": "README.md",
       "source_location": "L76",
       "_origin": "ast",
-      "community": 43,
+      "community": 6,
       "norm_label": "2. environment variables",
       "id": "users_mac_desktop_starlordgroup_starlord_web_readme_2_environment_variables"
     },
@@ -5135,7 +5255,7 @@
       "source_file": "README.md",
       "source_location": "L85",
       "_origin": "ast",
-      "community": 43,
+      "community": 6,
       "norm_label": "3. run dev server",
       "id": "users_mac_desktop_starlordgroup_starlord_web_readme_3_run_dev_server"
     },
@@ -5145,7 +5265,7 @@
       "source_file": "README.md",
       "source_location": "L91",
       "_origin": "ast",
-      "community": 43,
+      "community": 6,
       "norm_label": "scripts",
       "id": "users_mac_desktop_starlordgroup_starlord_web_readme_scripts"
     },
@@ -5155,7 +5275,7 @@
       "source_file": "README.md",
       "source_location": "L97",
       "_origin": "ast",
-      "community": 43,
+      "community": 6,
       "norm_label": "\u2601\ufe0f deployment",
       "id": "users_mac_desktop_starlordgroup_starlord_web_readme_deployment"
     },
@@ -5165,7 +5285,7 @@
       "source_file": "README.md",
       "source_location": "L111",
       "_origin": "ast",
-      "community": 43,
+      "community": 6,
       "norm_label": "\ud83d\udd12 environment variables reference",
       "id": "users_mac_desktop_starlordgroup_starlord_web_readme_environment_variables_reference"
     },
@@ -5175,7 +5295,7 @@
       "source_file": "README.md",
       "source_location": "L119",
       "_origin": "ast",
-      "community": 43,
+      "community": 6,
       "norm_label": "\ud83e\udd1d contributing",
       "id": "users_mac_desktop_starlordgroup_starlord_web_readme_contributing"
     },
@@ -5185,7 +5305,7 @@
       "source_file": "README.md",
       "source_location": "L124",
       "_origin": "ast",
-      "community": 43,
+      "community": 6,
       "norm_label": "\ud83d\udcc4 license",
       "id": "users_mac_desktop_starlordgroup_starlord_web_readme_license"
     },
@@ -5195,129 +5315,9 @@
       "source_file": "README.md",
       "source_location": "L127",
       "_origin": "ast",
-      "community": 43,
+      "community": 6,
       "norm_label": "\ud83d\ude4c acknowledgments",
       "id": "users_mac_desktop_starlordgroup_starlord_web_readme_acknowledgments"
-    },
-    {
-      "label": "Todo.md",
-      "file_type": "document",
-      "source_file": "Todo.md",
-      "source_location": "L1",
-      "_origin": "ast",
-      "community": 6,
-      "norm_label": "todo.md",
-      "id": "users_mac_desktop_starlordgroup_starlord_web_todo_md"
-    },
-    {
-      "label": "IremboPay Payment Integration TODO.",
-      "file_type": "document",
-      "source_file": "Todo.md",
-      "source_location": "L1",
-      "_origin": "ast",
-      "community": 6,
-      "norm_label": "irembopay payment integration todo.",
-      "id": "users_mac_desktop_starlordgroup_starlord_web_todo_irembopay_payment_integration_todo"
-    },
-    {
-      "label": "\u2705 Completed",
-      "file_type": "document",
-      "source_file": "Todo.md",
-      "source_location": "L5",
-      "_origin": "ast",
-      "community": 6,
-      "norm_label": "\u2705 completed",
-      "id": "users_mac_desktop_starlordgroup_starlord_web_todo_completed"
-    },
-    {
-      "label": "\ud83d\udccb Remaining",
-      "file_type": "document",
-      "source_file": "Todo.md",
-      "source_location": "L16",
-      "_origin": "ast",
-      "community": 6,
-      "norm_label": "\ud83d\udccb remaining",
-      "id": "users_mac_desktop_starlordgroup_starlord_web_todo_remaining"
-    },
-    {
-      "label": "1. Sandbox Access (blocker)",
-      "file_type": "document",
-      "source_file": "Todo.md",
-      "source_location": "L18",
-      "_origin": "ast",
-      "community": 6,
-      "norm_label": "1. sandbox access (blocker)",
-      "id": "users_mac_desktop_starlordgroup_starlord_web_todo_1_sandbox_access_blocker"
-    },
-    {
-      "label": "2. Confirm API shape (unblock `/api/payments/initiate`)",
-      "file_type": "document",
-      "source_file": "Todo.md",
-      "source_location": "L22",
-      "_origin": "ast",
-      "community": 6,
-      "norm_label": "2. confirm api shape (unblock `/api/payments/initiate`)",
-      "id": "users_mac_desktop_starlordgroup_starlord_web_todo_2_confirm_api_shape_unblock_api_payments_initiate"
-    },
-    {
-      "label": "3. Wire up `/api/payments/initiate` (~30 min once sandbox confirmed)",
-      "file_type": "document",
-      "source_file": "Todo.md",
-      "source_location": "L34",
-      "_origin": "ast",
-      "community": 6,
-      "norm_label": "3. wire up `/api/payments/initiate` (~30 min once sandbox confirmed)",
-      "id": "users_mac_desktop_starlordgroup_starlord_web_todo_3_wire_up_api_payments_initiate_30_min_once_sandbox_confirmed"
-    },
-    {
-      "label": "4. Webhook testing",
-      "file_type": "document",
-      "source_file": "Todo.md",
-      "source_location": "L38",
-      "_origin": "ast",
-      "community": 6,
-      "norm_label": "4. webhook testing",
-      "id": "users_mac_desktop_starlordgroup_starlord_web_todo_4_webhook_testing"
-    },
-    {
-      "label": "5. Prod rollout",
-      "file_type": "document",
-      "source_file": "Todo.md",
-      "source_location": "L43",
-      "_origin": "ast",
-      "community": 6,
-      "norm_label": "5. prod rollout",
-      "id": "users_mac_desktop_starlordgroup_starlord_web_todo_5_prod_rollout"
-    },
-    {
-      "label": "6. Optional polish",
-      "file_type": "document",
-      "source_file": "Todo.md",
-      "source_location": "L49",
-      "_origin": "ast",
-      "community": 6,
-      "norm_label": "6. optional polish",
-      "id": "users_mac_desktop_starlordgroup_starlord_web_todo_6_optional_polish"
-    },
-    {
-      "label": "\ud83d\udea8 Known risks",
-      "file_type": "document",
-      "source_file": "Todo.md",
-      "source_location": "L54",
-      "_origin": "ast",
-      "community": 6,
-      "norm_label": "\ud83d\udea8 known risks",
-      "id": "users_mac_desktop_starlordgroup_starlord_web_todo_known_risks"
-    },
-    {
-      "label": "Progress",
-      "file_type": "document",
-      "source_file": "Todo.md",
-      "source_location": "L58",
-      "_origin": "ast",
-      "community": 6,
-      "norm_label": "progress",
-      "id": "users_mac_desktop_starlordgroup_starlord_web_todo_progress"
     },
     {
       "label": "fixes.md",
@@ -5574,12 +5574,122 @@
     {
       "relation": "contains",
       "confidence": "EXTRACTED",
+      "source_file": "Todo.md",
+      "source_location": "L1",
+      "weight": 1.0,
+      "source": "todo",
+      "target": "todo_irembopay_payment_integration_todo_almost",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "Todo.md",
+      "source_location": "L5",
+      "weight": 1.0,
+      "source": "todo_irembopay_payment_integration_todo_almost",
+      "target": "todo_completed",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "Todo.md",
+      "source_location": "L54",
+      "weight": 1.0,
+      "source": "todo_irembopay_payment_integration_todo_almost",
+      "target": "todo_known_risks",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "Todo.md",
+      "source_location": "L58",
+      "weight": 1.0,
+      "source": "todo_irembopay_payment_integration_todo_almost",
+      "target": "todo_progress",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "Todo.md",
+      "source_location": "L16",
+      "weight": 1.0,
+      "source": "todo_irembopay_payment_integration_todo_almost",
+      "target": "todo_remaining",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "Todo.md",
+      "source_location": "L18",
+      "weight": 1.0,
+      "source": "todo_remaining",
+      "target": "todo_1_sandbox_access_blocker",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "Todo.md",
+      "source_location": "L22",
+      "weight": 1.0,
+      "source": "todo_remaining",
+      "target": "todo_2_confirm_api_shape_unblock_api_payments_initiate",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "Todo.md",
+      "source_location": "L34",
+      "weight": 1.0,
+      "source": "todo_remaining",
+      "target": "todo_3_wire_up_api_payments_initiate_30_min_once_sandbox_confirmed",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "Todo.md",
+      "source_location": "L38",
+      "weight": 1.0,
+      "source": "todo_remaining",
+      "target": "todo_4_webhook_testing",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "Todo.md",
+      "source_location": "L43",
+      "weight": 1.0,
+      "source": "todo_remaining",
+      "target": "todo_5_prod_rollout",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "Todo.md",
+      "source_location": "L49",
+      "weight": 1.0,
+      "source": "todo_remaining",
+      "target": "todo_6_optional_polish",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
       "source_file": "app/api/banners/route.js",
       "source_location": "L3",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "app_api_banners_route",
-      "target": "app_api_banners_route_get",
-      "confidence_score": 1.0
+      "target": "app_api_banners_route_get"
     },
     {
       "relation": "imports_from",
@@ -5588,9 +5698,9 @@
       "source_file": "app/api/banners/route.js",
       "source_location": "L1",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "app_api_banners_route",
-      "target": "lib_banners",
-      "confidence_score": 1.0
+      "target": "lib_banners"
     },
     {
       "relation": "imports",
@@ -5599,9 +5709,9 @@
       "source_file": "app/api/banners/route.js",
       "source_location": "L1",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "app_api_banners_route",
-      "target": "lib_banners_getbanners",
-      "confidence_score": 1.0
+      "target": "lib_banners_getbanners"
     },
     {
       "relation": "calls",
@@ -5620,9 +5730,9 @@
       "source_file": "app/page.js",
       "source_location": "L9",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "app_page",
-      "target": "app_page_getnavcategories",
-      "confidence_score": 1.0
+      "target": "app_page_getnavcategories"
     },
     {
       "relation": "contains",
@@ -5630,9 +5740,9 @@
       "source_file": "app/page.js",
       "source_location": "L21",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "app_page",
-      "target": "app_page_getproducts",
-      "confidence_score": 1.0
+      "target": "app_page_getproducts"
     },
     {
       "relation": "contains",
@@ -5640,9 +5750,9 @@
       "source_file": "app/page.js",
       "source_location": "L44",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "app_page",
-      "target": "app_page_homepage",
-      "confidence_score": 1.0
+      "target": "app_page_homepage"
     },
     {
       "relation": "imports_from",
@@ -5651,9 +5761,9 @@
       "source_file": "app/page.js",
       "source_location": "L3",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "app_page",
-      "target": "components_bannerslider",
-      "confidence_score": 1.0
+      "target": "components_bannerslider"
     },
     {
       "relation": "imports",
@@ -5662,9 +5772,9 @@
       "source_file": "app/page.js",
       "source_location": "L3",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "app_page",
-      "target": "components_bannerslider_bannerslider",
-      "confidence_score": 1.0
+      "target": "components_bannerslider_bannerslider"
     },
     {
       "relation": "imports_from",
@@ -5673,9 +5783,9 @@
       "source_file": "app/page.js",
       "source_location": "L2",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "app_page",
-      "target": "lib_banners",
-      "confidence_score": 1.0
+      "target": "lib_banners"
     },
     {
       "relation": "imports",
@@ -5684,9 +5794,9 @@
       "source_file": "app/page.js",
       "source_location": "L2",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "app_page",
-      "target": "lib_banners_getbanners",
-      "confidence_score": 1.0
+      "target": "lib_banners_getbanners"
     },
     {
       "relation": "calls",
@@ -5695,9 +5805,9 @@
       "source_file": "app/page.js",
       "source_location": "L47",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "app_page_homepage",
-      "target": "app_page_getnavcategories",
-      "confidence_score": 1.0
+      "target": "app_page_getnavcategories"
     },
     {
       "relation": "calls",
@@ -5706,9 +5816,9 @@
       "source_file": "app/page.js",
       "source_location": "L46",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "app_page_homepage",
-      "target": "app_page_getproducts",
-      "confidence_score": 1.0
+      "target": "app_page_getproducts"
     },
     {
       "relation": "calls",
@@ -5727,9 +5837,9 @@
       "source_file": "components/BannerSlider.js",
       "source_location": "L7",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "components_bannerslider",
-      "target": "components_bannerslider_bannerslider",
-      "confidence_score": 1.0
+      "target": "components_bannerslider_bannerslider"
     },
     {
       "relation": "contains",
@@ -5737,9 +5847,9 @@
       "source_file": "lib/banners.js",
       "source_location": "L3",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "lib_banners",
-      "target": "lib_banners_getbanners",
-      "confidence_score": 1.0
+      "target": "lib_banners_getbanners"
     },
     {
       "relation": "contains",
@@ -5747,9 +5857,9 @@
       "source_file": "next.config.ts",
       "source_location": "L3",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "next_config",
-      "target": "next_config_nextconfig",
-      "confidence_score": 1.0
+      "target": "next_config_nextconfig"
     },
     {
       "relation": "contains",
@@ -13235,16 +13345,6 @@
       "target": "users_mac_desktop_starlordgroup_starlord_web_readme_md"
     },
     {
-      "relation": "references",
-      "confidence": "EXTRACTED",
-      "source_file": "Instructions.md",
-      "source_location": "L202",
-      "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "users_mac_desktop_starlordgroup_starlord_web_instructions_md",
-      "target": "users_mac_desktop_starlordgroup_starlord_web_todo_md"
-    },
-    {
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "Instructions.md",
@@ -13777,116 +13877,6 @@
     {
       "relation": "contains",
       "confidence": "EXTRACTED",
-      "source_file": "Todo.md",
-      "source_location": "L1",
-      "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "users_mac_desktop_starlordgroup_starlord_web_todo_md",
-      "target": "users_mac_desktop_starlordgroup_starlord_web_todo_irembopay_payment_integration_todo"
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "Todo.md",
-      "source_location": "L5",
-      "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "users_mac_desktop_starlordgroup_starlord_web_todo_irembopay_payment_integration_todo",
-      "target": "users_mac_desktop_starlordgroup_starlord_web_todo_completed"
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "Todo.md",
-      "source_location": "L54",
-      "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "users_mac_desktop_starlordgroup_starlord_web_todo_irembopay_payment_integration_todo",
-      "target": "users_mac_desktop_starlordgroup_starlord_web_todo_known_risks"
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "Todo.md",
-      "source_location": "L58",
-      "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "users_mac_desktop_starlordgroup_starlord_web_todo_irembopay_payment_integration_todo",
-      "target": "users_mac_desktop_starlordgroup_starlord_web_todo_progress"
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "Todo.md",
-      "source_location": "L16",
-      "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "users_mac_desktop_starlordgroup_starlord_web_todo_irembopay_payment_integration_todo",
-      "target": "users_mac_desktop_starlordgroup_starlord_web_todo_remaining"
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "Todo.md",
-      "source_location": "L18",
-      "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "users_mac_desktop_starlordgroup_starlord_web_todo_remaining",
-      "target": "users_mac_desktop_starlordgroup_starlord_web_todo_1_sandbox_access_blocker"
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "Todo.md",
-      "source_location": "L22",
-      "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "users_mac_desktop_starlordgroup_starlord_web_todo_remaining",
-      "target": "users_mac_desktop_starlordgroup_starlord_web_todo_2_confirm_api_shape_unblock_api_payments_initiate"
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "Todo.md",
-      "source_location": "L34",
-      "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "users_mac_desktop_starlordgroup_starlord_web_todo_remaining",
-      "target": "users_mac_desktop_starlordgroup_starlord_web_todo_3_wire_up_api_payments_initiate_30_min_once_sandbox_confirmed"
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "Todo.md",
-      "source_location": "L38",
-      "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "users_mac_desktop_starlordgroup_starlord_web_todo_remaining",
-      "target": "users_mac_desktop_starlordgroup_starlord_web_todo_4_webhook_testing"
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "Todo.md",
-      "source_location": "L43",
-      "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "users_mac_desktop_starlordgroup_starlord_web_todo_remaining",
-      "target": "users_mac_desktop_starlordgroup_starlord_web_todo_5_prod_rollout"
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "Todo.md",
-      "source_location": "L49",
-      "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "users_mac_desktop_starlordgroup_starlord_web_todo_remaining",
-      "target": "users_mac_desktop_starlordgroup_starlord_web_todo_6_optional_polish"
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
       "source_file": "fixes.md",
       "source_location": "L1",
       "weight": 1.0,
@@ -14126,5 +14116,5 @@
     }
   ],
   "hyperedges": [],
-  "built_at_commit": "a8b1492f8cce80ed24c438c12bff45d6ad2ec791"
+  "built_at_commit": "84165f52c746ffcdd349ce698c67f8493c2fb963"
 }
