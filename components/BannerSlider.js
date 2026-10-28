@@ -4,22 +4,15 @@ import { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 
-export default function BannerSlider() {
-  const [banners, setBanners]   = useState([]);
-  const [active, setActive]     = useState(0);
-  const [loading, setLoading]   = useState(true);
-  const touchStartX             = useRef(null);
-  const intervalRef             = useRef(null);
+export default function BannerSlider({ initialBanners = [] }) {
+  const banners               = initialBanners;
+  const [active, setActive]   = useState(0);
+  const [mounted, setMounted] = useState(false);
+  const touchStartX           = useRef(null);
+  const intervalRef           = useRef(null);
+  const current               = banners.length ? active % banners.length : 0;
 
-  useEffect(() => {
-    fetch('/api/banners')
-      .then(r => r.json())
-      .then(d => {
-        setBanners(d.banners || []);
-        setLoading(false);
-      })
-      .catch(() => setLoading(false));
-  }, []);
+  useEffect(() => { setMounted(true); }, []);
 
   useEffect(() => {
     if (banners.length <= 1) return;
@@ -43,15 +36,15 @@ export default function BannerSlider() {
     const diff = touchStartX.current - e.changedTouches[0].clientX;
     if (Math.abs(diff) > 40) {
       if (diff > 0) {
-        goTo((active + 1) % banners.length);
+        goTo((current + 1) % banners.length);
       } else {
-        goTo((active - 1 + banners.length) % banners.length);
+        goTo((current - 1 + banners.length) % banners.length);
       }
     }
     touchStartX.current = null;
   };
 
-  if (loading || banners.length === 0) return null;
+  if (banners.length === 0) return null;
 
   return (
     <div
@@ -77,24 +70,24 @@ export default function BannerSlider() {
           key={b.id}
           style={{
             position: 'absolute', inset: 0,
-            opacity: i === active ? 1 : 0,
+            opacity: i === current ? 1 : 0,
             transition: 'opacity 0.7s ease',
-            pointerEvents: i === active ? 'auto' : 'none',
+            pointerEvents: i === current ? 'auto' : 'none',
           }}
         >
           {/* Background image — Next.js Image for auto WebP + resizing */}
-          {b.image_url ? (
+          {b.image_url && (i === 0 || mounted) ? (
             <Image
               src={b.image_url}
               alt={b.title || ''}
               fill
               style={{ objectFit: 'cover' }}
-              // First slide loads eagerly as LCP element; rest are lazy
-              priority={i === 0}
-              loading={i === 0 ? 'eager' : 'lazy'}
-              // Tells Next.js what size to generate:
-              // mobile: full viewport width, desktop: capped at 1280px
-              sizes="(max-width: 767px) 100vw, 1280px"
+              // First slide is the LCP: preload it in the SSR <head>.
+              // Other slides mount after hydration and yield priority.
+              preload={i === 0}
+              fetchPriority={i === 0 ? 'high' : 'low'}
+              // mobile: full viewport width, desktop: capped at 1200px
+              sizes="(max-width: 1200px) 100vw, 1200px"
               quality={75}
             />
           ) : (
@@ -169,7 +162,7 @@ export default function BannerSlider() {
         <>
           <button
             className="banner-arrow" 
-            onClick={() => goTo((active - 1 + banners.length) % banners.length)}
+            onClick={() => goTo((current - 1 + banners.length) % banners.length)}
             aria-label="Previous"
             style={{
               position: 'absolute', left: 16, top: '50%',
@@ -183,7 +176,7 @@ export default function BannerSlider() {
           >‹</button>
           <button
             className="banner-arrow" 
-            onClick={() => goTo((active + 1) % banners.length)}
+            onClick={() => goTo((current + 1) % banners.length)}
             aria-label="Next"
             style={{
               position: 'absolute', right: 16, top: '50%',
@@ -211,9 +204,9 @@ export default function BannerSlider() {
               onClick={() => goTo(i)}
               aria-label={`Go to slide ${i + 1}`}
               style={{
-                width: i === active ? 24 : 8,
+                width: i === current ? 24 : 8,
                 height: 8, borderRadius: 4,
-                background: i === active ? 'var(--gold)' : 'rgba(255,255,255,0.4)',
+                background: i === current ? 'var(--gold)' : 'rgba(255,255,255,0.4)',
                 border: 'none', cursor: 'pointer',
                 padding: 0,
                 transition: 'all 0.3s ease',

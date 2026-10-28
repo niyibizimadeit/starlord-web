@@ -5,7 +5,10 @@ const nextConfig: NextConfig = {
     root: __dirname,
   },
   images: {
-    unoptimized: true,
+    // The local machine's VPN resolves images.starlordgroup.rw to a private
+    // fake-IP, which the optimizer blocks. Vercel resolves it publicly, so
+    // keep the SSRF guard enabled there (VERCEL=1) and relax it locally.
+    dangerouslyAllowLocalIP: !process.env.VERCEL,
     remotePatterns: [
       {
         protocol: 'https',

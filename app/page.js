@@ -1,4 +1,5 @@
 import { createServiceClient } from '@/lib/supabase/server';
+import { getBanners } from '@/lib/banners';
 import BannerSlider from '@/components/BannerSlider';
 import ProductGrid from '@/components/ProductGrid';
 import TrustBar from '@/components/TrustBar';
@@ -40,24 +41,18 @@ async function getProducts() {
     });
 }
 
-export default async function HomePage({ searchParams }) {
-  const params   = await searchParams;
-  const [products, navCategories] = await Promise.all([
+export default async function HomePage() {
+  const [products, navCategories, banners] = await Promise.all([
     getProducts(),
     getNavCategories(),
+    getBanners(),
   ]);
-  const category = params?.category || 'All';
-  const search   = params?.search   || '';
-  const badge    = params?.badge    || '';
 
   return (
     <main className="home-sections">
-      <BannerSlider />
+      <BannerSlider initialBanners={banners} />
       <ProductGrid
         initialProducts={products}
-        initialCategory={category}
-        initialSearch={search}
-        initialBadge={badge}
         hideDesktopFilters
         categories={navCategories}
       />
