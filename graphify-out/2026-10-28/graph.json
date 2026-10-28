@@ -3347,7 +3347,7 @@
       "label": "DesktopSectionHeader()",
       "file_type": "code",
       "source_file": "components/ProductGrid.js",
-      "source_location": "L108",
+      "source_location": "L109",
       "_origin": "ast",
       "id": "components_productgrid_desktopsectionheader",
       "community": 1,
@@ -3357,7 +3357,7 @@
       "label": "ProductGrid()",
       "file_type": "code",
       "source_file": "components/ProductGrid.js",
-      "source_location": "L120",
+      "source_location": "L121",
       "_origin": "ast",
       "id": "components_productgrid_productgrid",
       "community": 1,
@@ -3759,7 +3759,7 @@
       "source_file": "package.json",
       "source_location": "L1",
       "_origin": "ast",
-      "id": "users_mac_desktop_starlordgroup_starlord_web_package_json",
+      "id": "package",
       "community": 2,
       "norm_label": "package.json"
     },
@@ -3769,7 +3769,7 @@
       "source_file": "package.json",
       "source_location": "L2",
       "_origin": "ast",
-      "id": "users_mac_desktop_starlordgroup_starlord_web_package_name",
+      "id": "package_name",
       "community": 2,
       "norm_label": "name"
     },
@@ -3779,7 +3779,7 @@
       "source_file": "package.json",
       "source_location": "L3",
       "_origin": "ast",
-      "id": "users_mac_desktop_starlordgroup_starlord_web_package_version",
+      "id": "package_version",
       "community": 2,
       "norm_label": "version"
     },
@@ -3789,7 +3789,7 @@
       "source_file": "package.json",
       "source_location": "L4",
       "_origin": "ast",
-      "id": "users_mac_desktop_starlordgroup_starlord_web_package_private",
+      "id": "package_private",
       "community": 2,
       "norm_label": "private"
     },
@@ -3799,7 +3799,7 @@
       "source_file": "package.json",
       "source_location": "L5",
       "_origin": "ast",
-      "id": "users_mac_desktop_starlordgroup_starlord_web_package_scripts",
+      "id": "package_scripts",
       "community": 2,
       "norm_label": "scripts"
     },
@@ -3809,7 +3809,7 @@
       "source_file": "package.json",
       "source_location": "L6",
       "_origin": "ast",
-      "id": "users_mac_desktop_starlordgroup_starlord_web_package_scripts_dev",
+      "id": "package_scripts_dev",
       "community": 2,
       "norm_label": "dev"
     },
@@ -3819,7 +3819,7 @@
       "source_file": "package.json",
       "source_location": "L7",
       "_origin": "ast",
-      "id": "users_mac_desktop_starlordgroup_starlord_web_package_scripts_build",
+      "id": "package_scripts_build",
       "community": 2,
       "norm_label": "build"
     },
@@ -3829,7 +3829,7 @@
       "source_file": "package.json",
       "source_location": "L8",
       "_origin": "ast",
-      "id": "users_mac_desktop_starlordgroup_starlord_web_package_scripts_start",
+      "id": "package_scripts_start",
       "community": 2,
       "norm_label": "start"
     },
@@ -3839,7 +3839,7 @@
       "source_file": "package.json",
       "source_location": "L9",
       "_origin": "ast",
-      "id": "users_mac_desktop_starlordgroup_starlord_web_package_scripts_lint",
+      "id": "package_scripts_lint",
       "community": 2,
       "norm_label": "lint"
     },
@@ -3849,7 +3849,7 @@
       "source_file": "package.json",
       "source_location": "L11",
       "_origin": "ast",
-      "id": "users_mac_desktop_starlordgroup_starlord_web_package_dependencies",
+      "id": "package_dependencies",
       "community": 2,
       "norm_label": "dependencies"
     },
@@ -3859,7 +3859,7 @@
       "source_file": "package.json",
       "source_location": "L12",
       "_origin": "ast",
-      "id": "users_mac_desktop_starlordgroup_starlord_web_package_dependencies_aws_sdk_client_s3",
+      "id": "package_dependencies_aws_sdk_client_s3",
       "community": 2,
       "norm_label": "@aws-sdk/client-s3"
     },
@@ -3869,7 +3869,7 @@
       "source_file": "package.json",
       "source_location": "L13",
       "_origin": "ast",
-      "id": "users_mac_desktop_starlordgroup_starlord_web_package_dependencies_supabase_ssr",
+      "id": "package_dependencies_supabase_ssr",
       "community": 2,
       "norm_label": "@supabase/ssr"
     },
@@ -3879,7 +3879,7 @@
       "source_file": "package.json",
       "source_location": "L14",
       "_origin": "ast",
-      "id": "users_mac_desktop_starlordgroup_starlord_web_package_dependencies_supabase_supabase_js",
+      "id": "package_dependencies_supabase_supabase_js",
       "community": 2,
       "norm_label": "@supabase/supabase-js"
     },
@@ -3889,7 +3889,7 @@
       "source_file": "package.json",
       "source_location": "L15",
       "_origin": "ast",
-      "id": "users_mac_desktop_starlordgroup_starlord_web_package_dependencies_vercel_analytics",
+      "id": "package_dependencies_vercel_analytics",
       "community": 2,
       "norm_label": "@vercel/analytics"
     },
@@ -3899,7 +3899,7 @@
       "source_file": "package.json",
       "source_location": "L16",
       "_origin": "ast",
-      "id": "users_mac_desktop_starlordgroup_starlord_web_package_dependencies_vercel_speed_insights",
+      "id": "package_dependencies_vercel_speed_insights",
       "community": 2,
       "norm_label": "@vercel/speed-insights"
     },
@@ -3909,7 +3909,7 @@
       "source_file": "package.json",
       "source_location": "L17",
       "_origin": "ast",
-      "id": "users_mac_desktop_starlordgroup_starlord_web_package_dependencies_jose",
+      "id": "package_dependencies_jose",
       "community": 2,
       "norm_label": "jose"
     },
@@ -3919,7 +3919,7 @@
       "source_file": "package.json",
       "source_location": "L18",
       "_origin": "ast",
-      "id": "users_mac_desktop_starlordgroup_starlord_web_package_dependencies_next",
+      "id": "package_dependencies_next",
       "community": 2,
       "norm_label": "next"
     },
@@ -3929,7 +3929,7 @@
       "source_file": "package.json",
       "source_location": "L19",
       "_origin": "ast",
-      "id": "users_mac_desktop_starlordgroup_starlord_web_package_dependencies_qrcode",
+      "id": "package_dependencies_qrcode",
       "community": 2,
       "norm_label": "qrcode"
     },
@@ -3939,7 +3939,7 @@
       "source_file": "package.json",
       "source_location": "L20",
       "_origin": "ast",
-      "id": "users_mac_desktop_starlordgroup_starlord_web_package_dependencies_react",
+      "id": "package_dependencies_react",
       "community": 2,
       "norm_label": "react"
     },
@@ -3949,7 +3949,7 @@
       "source_file": "package.json",
       "source_location": "L21",
       "_origin": "ast",
-      "id": "users_mac_desktop_starlordgroup_starlord_web_package_dependencies_react_dom",
+      "id": "package_dependencies_react_dom",
       "community": 2,
       "norm_label": "react-dom"
     },
@@ -3959,7 +3959,7 @@
       "source_file": "package.json",
       "source_location": "L22",
       "_origin": "ast",
-      "id": "users_mac_desktop_starlordgroup_starlord_web_package_dependencies_sanitize_html",
+      "id": "package_dependencies_sanitize_html",
       "community": 2,
       "norm_label": "sanitize-html"
     },
@@ -3969,7 +3969,7 @@
       "source_file": "package.json",
       "source_location": "L23",
       "_origin": "ast",
-      "id": "users_mac_desktop_starlordgroup_starlord_web_package_dependencies_server_only",
+      "id": "package_dependencies_server_only",
       "community": 2,
       "norm_label": "server-only"
     },
@@ -3979,7 +3979,7 @@
       "source_file": "package.json",
       "source_location": "L25",
       "_origin": "ast",
-      "id": "users_mac_desktop_starlordgroup_starlord_web_package_devdependencies",
+      "id": "package_devdependencies",
       "community": 2,
       "norm_label": "devdependencies"
     },
@@ -3989,7 +3989,7 @@
       "source_file": "package.json",
       "source_location": "L26",
       "_origin": "ast",
-      "id": "users_mac_desktop_starlordgroup_starlord_web_package_devdependencies_tailwindcss_postcss",
+      "id": "package_devdependencies_tailwindcss_postcss",
       "community": 2,
       "norm_label": "@tailwindcss/postcss"
     },
@@ -3999,7 +3999,7 @@
       "source_file": "package.json",
       "source_location": "L27",
       "_origin": "ast",
-      "id": "users_mac_desktop_starlordgroup_starlord_web_package_devdependencies_testing_library_jest_dom",
+      "id": "package_devdependencies_testing_library_jest_dom",
       "community": 2,
       "norm_label": "@testing-library/jest-dom"
     },
@@ -4009,7 +4009,7 @@
       "source_file": "package.json",
       "source_location": "L28",
       "_origin": "ast",
-      "id": "users_mac_desktop_starlordgroup_starlord_web_package_devdependencies_testing_library_react",
+      "id": "package_devdependencies_testing_library_react",
       "community": 2,
       "norm_label": "@testing-library/react"
     },
@@ -4019,7 +4019,7 @@
       "source_file": "package.json",
       "source_location": "L29",
       "_origin": "ast",
-      "id": "users_mac_desktop_starlordgroup_starlord_web_package_devdependencies_types_node",
+      "id": "package_devdependencies_types_node",
       "community": 2,
       "norm_label": "@types/node"
     },
@@ -4029,7 +4029,7 @@
       "source_file": "package.json",
       "source_location": "L30",
       "_origin": "ast",
-      "id": "users_mac_desktop_starlordgroup_starlord_web_package_devdependencies_types_react",
+      "id": "package_devdependencies_types_react",
       "community": 2,
       "norm_label": "@types/react"
     },
@@ -4039,7 +4039,7 @@
       "source_file": "package.json",
       "source_location": "L31",
       "_origin": "ast",
-      "id": "users_mac_desktop_starlordgroup_starlord_web_package_devdependencies_types_react_dom",
+      "id": "package_devdependencies_types_react_dom",
       "community": 2,
       "norm_label": "@types/react-dom"
     },
@@ -4049,7 +4049,7 @@
       "source_file": "package.json",
       "source_location": "L32",
       "_origin": "ast",
-      "id": "users_mac_desktop_starlordgroup_starlord_web_package_devdependencies_eslint",
+      "id": "package_devdependencies_eslint",
       "community": 2,
       "norm_label": "eslint"
     },
@@ -4059,7 +4059,7 @@
       "source_file": "package.json",
       "source_location": "L33",
       "_origin": "ast",
-      "id": "users_mac_desktop_starlordgroup_starlord_web_package_devdependencies_eslint_config_next",
+      "id": "package_devdependencies_eslint_config_next",
       "community": 2,
       "norm_label": "eslint-config-next"
     },
@@ -4069,7 +4069,7 @@
       "source_file": "package.json",
       "source_location": "L34",
       "_origin": "ast",
-      "id": "users_mac_desktop_starlordgroup_starlord_web_package_devdependencies_tailwindcss",
+      "id": "package_devdependencies_tailwindcss",
       "community": 2,
       "norm_label": "tailwindcss"
     },
@@ -4079,7 +4079,7 @@
       "source_file": "package.json",
       "source_location": "L35",
       "_origin": "ast",
-      "id": "users_mac_desktop_starlordgroup_starlord_web_package_devdependencies_typescript",
+      "id": "package_devdependencies_typescript",
       "community": 2,
       "norm_label": "typescript"
     },
@@ -4089,7 +4089,7 @@
       "source_file": "package.json",
       "source_location": "L36",
       "_origin": "ast",
-      "id": "users_mac_desktop_starlordgroup_starlord_web_package_devdependencies_vitest",
+      "id": "package_devdependencies_vitest",
       "community": 2,
       "norm_label": "vitest"
     },
@@ -4099,7 +4099,7 @@
       "source_file": "package.json",
       "source_location": "L38",
       "_origin": "ast",
-      "id": "users_mac_desktop_starlordgroup_starlord_web_package_browserslist",
+      "id": "package_browserslist",
       "community": 2,
       "norm_label": "browserslist"
     },
@@ -6272,7 +6272,7 @@
       "source_location": "L133",
       "weight": 1.0,
       "source": "app_admin_adminhelpers_printshippinglabel",
-      "target": "users_mac_desktop_starlordgroup_starlord_web_package_dependencies_qrcode"
+      "target": "package_dependencies_qrcode"
     },
     {
       "relation": "imports",
@@ -11671,7 +11671,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "components/ProductGrid.js",
-      "source_location": "L142",
+      "source_location": "L143",
       "weight": 1.0,
       "source": "components_productgrid_productgrid",
       "target": "components_cartcontext_usecart"
@@ -12060,7 +12060,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "components/ProductGrid.js",
-      "source_location": "L108",
+      "source_location": "L109",
       "weight": 1.0,
       "source": "components_productgrid",
       "target": "components_productgrid_desktopsectionheader",
@@ -12090,7 +12090,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "components/ProductGrid.js",
-      "source_location": "L120",
+      "source_location": "L121",
       "weight": 1.0,
       "source": "components_productgrid",
       "target": "components_productgrid_productgrid",
@@ -12101,7 +12101,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "components/ProductGrid.js",
-      "source_location": "L82",
+      "source_location": "L83",
       "weight": 1.0,
       "source": "components_productgrid_productcard",
       "target": "components_productgrid_formatrwf",
@@ -12112,7 +12112,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "components/ProductGrid.js",
-      "source_location": "L290",
+      "source_location": "L291",
       "weight": 1.0,
       "source": "components_productgrid_productgrid",
       "target": "components_productgrid_formatrwf",
@@ -12451,8 +12451,8 @@
       "source_file": "package.json",
       "source_location": "L38",
       "weight": 1.0,
-      "source": "users_mac_desktop_starlordgroup_starlord_web_package_json",
-      "target": "users_mac_desktop_starlordgroup_starlord_web_package_browserslist",
+      "source": "package",
+      "target": "package_browserslist",
       "confidence_score": 1.0
     },
     {
@@ -12461,8 +12461,8 @@
       "source_file": "package.json",
       "source_location": "L11",
       "weight": 1.0,
-      "source": "users_mac_desktop_starlordgroup_starlord_web_package_json",
-      "target": "users_mac_desktop_starlordgroup_starlord_web_package_dependencies",
+      "source": "package",
+      "target": "package_dependencies",
       "confidence_score": 1.0
     },
     {
@@ -12471,8 +12471,8 @@
       "source_file": "package.json",
       "source_location": "L25",
       "weight": 1.0,
-      "source": "users_mac_desktop_starlordgroup_starlord_web_package_json",
-      "target": "users_mac_desktop_starlordgroup_starlord_web_package_devdependencies",
+      "source": "package",
+      "target": "package_devdependencies",
       "confidence_score": 1.0
     },
     {
@@ -12481,8 +12481,8 @@
       "source_file": "package.json",
       "source_location": "L2",
       "weight": 1.0,
-      "source": "users_mac_desktop_starlordgroup_starlord_web_package_json",
-      "target": "users_mac_desktop_starlordgroup_starlord_web_package_name",
+      "source": "package",
+      "target": "package_name",
       "confidence_score": 1.0
     },
     {
@@ -12491,8 +12491,8 @@
       "source_file": "package.json",
       "source_location": "L4",
       "weight": 1.0,
-      "source": "users_mac_desktop_starlordgroup_starlord_web_package_json",
-      "target": "users_mac_desktop_starlordgroup_starlord_web_package_private",
+      "source": "package",
+      "target": "package_private",
       "confidence_score": 1.0
     },
     {
@@ -12501,8 +12501,8 @@
       "source_file": "package.json",
       "source_location": "L5",
       "weight": 1.0,
-      "source": "users_mac_desktop_starlordgroup_starlord_web_package_json",
-      "target": "users_mac_desktop_starlordgroup_starlord_web_package_scripts",
+      "source": "package",
+      "target": "package_scripts",
       "confidence_score": 1.0
     },
     {
@@ -12511,8 +12511,8 @@
       "source_file": "package.json",
       "source_location": "L3",
       "weight": 1.0,
-      "source": "users_mac_desktop_starlordgroup_starlord_web_package_json",
-      "target": "users_mac_desktop_starlordgroup_starlord_web_package_version",
+      "source": "package",
+      "target": "package_version",
       "confidence_score": 1.0
     },
     {
@@ -12521,8 +12521,8 @@
       "source_file": "package.json",
       "source_location": "L7",
       "weight": 1.0,
-      "source": "users_mac_desktop_starlordgroup_starlord_web_package_scripts",
-      "target": "users_mac_desktop_starlordgroup_starlord_web_package_scripts_build",
+      "source": "package_scripts",
+      "target": "package_scripts_build",
       "confidence_score": 1.0
     },
     {
@@ -12531,8 +12531,8 @@
       "source_file": "package.json",
       "source_location": "L6",
       "weight": 1.0,
-      "source": "users_mac_desktop_starlordgroup_starlord_web_package_scripts",
-      "target": "users_mac_desktop_starlordgroup_starlord_web_package_scripts_dev",
+      "source": "package_scripts",
+      "target": "package_scripts_dev",
       "confidence_score": 1.0
     },
     {
@@ -12541,8 +12541,8 @@
       "source_file": "package.json",
       "source_location": "L9",
       "weight": 1.0,
-      "source": "users_mac_desktop_starlordgroup_starlord_web_package_scripts",
-      "target": "users_mac_desktop_starlordgroup_starlord_web_package_scripts_lint",
+      "source": "package_scripts",
+      "target": "package_scripts_lint",
       "confidence_score": 1.0
     },
     {
@@ -12551,8 +12551,8 @@
       "source_file": "package.json",
       "source_location": "L8",
       "weight": 1.0,
-      "source": "users_mac_desktop_starlordgroup_starlord_web_package_scripts",
-      "target": "users_mac_desktop_starlordgroup_starlord_web_package_scripts_start",
+      "source": "package_scripts",
+      "target": "package_scripts_start",
       "confidence_score": 1.0
     },
     {
@@ -12561,8 +12561,8 @@
       "source_file": "package.json",
       "source_location": "L12",
       "weight": 1.0,
-      "source": "users_mac_desktop_starlordgroup_starlord_web_package_dependencies",
-      "target": "users_mac_desktop_starlordgroup_starlord_web_package_dependencies_aws_sdk_client_s3",
+      "source": "package_dependencies",
+      "target": "package_dependencies_aws_sdk_client_s3",
       "confidence_score": 1.0
     },
     {
@@ -12571,8 +12571,8 @@
       "source_file": "package.json",
       "source_location": "L17",
       "weight": 1.0,
-      "source": "users_mac_desktop_starlordgroup_starlord_web_package_dependencies",
-      "target": "users_mac_desktop_starlordgroup_starlord_web_package_dependencies_jose",
+      "source": "package_dependencies",
+      "target": "package_dependencies_jose",
       "confidence_score": 1.0
     },
     {
@@ -12581,8 +12581,8 @@
       "source_file": "package.json",
       "source_location": "L18",
       "weight": 1.0,
-      "source": "users_mac_desktop_starlordgroup_starlord_web_package_dependencies",
-      "target": "users_mac_desktop_starlordgroup_starlord_web_package_dependencies_next",
+      "source": "package_dependencies",
+      "target": "package_dependencies_next",
       "confidence_score": 1.0
     },
     {
@@ -12591,8 +12591,8 @@
       "source_file": "package.json",
       "source_location": "L19",
       "weight": 1.0,
-      "source": "users_mac_desktop_starlordgroup_starlord_web_package_dependencies",
-      "target": "users_mac_desktop_starlordgroup_starlord_web_package_dependencies_qrcode",
+      "source": "package_dependencies",
+      "target": "package_dependencies_qrcode",
       "confidence_score": 1.0
     },
     {
@@ -12601,8 +12601,8 @@
       "source_file": "package.json",
       "source_location": "L20",
       "weight": 1.0,
-      "source": "users_mac_desktop_starlordgroup_starlord_web_package_dependencies",
-      "target": "users_mac_desktop_starlordgroup_starlord_web_package_dependencies_react",
+      "source": "package_dependencies",
+      "target": "package_dependencies_react",
       "confidence_score": 1.0
     },
     {
@@ -12611,8 +12611,8 @@
       "source_file": "package.json",
       "source_location": "L21",
       "weight": 1.0,
-      "source": "users_mac_desktop_starlordgroup_starlord_web_package_dependencies",
-      "target": "users_mac_desktop_starlordgroup_starlord_web_package_dependencies_react_dom",
+      "source": "package_dependencies",
+      "target": "package_dependencies_react_dom",
       "confidence_score": 1.0
     },
     {
@@ -12621,8 +12621,8 @@
       "source_file": "package.json",
       "source_location": "L22",
       "weight": 1.0,
-      "source": "users_mac_desktop_starlordgroup_starlord_web_package_dependencies",
-      "target": "users_mac_desktop_starlordgroup_starlord_web_package_dependencies_sanitize_html",
+      "source": "package_dependencies",
+      "target": "package_dependencies_sanitize_html",
       "confidence_score": 1.0
     },
     {
@@ -12631,8 +12631,8 @@
       "source_file": "package.json",
       "source_location": "L23",
       "weight": 1.0,
-      "source": "users_mac_desktop_starlordgroup_starlord_web_package_dependencies",
-      "target": "users_mac_desktop_starlordgroup_starlord_web_package_dependencies_server_only",
+      "source": "package_dependencies",
+      "target": "package_dependencies_server_only",
       "confidence_score": 1.0
     },
     {
@@ -12641,8 +12641,8 @@
       "source_file": "package.json",
       "source_location": "L13",
       "weight": 1.0,
-      "source": "users_mac_desktop_starlordgroup_starlord_web_package_dependencies",
-      "target": "users_mac_desktop_starlordgroup_starlord_web_package_dependencies_supabase_ssr",
+      "source": "package_dependencies",
+      "target": "package_dependencies_supabase_ssr",
       "confidence_score": 1.0
     },
     {
@@ -12651,8 +12651,8 @@
       "source_file": "package.json",
       "source_location": "L14",
       "weight": 1.0,
-      "source": "users_mac_desktop_starlordgroup_starlord_web_package_dependencies",
-      "target": "users_mac_desktop_starlordgroup_starlord_web_package_dependencies_supabase_supabase_js",
+      "source": "package_dependencies",
+      "target": "package_dependencies_supabase_supabase_js",
       "confidence_score": 1.0
     },
     {
@@ -12661,8 +12661,8 @@
       "source_file": "package.json",
       "source_location": "L15",
       "weight": 1.0,
-      "source": "users_mac_desktop_starlordgroup_starlord_web_package_dependencies",
-      "target": "users_mac_desktop_starlordgroup_starlord_web_package_dependencies_vercel_analytics",
+      "source": "package_dependencies",
+      "target": "package_dependencies_vercel_analytics",
       "confidence_score": 1.0
     },
     {
@@ -12671,8 +12671,8 @@
       "source_file": "package.json",
       "source_location": "L16",
       "weight": 1.0,
-      "source": "users_mac_desktop_starlordgroup_starlord_web_package_dependencies",
-      "target": "users_mac_desktop_starlordgroup_starlord_web_package_dependencies_vercel_speed_insights",
+      "source": "package_dependencies",
+      "target": "package_dependencies_vercel_speed_insights",
       "confidence_score": 1.0
     },
     {
@@ -12681,8 +12681,8 @@
       "source_file": "package.json",
       "source_location": "L32",
       "weight": 1.0,
-      "source": "users_mac_desktop_starlordgroup_starlord_web_package_devdependencies",
-      "target": "users_mac_desktop_starlordgroup_starlord_web_package_devdependencies_eslint",
+      "source": "package_devdependencies",
+      "target": "package_devdependencies_eslint",
       "confidence_score": 1.0
     },
     {
@@ -12691,8 +12691,8 @@
       "source_file": "package.json",
       "source_location": "L33",
       "weight": 1.0,
-      "source": "users_mac_desktop_starlordgroup_starlord_web_package_devdependencies",
-      "target": "users_mac_desktop_starlordgroup_starlord_web_package_devdependencies_eslint_config_next",
+      "source": "package_devdependencies",
+      "target": "package_devdependencies_eslint_config_next",
       "confidence_score": 1.0
     },
     {
@@ -12701,8 +12701,8 @@
       "source_file": "package.json",
       "source_location": "L34",
       "weight": 1.0,
-      "source": "users_mac_desktop_starlordgroup_starlord_web_package_devdependencies",
-      "target": "users_mac_desktop_starlordgroup_starlord_web_package_devdependencies_tailwindcss",
+      "source": "package_devdependencies",
+      "target": "package_devdependencies_tailwindcss",
       "confidence_score": 1.0
     },
     {
@@ -12711,8 +12711,8 @@
       "source_file": "package.json",
       "source_location": "L26",
       "weight": 1.0,
-      "source": "users_mac_desktop_starlordgroup_starlord_web_package_devdependencies",
-      "target": "users_mac_desktop_starlordgroup_starlord_web_package_devdependencies_tailwindcss_postcss",
+      "source": "package_devdependencies",
+      "target": "package_devdependencies_tailwindcss_postcss",
       "confidence_score": 1.0
     },
     {
@@ -12721,8 +12721,8 @@
       "source_file": "package.json",
       "source_location": "L27",
       "weight": 1.0,
-      "source": "users_mac_desktop_starlordgroup_starlord_web_package_devdependencies",
-      "target": "users_mac_desktop_starlordgroup_starlord_web_package_devdependencies_testing_library_jest_dom",
+      "source": "package_devdependencies",
+      "target": "package_devdependencies_testing_library_jest_dom",
       "confidence_score": 1.0
     },
     {
@@ -12731,8 +12731,8 @@
       "source_file": "package.json",
       "source_location": "L28",
       "weight": 1.0,
-      "source": "users_mac_desktop_starlordgroup_starlord_web_package_devdependencies",
-      "target": "users_mac_desktop_starlordgroup_starlord_web_package_devdependencies_testing_library_react",
+      "source": "package_devdependencies",
+      "target": "package_devdependencies_testing_library_react",
       "confidence_score": 1.0
     },
     {
@@ -12741,8 +12741,8 @@
       "source_file": "package.json",
       "source_location": "L29",
       "weight": 1.0,
-      "source": "users_mac_desktop_starlordgroup_starlord_web_package_devdependencies",
-      "target": "users_mac_desktop_starlordgroup_starlord_web_package_devdependencies_types_node",
+      "source": "package_devdependencies",
+      "target": "package_devdependencies_types_node",
       "confidence_score": 1.0
     },
     {
@@ -12751,8 +12751,8 @@
       "source_file": "package.json",
       "source_location": "L30",
       "weight": 1.0,
-      "source": "users_mac_desktop_starlordgroup_starlord_web_package_devdependencies",
-      "target": "users_mac_desktop_starlordgroup_starlord_web_package_devdependencies_types_react",
+      "source": "package_devdependencies",
+      "target": "package_devdependencies_types_react",
       "confidence_score": 1.0
     },
     {
@@ -12761,8 +12761,8 @@
       "source_file": "package.json",
       "source_location": "L31",
       "weight": 1.0,
-      "source": "users_mac_desktop_starlordgroup_starlord_web_package_devdependencies",
-      "target": "users_mac_desktop_starlordgroup_starlord_web_package_devdependencies_types_react_dom",
+      "source": "package_devdependencies",
+      "target": "package_devdependencies_types_react_dom",
       "confidence_score": 1.0
     },
     {
@@ -12771,8 +12771,8 @@
       "source_file": "package.json",
       "source_location": "L35",
       "weight": 1.0,
-      "source": "users_mac_desktop_starlordgroup_starlord_web_package_devdependencies",
-      "target": "users_mac_desktop_starlordgroup_starlord_web_package_devdependencies_typescript",
+      "source": "package_devdependencies",
+      "target": "package_devdependencies_typescript",
       "confidence_score": 1.0
     },
     {
@@ -12781,8 +12781,8 @@
       "source_file": "package.json",
       "source_location": "L36",
       "weight": 1.0,
-      "source": "users_mac_desktop_starlordgroup_starlord_web_package_devdependencies",
-      "target": "users_mac_desktop_starlordgroup_starlord_web_package_devdependencies_vitest",
+      "source": "package_devdependencies",
+      "target": "package_devdependencies_vitest",
       "confidence_score": 1.0
     },
     {
