@@ -106,7 +106,11 @@ export default function CheckoutPage() {
       // IREMBOPAY_BASE_URL: sandbox → our proxy (its hosts aren't reachable
       // on every dev network), production → IremboPay's real widget, which
       // resolves publicly. One server-side variable drives the cutover.
-      let widgetSrc = '/api/irembopay-widget';
+      // Safe production default. The server config switches this to the
+      // sandbox proxy only when IREMBOPAY_BASE_URL actually points at the
+      // sandbox — a config-fetch failure must never send a live customer
+      // to the sandbox proxy.
+      let widgetSrc = 'https://dashboard.irembopay.com/assets/payment/inline.js';
       try {
         const res = await fetch('/api/payments/config', { cache: 'no-store' });
         if (res.ok) {
@@ -115,7 +119,7 @@ export default function CheckoutPage() {
         }
       } catch (err) {
         console.warn(
-          '[IremboPay] Could not load payment config, using sandbox proxy:',
+          '[IremboPay] Could not load payment config, using the production widget:',
           err.message,
         );
       }

@@ -8,15 +8,15 @@
  *
  * Production loads the real production widget directly from
  * dashboard.irembopay.com (see app/checkout/page.js) and must never route
- * through this proxy. It stays enabled automatically while the server is
- * pointed at the sandbox, and is force-disabled in production unless
- * IREMBOPAY_PROXY_ENABLED=true is set explicitly.
+ * through this proxy. It is enabled only while the server is pointed at the
+ * sandbox, and force-disabled for any non-sandbox base — even if a stale
+ * env var tries to enable it.
  */
 const configuredBase = (process.env.IREMBOPAY_BASE_URL || '').trim().toLowerCase();
 const IS_SANDBOX = configuredBase
   ? configuredBase.includes('sandbox')
   : process.env.NODE_ENV !== 'production';
-const PROXY_ENABLED = process.env.IREMBOPAY_PROXY_ENABLED === 'true' || IS_SANDBOX;
+const PROXY_ENABLED = IS_SANDBOX;
 
 export async function GET(request) {
   if (!PROXY_ENABLED) {

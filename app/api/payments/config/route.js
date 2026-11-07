@@ -9,7 +9,15 @@
  * read server-side at request time.
  */
 export async function GET() {
-  const base = (process.env.IREMBOPAY_BASE_URL || 'https://api.sandbox.irembopay.com')
+  // If the env var is missing in production, default the *widget* to the
+  // production host. /api/payments/initiate already fails loudly in that
+  // state, so the customer can't start a payment — this just avoids sending
+  // the browser at a sandbox proxy that is disabled in production.
+  const fallbackBase = process.env.NODE_ENV === 'production'
+    ? 'https://api.irembopay.com'
+    : 'https://api.sandbox.irembopay.com';
+
+  const base = (process.env.IREMBOPAY_BASE_URL || fallbackBase)
     .trim()
     .replace(/\/+$/, '');
 

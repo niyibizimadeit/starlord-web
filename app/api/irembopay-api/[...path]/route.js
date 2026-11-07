@@ -7,8 +7,9 @@
  * This route attaches the merchant secret key to any path it is given,
  * so it MUST NOT be reachable in production: an open relay holding the
  * secret lets anyone read invoices (customer name/phone/amount) or
- * create new ones. Disabled unless IREMBOPAY_PROXY_ENABLED=true, which
- * should only ever be set for local sandbox testing.
+ * create new ones. Enabled only while IREMBOPAY_BASE_URL points at the
+ * sandbox; any non-sandbox base force-disables it, even if a stale env
+ * var tries to enable it.
  *
  * NOTE: In Next.js 16, `params` is a Promise and MUST be awaited.
  */
@@ -17,7 +18,7 @@ const configuredBase = (process.env.IREMBOPAY_BASE_URL || '').trim().toLowerCase
 const IS_SANDBOX = configuredBase
   ? configuredBase.includes('sandbox')
   : process.env.NODE_ENV !== 'production';
-const PROXY_ENABLED = process.env.IREMBOPAY_PROXY_ENABLED === 'true' || IS_SANDBOX;
+const PROXY_ENABLED = IS_SANDBOX;
 
 // Endpoints matching this pattern hold the connection open and push a
 // real-time payment result (SSE-style long-poll). A single attempt can
