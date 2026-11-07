@@ -493,11 +493,13 @@ export default function CheckoutPage() {
       });
 
       if (!paymentRes.ok) {
-        setError('Payment initiation failed. Your order is saved — contact support with reference: ' + data.reference);
+        // Stay on step 2 so the error is actually visible. Advancing to
+        // step 3 used to show "Processing your payment" forever, because
+        // that screen doesn't render `error` and no invoice was ever
+        // created. The cart is still intact, so the customer can retry.
+        setError('We could not start the payment. Please try again or choose another method. Reference: ' + data.reference);
         setProcessing(false);
         submittingRef.current = false;
-        setOrder(data);
-        setStep(3);
         return;
       }
 
