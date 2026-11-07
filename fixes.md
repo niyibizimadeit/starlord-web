@@ -109,8 +109,8 @@ if (order.payment_status === 'paid' && paymentStatus !== 'PAID') {
 The `.env.local` file contains IremboPay keys with the `_live` suffix (indicating production credentials):
 
 ```
-IREMBOPAY_SECRET_KEY=sk_live_6c74045267f2452aa926bebdf58f2433
-NEXT_PUBLIC_IREMBOPAY_PUBLIC_KEY=pk_live_709aef9582d04913a1f128861ce40617
+IREMBOPAY_SECRET_KEY=<redacted — set in Vercel, never commit>
+NEXT_PUBLIC_IREMBOPAY_PUBLIC_KEY=<redacted — set in Vercel, never commit>
 ```
 
 But the API base URL still points to sandbox:

@@ -77,6 +77,8 @@
 
 ## 4. Webhook Reliability
 
+> **Local dev:** the sandbox callback URL in the IremboPay portal must point at a public tunnel (e.g. `ngrok http 3000` → `https://<host>/api/webhooks/irembopay`). Irembo cannot POST to `localhost`, so without a tunnel no webhook arrives — the ~12s invoice reconciliation in `/api/orders/payment-status` will still confirm the order, but the `processed_webhooks` row is what proves the callback is configured.
+
 - [x] Confirm every successful payment produces exactly one row in `processed_webhooks`
 - [x] Confirm re-sending a webhook for an already-processed invoice does NOT create a duplicate update (idempotency check works)
 - [x] Confirm webhook signature verification rejects a tampered payload (send a curl with wrong signature, confirm 401)
@@ -118,10 +120,16 @@
 ## 8. Production Readiness
 
 - [ ] Update callback URL in IremboPay portal to production domain (no sandbox prefix)
-- [ ] Swap all `IREMBOPAY_*` env vars in Vercel to production values
-- [ ] Change widget script src from sandbox to production URL
-- [ ] Run one live test with a real small amount (100 RWF) after production credentials arrive
-- [ ] Monitor Vercel logs for the first week of live traffic
+- [ ] Set these in Vercel from the **production** merchant portal — the account ID and product code are portal-specific, not the sandbox values:
+  - `IREMBOPAY_BASE_URL=https://api.irembopay.com` (host root — **no** `/payments` suffix; the code appends `/payments/...`)
+  - `IREMBOPAY_SECRET_KEY=<production sk>`
+  - `IREMBOPAY_PAYMENT_ACCOUNT_ID=<production account identifier>`
+  - `IREMBOPAY_PRODUCT_CODE=<production product code>`
+  - `NEXT_PUBLIC_IREMBOPAY_PUBLIC_KEY=<production pk>`
+- [ ] The widget follows `IREMBOPAY_BASE_URL` automatically — no separate script-src switch. After deploying, confirm `GET /api/payments/config` returns `environment: "production"` and the `dashboard.irembopay.com` widget URL.
+- [ ] Confirm the sandbox proxy routes are closed in production: `/api/irembopay-widget` and `/api/irembopay-api/...` must return 404.
+- [ ] Run one live test with a real small amount (100 RWF) after production credentials arrive — card, MTN, and Airtel each.
+- [ ] Monitor Vercel logs for the first week of live traffic.
 
 ---
 

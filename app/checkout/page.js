@@ -10,6 +10,44 @@ function formatRWF(n) {
   return `RWF ${Number(n).toLocaleString()}`;
 }
 
+// The IremboPay widget appends its modal and notification UI straight to
+// <body>, outside the React tree — a state change does not remove it. Hide
+// the known roots instead of removing them: the widget's own interval calls
+// toggleCardDisplay(), which throws if #irembopay-cardForm has been removed.
+function hideIremboPayUi() {
+  const roots = [
+    'irembopay-iremboPayModalContainer',
+    'irembopay-notificationPopUp',
+    'irembopay-successBox',
+    'irembopay-alertBox',
+    'irembopay-loadingSection',
+    'authenticationParentDiv',
+  ];
+
+  for (const id of roots) {
+    const el = document.getElementById(id);
+    if (el) el.style.display = 'none';
+  }
+}
+
+// Fully tear the widget down once the payment reaches a terminal state.
+// IremboPay.closeModal() removes its modal AND clears its status interval
+// and notification stream; hiding alone leaves the interval running, which
+// is what caused the post-payment /invoices/verify BAD_INVOICES_PAID 400 and
+// the widget's "data is not defined" unhandled rejection.
+function closeIremboPayWidget() {
+  try {
+    const modal = document.getElementById('irembopay-iremboPayModalContainer');
+    if (modal && typeof window !== 'undefined' && window.IremboPay?.closeModal) {
+      window.IremboPay.closeModal();
+    }
+  } catch (err) {
+    console.warn('[IremboPay] closeModal failed:', err.message);
+  }
+
+  hideIremboPayUi();
+}
+
 export default function CheckoutPage() {
   const { cart, cartTotal, clearCart, restoreCart } = useCart();
   const router = useRouter();
@@ -62,71 +100,95 @@ export default function CheckoutPage() {
     }
 
     let cancelled = false;
-    const widgetSrc = '/api/irembopay-widget';
-    const MAX_LOAD_ATTEMPTS = 3;
 
-    widgetLoadPromiseRef.current = new Promise((resolve, reject) => {
-      let attempt = 0;
-
-      function loadScript() {
-        attempt += 1;
-
-        const existing = document.getElementById('irembopay-widget');
-        if (existing) existing.remove();
-
-        const script = document.createElement('script');
-        script.id = 'irembopay-widget';
-        // Cache-bust each retry so a failed attempt isn't served stale
-        script.src = `${widgetSrc}?attempt=${attempt}`;
-        script.async = true;
-
-        script.onload = () => {
-          if (cancelled) return;
-          // onload only means the top-level script finished downloading
-          // and running — this widget loads an async chunk internally
-          // (the same one the webpack publicPath patch targets) and
-          // only assigns window.IremboPay once that chunk resolves.
-          // Poll briefly for the real thing instead of trusting onload.
-          const POLL_INTERVAL_MS = 100;
-          const POLL_TIMEOUT_MS = 10000;
-          const startedAt = Date.now();
-
-          function checkReady() {
-            if (cancelled) return;
-            if (window.IremboPay && typeof window.IremboPay.initiate === 'function') {
-              iremboPayReadyRef.current = true;
-              resolve();
-              return;
-            }
-            if (Date.now() - startedAt > POLL_TIMEOUT_MS) {
-              reject(new Error('window.IremboPay.initiate never appeared after script load'));
-              return;
-            }
-            setTimeout(checkReady, POLL_INTERVAL_MS);
-          }
-
-          checkReady();
-        };
-
-        script.onerror = () => {
-          if (cancelled) return;
-          console.error(
-            `[IremboPay] Widget script failed to load (attempt ${attempt}/${MAX_LOAD_ATTEMPTS})`,
-          );
-          if (attempt < MAX_LOAD_ATTEMPTS) {
-            setTimeout(() => { if (!cancelled) loadScript(); }, 1500 * attempt);
-          } else {
-            iremboPayFailedRef.current = true;
-            console.error('[IremboPay] Widget script failed to load after', MAX_LOAD_ATTEMPTS, 'attempts');
-            reject(new Error(`Widget script failed to load after ${MAX_LOAD_ATTEMPTS} attempts`));
-          }
-        };
-
-        document.head.appendChild(script);
+    async function loadWidget() {
+      // Resolve the script URL from server config so it follows
+      // IREMBOPAY_BASE_URL: sandbox → our proxy (its hosts aren't reachable
+      // on every dev network), production → IremboPay's real widget, which
+      // resolves publicly. One server-side variable drives the cutover.
+      let widgetSrc = '/api/irembopay-widget';
+      try {
+        const res = await fetch('/api/payments/config', { cache: 'no-store' });
+        if (res.ok) {
+          const config = await res.json();
+          if (config?.widgetUrl) widgetSrc = config.widgetUrl;
+        }
+      } catch (err) {
+        console.warn(
+          '[IremboPay] Could not load payment config, using sandbox proxy:',
+          err.message,
+        );
       }
 
-      loadScript();
-    });
+      if (cancelled) return;
+
+      const MAX_LOAD_ATTEMPTS = 3;
+
+      await new Promise((resolve, reject) => {
+        let attempt = 0;
+
+        function loadScript() {
+          attempt += 1;
+
+          const existing = document.getElementById('irembopay-widget');
+          if (existing) existing.remove();
+
+          const script = document.createElement('script');
+          script.id = 'irembopay-widget';
+          // Cache-bust each retry so a failed attempt isn't served stale
+          script.src = `${widgetSrc}?attempt=${attempt}`;
+          script.async = true;
+
+          script.onload = () => {
+            if (cancelled) return;
+            // onload only means the top-level script finished downloading
+            // and running — this widget loads an async chunk internally
+            // (the same one the webpack publicPath patch targets) and
+            // only assigns window.IremboPay once that chunk resolves.
+            // Poll briefly for the real thing instead of trusting onload.
+            const POLL_INTERVAL_MS = 100;
+            const POLL_TIMEOUT_MS = 10000;
+            const startedAt = Date.now();
+
+            function checkReady() {
+              if (cancelled) return;
+              if (window.IremboPay && typeof window.IremboPay.initiate === 'function') {
+                iremboPayReadyRef.current = true;
+                resolve();
+                return;
+              }
+              if (Date.now() - startedAt > POLL_TIMEOUT_MS) {
+                reject(new Error('window.IremboPay.initiate never appeared after script load'));
+                return;
+              }
+              setTimeout(checkReady, POLL_INTERVAL_MS);
+            }
+
+            checkReady();
+          };
+
+          script.onerror = () => {
+            if (cancelled) return;
+            console.error(
+              `[IremboPay] Widget script failed to load (attempt ${attempt}/${MAX_LOAD_ATTEMPTS})`,
+            );
+            if (attempt < MAX_LOAD_ATTEMPTS) {
+              setTimeout(() => { if (!cancelled) loadScript(); }, 1500 * attempt);
+            } else {
+              iremboPayFailedRef.current = true;
+              console.error('[IremboPay] Widget script failed to load after', MAX_LOAD_ATTEMPTS, 'attempts');
+              reject(new Error(`Widget script failed to load after ${MAX_LOAD_ATTEMPTS} attempts`));
+            }
+          };
+
+          document.head.appendChild(script);
+        }
+
+        loadScript();
+      });
+    }
+
+    widgetLoadPromiseRef.current = loadWidget();
 
     return () => { cancelled = true; };
   }, []);
@@ -197,10 +259,21 @@ export default function CheckoutPage() {
     if (step !== 3 || !order) return;
     if (paymentStatus === 'paid' || paymentStatus === 'failed' || paymentStatus === 'expired') return;
 
+    let pollCount = 0;
+
     const interval = setInterval(async () => {
+      pollCount += 1;
+      // Every 3rd poll (~12s), ask the server to confirm the invoice with
+      // IremboPay. The webhook usually wins long before this; the verify
+      // call covers delayed/dropped notifications and local dev where the
+      // callback URL isn't reachable. Bounded by the 4s poll interval and
+      // the server's 10s minimum order age, so it can't be used to hammer
+      // the IremboPay API faster than that.
+      const verify = pollCount % 3 === 0 ? '&verify=1' : '';
+
       try {
         const res = await fetch(
-          `/api/orders/payment-status?ref=${order.reference}&phone=${encodeURIComponent(form.phone.replace(/\s/g, ''))}`
+          `/api/orders/payment-status?ref=${order.reference}&phone=${encodeURIComponent(form.phone.replace(/\s/g, ''))}${verify}`
         );
         const data = await res.json();
 
@@ -219,38 +292,8 @@ export default function CheckoutPage() {
           // dropped so a stale restore can't happen on a later render.
           savedCartRef.current = null;
 
-          // The IremboPay widget's own notification channel has proven
-          // unreliable in this environment — it can leave the customer
-          // staring at a stale "not received" message even though the
-          // payment succeeded, which we already know for a fact via our
-          // own webhook-confirmed poll (this very check). Don't wait on
-          // the widget to figure that out on its own; drive it to a
-          // success state ourselves.
-          try {
-            const alertBox = document.getElementById('irembopay-alertBox');
-            const successBox = document.getElementById('irembopay-successBox');
-            const modalContainer = document.getElementById('irembopay-iremboPayModalContainer');
-
-            if (successBox && alertBox) {
-              // Swap to the widget's own built-in success screen so it
-              // looks like the widget completed normally, not like we
-              // reached in and broke it.
-              alertBox.style.display = 'none';
-              successBox.style.display = 'block';
-              // Give the customer a moment to see "Payment Successful"
-              // before dismissing the modal entirely.
-              setTimeout(() => {
-                if (modalContainer) modalContainer.remove();
-              }, 1800);
-            } else if (modalContainer) {
-              // Fallback: couldn't find the success box for some reason
-              // (widget markup changed) — just remove the whole modal
-              // rather than leave a stale failure message on screen.
-              modalContainer.remove();
-            }
-          } catch (e) {
-            console.warn('[IremboPay] Could not update widget modal on success:', e.message);
-          }
+          // The terminal-state effect below tears the widget down completely;
+          // our own success screen is the only UI the customer should see.
 
         } else if (data.paymentStatus === 'failed') {
           setPaymentStatus('failed');
@@ -315,10 +358,20 @@ export default function CheckoutPage() {
         widgetModalObserverRef.current.disconnect();
         widgetModalObserverRef.current = null;
       }
-      const modalEl = document.getElementById('irembopay-iremboPayModalContainer');
-      if (modalEl) modalEl.remove();
     }
   }, [paymentStatus, restoreCart]);
+
+  // ── One screen at a time ──────────────────────────────────────────
+  // The widget mounts its modal outside React, so a state change alone
+  // doesn't remove it. Whenever the payment reaches a terminal state —
+  // whether from the widget callback or the status poll — hide every
+  // IremboPay root so the customer never sees a success box next to a
+  // stale "payment not received" modal.
+  useEffect(() => {
+    if (paymentStatus === 'paid' || paymentStatus === 'failed' || paymentStatus === 'expired') {
+      closeIremboPayWidget();
+    }
+  }, [paymentStatus]);
 
   // ── updateForm — simple setter, no auto-detection ─────────────────
   const updateForm = (key, value) => {
@@ -470,19 +523,17 @@ export default function CheckoutPage() {
           invoiceNumber: paymentData.invoiceNumber,
           publicKey: process.env.NEXT_PUBLIC_IREMBOPAY_PUBLIC_KEY,
           locale: 'en',
-          callback: function (response) {
-            console.log('[IremboPay] Callback fired:', JSON.stringify(response));
-            if (response && response.status === 'PAID') {
-              setPaymentStatus('paid');
-            } else {
-              // Widget reported non-success (FAILED, CANCELLED, error code,
-              // or anything else). Treat as a failure — don't wait for a
-              // webhook that may never arrive for declined cards.
-              if (response && (response.status === 'FAILED' || response.status === 'CANCELLED')) {
-                console.log('[IremboPay] Widget reported:', response.status);
-              } else {
-                console.error('[IremboPay] Widget non-success:', JSON.stringify(response));
-              }
+          callback: function (error, response) {
+            // The widget (and the docs) call this as callback(err, resp).
+            // Success is callback(null, { message: "Payment successful" }) —
+            // there is no `status` field, so requiring one (as an earlier
+            // version did) silently ignored a successful card payment and
+            // left the widget's own success/loading UI on screen. A non-null
+            // first argument is the widget's error object.
+            console.log('[IremboPay] Callback fired:', JSON.stringify({ error, response }));
+
+            if (error) {
+              console.log('[IremboPay] Widget reported failure:', JSON.stringify(error));
               setPaymentStatus('failed');
               // Disconnect the modal-dismiss observer — the callback already
               // told us the payment didn't succeed.
@@ -490,6 +541,8 @@ export default function CheckoutPage() {
                 widgetModalObserverRef.current.disconnect();
                 widgetModalObserverRef.current = null;
               }
+            } else {
+              setPaymentStatus('paid');
             }
           },
         };
@@ -571,12 +624,13 @@ export default function CheckoutPage() {
         const stuckModalTimeout = setTimeout(() => {
           const modal = document.getElementById(MODAL_ID);
           if (modal) {
-            // Disconnect observer before we remove the modal ourselves
+            // Disconnect observer before we hide the modal ourselves
             if (widgetModalObserverRef.current) {
               widgetModalObserverRef.current.disconnect();
               widgetModalObserverRef.current = null;
             }
-            modal.remove();
+            // Hide rather than remove — see the note in the success handler.
+            modal.style.display = 'none';
           }
           // Only transition if we're still pending — if the poll already
           // set us to paid/failed/expired, don't overwrite it.

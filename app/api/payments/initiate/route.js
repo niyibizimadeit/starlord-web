@@ -1,6 +1,23 @@
 import { createServiceClient } from '@/lib/supabase/server';
 
-const BASE_URL = process.env.IREMBOPAY_BASE_URL || 'https://api.sandbox.irembopay.com';
+const SANDBOX_BASE_URL = 'https://api.sandbox.irembopay.com';
+
+// The routes below append /payments/... to this value, so it must be the
+// host root (https://api.irembopay.com). The docs sometimes quote the
+// resource base with a /payments suffix — that would produce
+// /payments/payments/... and every request would 404.
+function resolveBaseUrl() {
+  const configured = (process.env.IREMBOPAY_BASE_URL || '').trim().replace(/\/+$/, '');
+
+  if (!configured) {
+    // Sandbox default is fine for local development, but never fall back
+    // silently in production — that sends production keys to sandbox.
+    return process.env.NODE_ENV === 'production' ? null : SANDBOX_BASE_URL;
+  }
+
+  if (configured.endsWith('/payments')) return null;
+  return configured;
+}
 
 function irembopayHeaders() {
   return {
@@ -12,6 +29,19 @@ function irembopayHeaders() {
 
 export async function POST(request) {
   try {
+    const BASE_URL = resolveBaseUrl();
+    const missingConfig = [
+      ['IREMBOPAY_BASE_URL', BASE_URL],
+      ['IREMBOPAY_SECRET_KEY', process.env.IREMBOPAY_SECRET_KEY],
+      ['IREMBOPAY_PAYMENT_ACCOUNT_ID', process.env.IREMBOPAY_PAYMENT_ACCOUNT_ID],
+      ['IREMBOPAY_PRODUCT_CODE', process.env.IREMBOPAY_PRODUCT_CODE],
+    ].filter(([, value]) => !value).map(([name]) => name);
+
+    if (missingConfig.length) {
+      console.error('[IremboPay] Payment provider misconfigured:', missingConfig.join(', '));
+      return Response.json({ error: 'Payment provider is not configured' }, { status: 500 });
+    }
+
     const { orderId, reference, amount, phone, method } = await request.json();
 
     if (!orderId || !reference || !amount || !phone || !method) {

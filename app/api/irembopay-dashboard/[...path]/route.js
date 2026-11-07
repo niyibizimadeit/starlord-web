@@ -1,13 +1,22 @@
 /**
- * IremboPay Dashboard Proxy
+ * IremboPay Dashboard Proxy — SANDBOX TESTING ONLY
  *
- * Proxies browser → server → IremboPay Dashboard assets (CSS,
- * HTML popup, font files, etc.) so the browser never needs
- * direct connectivity to 198.18.0.x private IPs.
+ * Proxies browser → server → IremboPay sandbox dashboard assets (CSS,
+ * HTML popup, font files, etc.) for dev networks that can't reach the
+ * sandbox hosts directly.
+ *
+ * Disabled by default. Production loads the real production widget and
+ * popup directly from dashboard.irembopay.com. Enable only for local
+ * sandbox testing with IREMBOPAY_PROXY_ENABLED=true.
  *
  * NOTE: In Next.js 16, `params` is a Promise and MUST be awaited.
  */
 const DASHBOARD_BASE = 'https://dashboard.sandbox.irembopay.com';
+const configuredBase = (process.env.IREMBOPAY_BASE_URL || '').trim().toLowerCase();
+const IS_SANDBOX = configuredBase
+  ? configuredBase.includes('sandbox')
+  : process.env.NODE_ENV !== 'production';
+const PROXY_ENABLED = process.env.IREMBOPAY_PROXY_ENABLED === 'true' || IS_SANDBOX;
 
 // Injected into any HTML page this route serves (i.e. the IremboPay
 // popup itself, pop-up.html). The popup is a SEPARATE window/JS
@@ -38,6 +47,7 @@ const POST_MESSAGE_PATCH = `<script>
 </script>`;
 
 export async function GET(_request, props) {
+  if (!PROXY_ENABLED) return new Response('Not found', { status: 404 });
   try {
     const p = await props.params;
     const path = p?.path || [];

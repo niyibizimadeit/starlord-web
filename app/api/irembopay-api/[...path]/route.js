@@ -1,12 +1,23 @@
 /**
- * IremboPay API Proxy
+ * IremboPay API Proxy — SANDBOX TESTING ONLY
  *
- * Proxies browser → server → IremboPay API calls so the browser
- * never needs direct connectivity to 198.18.0.x private IPs.
+ * Proxies browser → server → IremboPay sandbox API calls for dev
+ * networks that can't reach the sandbox hosts directly.
+ *
+ * This route attaches the merchant secret key to any path it is given,
+ * so it MUST NOT be reachable in production: an open relay holding the
+ * secret lets anyone read invoices (customer name/phone/amount) or
+ * create new ones. Disabled unless IREMBOPAY_PROXY_ENABLED=true, which
+ * should only ever be set for local sandbox testing.
  *
  * NOTE: In Next.js 16, `params` is a Promise and MUST be awaited.
  */
 const API_BASE = 'https://api.sandbox.irembopay.com';
+const configuredBase = (process.env.IREMBOPAY_BASE_URL || '').trim().toLowerCase();
+const IS_SANDBOX = configuredBase
+  ? configuredBase.includes('sandbox')
+  : process.env.NODE_ENV !== 'production';
+const PROXY_ENABLED = process.env.IREMBOPAY_PROXY_ENABLED === 'true' || IS_SANDBOX;
 
 // Endpoints matching this pattern hold the connection open and push a
 // real-time payment result (SSE-style long-poll). A single attempt can
@@ -162,6 +173,7 @@ async function proxyGet(_request, props) {
 }
 
 export async function GET(_request, props) {
+  if (!PROXY_ENABLED) return new Response('Not found', { status: 404 });
   try {
     return await proxyGet(_request, props);
   } catch (err) {
@@ -197,6 +209,7 @@ async function proxyWithBody(method, _request, props) {
 }
 
 export async function POST(_request, props) {
+  if (!PROXY_ENABLED) return new Response('Not found', { status: 404 });
   try { return await proxyWithBody('POST', _request, props); }
   catch (e) {
     console.error('[IremboPay Proxy] POST error:', e.message);
@@ -205,6 +218,7 @@ export async function POST(_request, props) {
 }
 
 export async function PUT(_request, props) {
+  if (!PROXY_ENABLED) return new Response('Not found', { status: 404 });
   try { return await proxyWithBody('PUT', _request, props); }
   catch (e) {
     console.error('[IremboPay Proxy] PUT error:', e.message);

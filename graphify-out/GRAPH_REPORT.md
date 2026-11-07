@@ -1,16 +1,16 @@
-# Graph Report - starlord-web  (2026-10-28)
+# Graph Report - starlord-web  (2026-11-07)
 
 ## Corpus Check
-- 115 files · ~91,864 words
+- 116 files · ~93,748 words
 - Verdict: corpus is large enough that graph structure adds value.
 
 ## Summary
-- 555 nodes · 817 edges · 63 communities (40 shown, 23 thin omitted)
+- 570 nodes · 852 edges · 64 communities (44 shown, 20 thin omitted)
 - Extraction: 100% EXTRACTED · 0% INFERRED · 0% AMBIGUOUS
 - Token cost: 0 input · 0 output
 
 ## Graph Freshness
-- Built from commit: `84165f52`
+- Built from commit: `628bcfaa`
 - Run `git rev-parse HEAD` and compare to check if the graph is stale.
 - Run `graphify update .` after code changes (no API cost).
 
@@ -70,9 +70,10 @@
 - route.js
 - route.js
 - route.js
+- route.js
 
 ## God Nodes (most connected - your core abstractions)
-1. `createServiceClient()` - 93 edges
+1. `createServiceClient()` - 98 edges
 2. `createServerSupabaseClient()` - 30 edges
 3. `compilerOptions` - 16 edges
 4. `useCart()` - 15 edges
@@ -81,7 +82,7 @@
 7. `AdminPage()` - 9 edges
 8. `useTheme()` - 9 edges
 9. `StarlordGroup Web - Complete Developer Onboarding Guide` - 9 edges
-10. `📋 Remaining` - 7 edges
+10. `formatRWF()` - 7 edges
 
 ## Surprising Connections (you probably didn't know these)
 - `GET()` --calls--> `createServiceClient()`  [EXTRACTED]
@@ -90,23 +91,23 @@
   app/api/reviews/route.js → lib/supabase/server.js
 - `generateMetadata()` --calls--> `createServiceClient()`  [EXTRACTED]
   app/products/[id]/page.js → lib/supabase/server.js
-- `GET()` --calls--> `getBanners()`  [EXTRACTED]
-  app/api/banners/route.js → lib/banners.js
 - `AccountPage()` --calls--> `createServerSupabaseClient()`  [EXTRACTED]
+  app/account/page.js → lib/supabase/server.js
+- `AccountPage()` --calls--> `createServiceClient()`  [EXTRACTED]
   app/account/page.js → lib/supabase/server.js
 
 ## Import Cycles
 - None detected.
 
-## Communities (63 total, 23 thin omitted)
+## Communities (64 total, 20 thin omitted)
 
 ### Community 0 - "createServiceClient"
-Cohesion: 0.13
-Nodes (13): GET(), getAdminUser(), POST(), GET(), GET(), GET(), GET(), GET() (+5 more)
+Cohesion: 0.14
+Nodes (15): DELETE(), getUser(), PATCH(), POST(), getAdminUser(), PATCH(), POST(), GET() (+7 more)
 
 ### Community 1 - "useCart"
 Cohesion: 0.07
-Nodes (31): CartPage(), formatRWF(), formatRWF(), metadata, OnSalePage(), CheckoutPage(), formatRWF(), IMPORTANT: we do NOT clearCart()/setStep(3) here anymore. (+23 more)
+Nodes (33): CartPage(), formatRWF(), formatRWF(), metadata, OnSalePage(), CheckoutPage(), closeIremboPayWidget(), formatRWF() (+25 more)
 
 ### Community 2 - "dependencies"
 Cohesion: 0.06
@@ -133,12 +134,12 @@ Cohesion: 0.16
 Nodes (11): AccountPage(), AccountClient(), AddressesTab(), formatDate(), formatRWF(), inputStyle(), labelStyle, OrderCard() (+3 more)
 
 ### Community 8 - "page.js"
-Cohesion: 0.36
-Nodes (6): GET(), getNavCategories(), getProducts(), HomePage(), BannerSlider(), getBanners()
+Cohesion: 0.19
+Nodes (7): GET(), getNavCategories(), getProducts(), HomePage(), BannerSlider(), TrustBar(), getBanners()
 
 ### Community 9 - "route.js"
-Cohesion: 0.31
-Nodes (8): GET(), getPath(), POST(), proxyGet(), proxyWithBody(), PUT(), IMPORTANT: we open the client-facing stream RIGHT NOW and do all, NOTE: In Next.js 16, `params` is a Promise and MUST be awaited.
+Cohesion: 0.27
+Nodes (9): configuredBase, GET(), getPath(), POST(), proxyGet(), proxyWithBody(), PUT(), NOTE: In Next.js 16, `params` is a Promise and MUST be awaited. (+1 more)
 
 ### Community 11 - "route.js"
 Cohesion: 0.56
@@ -180,6 +181,14 @@ Nodes (4): config, isValidAdminToken(), JWT_SECRET, middleware()
 Cohesion: 0.60
 Nodes (4): DELETE(), isAuthorized(), JWT_SECRET, PATCH()
 
+### Community 23 - "route.js"
+Cohesion: 0.40
+Nodes (3): configuredBase, NOTE: In Next.js 16, `params` is a Promise and MUST be awaited., IMPORTANT: rewrite to an ABSOLUTE origin (scheme + host), not a
+
+### Community 24 - "route.js"
+Cohesion: 0.40
+Nodes (3): configuredBase, IMPORTANT: rewrite to an ABSOLUTE url (scheme + host), not a bare, NOTE: this only patches postMessage in the window this script
+
 ### Community 35 - "not-found.js"
 Cohesion: 0.08
 Nodes (24): 10. In-Memory Rate Limiter Is Stateless on Serverless, 11. Checkout API Doesn't Validate Allowed Payment Methods, 12. `NEXT_PUBLIC_IREMBOPAY_BASE_URL` Exposed to Browser Unnecessarily, 13. Missing Input Type/Sanity Validation on Amount, 14. No CSRF Protection on Checkout/Payment Endpoints, 15. `cart` localStorage Key Not Versioned, 16. Checkout API Ignoring `deliveryFee` Client Field Without Warning, 17. Immediate Recovery from Payment Failure Not Possible (+16 more)
@@ -197,28 +206,36 @@ Cohesion: 0.17
 Nodes (11): 1. Sandbox Access (blocker), 2. Confirm API shape (unblock `/api/payments/initiate`), 3. Wire up `/api/payments/initiate` (~30 min once sandbox confirmed), 4. Webhook testing, 5. Prod rollout, 6. Optional polish, ✅ Completed, IremboPay Payment Integration TODO.(almost) (+3 more)
 
 ### Community 44 - "route.js"
-Cohesion: 0.53
-Nodes (5): checkAdminAuth(), DELETE(), GET(), PATCH(), POST()
+Cohesion: 0.70
+Nodes (4): DELETE(), GET(), getAdminUser(), PUT()
 
 ### Community 45 - "route.js"
 Cohesion: 0.60
 Nodes (5): checkAdmin(), DELETE(), GET(), PATCH(), POST()
 
 ### Community 47 - "route.js"
-Cohesion: 0.70
-Nodes (4): DELETE(), GET(), getAdminUser(), PUT()
-
-### Community 48 - "route.js"
-Cohesion: 0.83
-Nodes (3): GET(), getAuthenticatedUser(), PATCH()
+Cohesion: 0.60
+Nodes (5): normalizePaymentMethod(), POST(), reDeductStock(), restoreStock(), TERMINAL_FAILURE_STATUSES
 
 ### Community 49 - "route.js"
 Cohesion: 0.20
 Nodes (9): background_color, description, display, icons, name, orientation, short_name, start_url (+1 more)
 
-### Community 53 - "route.js"
+### Community 51 - "route.js"
+Cohesion: 0.53
+Nodes (5): checkAdminAuth(), DELETE(), GET(), PATCH(), POST()
+
+### Community 52 - "route.js"
 Cohesion: 0.70
-Nodes (4): DELETE(), getUser(), PATCH(), POST()
+Nodes (4): fetchInvoice(), GET(), normalizePaymentMethod(), restoreStock()
+
+### Community 53 - "route.js"
+Cohesion: 0.83
+Nodes (3): GET(), getAuthenticatedUser(), PATCH()
+
+### Community 54 - "route.js"
+Cohesion: 0.83
+Nodes (3): irembopayHeaders(), POST(), resolveBaseUrl()
 
 ### Community 55 - "CLAUDE.md"
 Cohesion: 0.83
@@ -229,24 +246,24 @@ Cohesion: 0.83
 Nodes (3): GET(), getAdminUser(), POST()
 
 ## Knowledge Gaps
-- **164 isolated node(s):** `✅ Completed`, `1. Sandbox Access (blocker)`, `2. Confirm API shape (unblock `/api/payments/initiate`)`, `3. Wire up `/api/payments/initiate` (~30 min once sandbox confirmed)`, `4. Webhook testing` (+159 more)
+- **167 isolated node(s):** `metadata`, `metadata`, `viewport`, `JWT_SECRET`, `config` (+162 more)
   These have ≤1 connection - possible missing edges or undocumented components.
-- **23 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
+- **20 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
 
 ## Suggested Questions
 _Questions this graph is uniquely positioned to answer:_
 
-- **Why does `createServiceClient()` connect `createServiceClient` to `useCart`, `server.js`, `AccountClient.js`, `route.js`, `route.js`, `route.js`, `route.js`, `route.js`, `route.js`, `route.js`, `route.js`, `route.js`, `route.js`, `route.js`, `route.js`, `route.js`, `route.js`, `route.js`, `route.js`, `route.js`?**
-  _High betweenness centrality (0.098) - this node is a cross-community bridge._
+- **Why does `createServiceClient()` connect `createServiceClient` to `useCart`, `server.js`, `AccountClient.js`, `page.js`, `route.js`, `route.js`, `route.js`, `route.js`, `route.js`, `route.js`, `route.js`, `route.js`, `route.js`, `route.js`, `route.js`, `route.js`, `route.js`, `route.js`, `route.js`, `route.js`, `route.js`, `route.js`?**
+  _High betweenness centrality (0.115) - this node is a cross-community bridge._
 - **Why does `useCart()` connect `useCart` to `Header.js`?**
-  _High betweenness centrality (0.026) - this node is a cross-community bridge._
-- **Why does `createServerSupabaseClient()` connect `server.js` to `route.js`, `useCart`, `route.js`, `AccountClient.js`?**
+  _High betweenness centrality (0.030) - this node is a cross-community bridge._
+- **Why does `createServerSupabaseClient()` connect `server.js` to `createServiceClient`, `useCart`, `route.js`, `AccountClient.js`?**
   _High betweenness centrality (0.014) - this node is a cross-community bridge._
-- **What connects `✅ Completed`, `1. Sandbox Access (blocker)`, `2. Confirm API shape (unblock `/api/payments/initiate`)` to the rest of the system?**
-  _172 weakly-connected nodes found - possible documentation gaps or missing edges._
+- **What connects `metadata`, `metadata`, `viewport` to the rest of the system?**
+  _175 weakly-connected nodes found - possible documentation gaps or missing edges._
 - **Should `createServiceClient` be split into smaller, more focused modules?**
-  _Cohesion score 0.13438735177865613 - nodes in this community are weakly interconnected._
+  _Cohesion score 0.14130434782608695 - nodes in this community are weakly interconnected._
 - **Should `useCart` be split into smaller, more focused modules?**
-  _Cohesion score 0.07400555041628122 - nodes in this community are weakly interconnected._
+  _Cohesion score 0.07142857142857142 - nodes in this community are weakly interconnected._
 - **Should `dependencies` be split into smaller, more focused modules?**
   _Cohesion score 0.05714285714285714 - nodes in this community are weakly interconnected._

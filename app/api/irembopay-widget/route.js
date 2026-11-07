@@ -1,12 +1,28 @@
 /**
- * IremboPay Widget Proxy
+ * IremboPay Widget Proxy — SANDBOX TESTING ONLY
  *
  * Fetches the IremboPay sandbox inline widget JavaScript server-side
- * (where the private 198.18.0.x IPs are reachable) and rewrites
- * hardcoded IremboPay URLs to our own proxy paths so the browser
- * never needs to connect to the private IPs directly.
+ * (where the sandbox hosts are reachable on dev networks that resolve
+ * them to fake-IPs) and rewrites hardcoded IremboPay URLs to our own
+ * proxy paths so the browser never needs to connect to those hosts.
+ *
+ * Production loads the real production widget directly from
+ * dashboard.irembopay.com (see app/checkout/page.js) and must never route
+ * through this proxy. It stays enabled automatically while the server is
+ * pointed at the sandbox, and is force-disabled in production unless
+ * IREMBOPAY_PROXY_ENABLED=true is set explicitly.
  */
+const configuredBase = (process.env.IREMBOPAY_BASE_URL || '').trim().toLowerCase();
+const IS_SANDBOX = configuredBase
+  ? configuredBase.includes('sandbox')
+  : process.env.NODE_ENV !== 'production';
+const PROXY_ENABLED = process.env.IREMBOPAY_PROXY_ENABLED === 'true' || IS_SANDBOX;
+
 export async function GET(request) {
+  if (!PROXY_ENABLED) {
+    return new Response('Not found', { status: 404 });
+  }
+
   const SANDBOX_WIDGET_URL =
     'https://dashboard.sandbox.irembopay.com/assets/payment/inline.js';
 

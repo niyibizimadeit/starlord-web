@@ -55,15 +55,18 @@ export async function POST(request) {
     // ── Check idempotency ─────────────────────────────────────────────
     const { data: existingOrder } = await supabase
       .from('orders')
-      .select('id, reference, status')
+      .select('id, reference, status, total')
       .eq('idempotency_key', idempotencyKey)
       .single();
 
     if (existingOrder) {
+      // Must include total: the client forwards it to /api/payments/initiate,
+      // which rejects a missing amount.
       return Response.json({
         orderId: existingOrder.id,
         reference: existingOrder.reference,
         status: existingOrder.status,
+        total: existingOrder.total,
       });
     }
 

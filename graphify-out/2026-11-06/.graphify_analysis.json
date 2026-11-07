@@ -1,0 +1,673 @@
+{
+  "communities": {
+    "0": [
+      "app_api_account_profile_route",
+      "app_api_account_profile_route_get",
+      "app_api_account_profile_route_getauthenticateduser",
+      "app_api_account_profile_route_patch",
+      "app_api_admin_analytics_route",
+      "app_api_admin_analytics_route_get",
+      "app_api_admin_analytics_route_getadminuser",
+      "app_api_admin_banners_route",
+      "app_api_admin_banners_route_checkadminauth",
+      "app_api_admin_banners_route_delete",
+      "app_api_admin_banners_route_get",
+      "app_api_admin_banners_route_patch",
+      "app_api_admin_banners_route_post",
+      "app_api_admin_banners_upload_route",
+      "app_api_admin_banners_upload_route_checkadminauth",
+      "app_api_admin_banners_upload_route_post",
+      "app_api_admin_categories_id_route",
+      "app_api_admin_categories_id_route_delete",
+      "app_api_admin_categories_id_route_get",
+      "app_api_admin_categories_id_route_getadminuser",
+      "app_api_admin_categories_id_route_put",
+      "app_api_admin_categories_route",
+      "app_api_admin_categories_route_get",
+      "app_api_admin_categories_route_getadminuser",
+      "app_api_admin_categories_route_post",
+      "app_api_admin_orders_route",
+      "app_api_admin_orders_route_get",
+      "app_api_admin_orders_route_getadminuser",
+      "app_api_admin_products_id_route",
+      "app_api_admin_products_id_route_getadminuser",
+      "app_api_admin_products_id_route_patch",
+      "app_api_admin_products_route",
+      "app_api_admin_products_route_getadminuser",
+      "app_api_admin_products_route_post",
+      "app_api_admin_promotions_route",
+      "app_api_admin_promotions_route_checkadmin",
+      "app_api_admin_promotions_route_delete",
+      "app_api_admin_promotions_route_get",
+      "app_api_admin_promotions_route_patch",
+      "app_api_admin_promotions_route_post",
+      "app_api_admin_variations_id_route",
+      "app_api_admin_variations_id_route_checkadmin",
+      "app_api_admin_variations_id_route_patch",
+      "app_api_auth_set_password_route",
+      "app_api_auth_set_password_route_post",
+      "app_api_banners_route",
+      "app_api_banners_route_get",
+      "app_api_orders_id_status_route",
+      "app_api_orders_id_status_route_get",
+      "app_api_orders_payment_status_route",
+      "app_api_orders_payment_status_route_get",
+      "app_api_orders_track_route",
+      "app_api_orders_track_route_get",
+      "app_api_payments_initiate_route",
+      "app_api_payments_initiate_route_irembopayheaders",
+      "app_api_payments_initiate_route_post",
+      "app_api_products_id_variations_route",
+      "app_api_products_id_variations_route_get",
+      "app_api_products_route",
+      "app_api_products_route_get",
+      "app_api_reviews_token_route",
+      "app_api_reviews_token_route_get",
+      "app_api_reviews_token_route_post",
+      "app_api_webhooks_irembopay_route",
+      "app_api_webhooks_irembopay_route_post",
+      "app_sitemap_xml_route",
+      "app_sitemap_xml_route_get",
+      "lib_supabase_server_createserviceclient"
+    ],
+    "1": [
+      "app_cart_page",
+      "app_cart_page_cartpage",
+      "app_cart_page_formatrwf",
+      "app_category_on_sale_page",
+      "app_category_on_sale_page_formatrwf",
+      "app_category_on_sale_page_metadata",
+      "app_category_on_sale_page_onsalepage",
+      "app_checkout_page",
+      "app_checkout_page_checkoutpage",
+      "app_checkout_page_formatrwf",
+      "app_checkout_page_rationale_391",
+      "app_products_id_page",
+      "app_products_id_page_formatrwf",
+      "app_products_id_page_generatemetadata",
+      "app_products_id_page_productpage",
+      "app_products_page",
+      "app_products_page_getcategories",
+      "app_products_page_getproducts",
+      "app_products_page_metadata",
+      "app_products_page_productspage",
+      "components_addtocartbutton",
+      "components_addtocartbutton_addtocartbutton",
+      "components_cartcontext",
+      "components_cartcontext_cartcontext",
+      "components_cartcontext_cartkey",
+      "components_cartcontext_cartprovider",
+      "components_cartcontext_usecart",
+      "components_cartheader",
+      "components_cartheader_cartheader",
+      "components_imagegallery",
+      "components_imagegallery_imagegallery",
+      "components_productgrid",
+      "components_productgrid_desktopsectionheader",
+      "components_productgrid_formatrwf",
+      "components_productgrid_productcard",
+      "components_productgrid_productgrid",
+      "components_productpageclient",
+      "components_productpageclient_formatrwf",
+      "components_productpageclient_productpageclient",
+      "components_productreviews",
+      "components_productreviews_formatdate",
+      "components_productreviews_productreviews",
+      "components_productreviews_starrating",
+      "components_salecountdown",
+      "components_salecountdown_salecountdown",
+      "components_variationselector",
+      "components_variationselector_variationselector"
+    ],
+    "2": [
+      "package",
+      "package_browserslist",
+      "package_dependencies",
+      "package_dependencies_aws_sdk_client_s3",
+      "package_dependencies_jose",
+      "package_dependencies_next",
+      "package_dependencies_react",
+      "package_dependencies_react_dom",
+      "package_dependencies_sanitize_html",
+      "package_dependencies_server_only",
+      "package_dependencies_supabase_ssr",
+      "package_dependencies_supabase_supabase_js",
+      "package_dependencies_vercel_analytics",
+      "package_dependencies_vercel_speed_insights",
+      "package_devdependencies",
+      "package_devdependencies_eslint",
+      "package_devdependencies_eslint_config_next",
+      "package_devdependencies_tailwindcss",
+      "package_devdependencies_tailwindcss_postcss",
+      "package_devdependencies_testing_library_jest_dom",
+      "package_devdependencies_testing_library_react",
+      "package_devdependencies_types_node",
+      "package_devdependencies_types_react",
+      "package_devdependencies_types_react_dom",
+      "package_devdependencies_typescript",
+      "package_devdependencies_vitest",
+      "package_name",
+      "package_private",
+      "package_scripts",
+      "package_scripts_build",
+      "package_scripts_dev",
+      "package_scripts_lint",
+      "package_scripts_start",
+      "package_version"
+    ],
+    "3": [
+      "app_api_account_addresses_route",
+      "app_api_account_addresses_route_delete",
+      "app_api_account_addresses_route_getuser",
+      "app_api_account_addresses_route_patch",
+      "app_api_account_addresses_route_post",
+      "app_api_account_returns_route",
+      "app_api_account_returns_route_post",
+      "app_api_account_set_password_route",
+      "app_api_account_set_password_route_post",
+      "app_api_auth_forgot_password_route",
+      "app_api_auth_forgot_password_route_post",
+      "app_api_auth_login_route",
+      "app_api_auth_login_route_post",
+      "app_api_auth_logout_route",
+      "app_api_auth_logout_route_post",
+      "app_api_auth_register_route",
+      "app_api_auth_register_route_post",
+      "app_api_auth_request_otp_route",
+      "app_api_auth_request_otp_route_post",
+      "app_api_auth_reset_password_route",
+      "app_api_auth_reset_password_route_post",
+      "app_api_auth_verify_email_route",
+      "app_api_auth_verify_email_route_post",
+      "app_api_auth_verify_otp_route",
+      "app_api_auth_verify_otp_route_post",
+      "app_api_checkout_route",
+      "app_api_checkout_route_generatereference",
+      "app_api_checkout_route_post",
+      "app_api_reviews_route",
+      "app_api_reviews_route_get",
+      "app_api_reviews_route_post",
+      "lib_supabase_server",
+      "lib_supabase_server_createserversupabaseclient"
+    ],
+    "4": [
+      "app_admin_adminhelpers",
+      "app_admin_adminhelpers_adminlogin",
+      "app_admin_adminhelpers_adminlogout",
+      "app_admin_adminhelpers_apifetch",
+      "app_admin_adminhelpers_apimutate",
+      "app_admin_adminhelpers_barchart",
+      "app_admin_adminhelpers_categorymodal",
+      "app_admin_adminhelpers_downloadcsv",
+      "app_admin_adminhelpers_formatdate",
+      "app_admin_adminhelpers_formatrwf",
+      "app_admin_adminhelpers_imageuploader",
+      "app_admin_adminhelpers_log_icons",
+      "app_admin_adminhelpers_next_status",
+      "app_admin_adminhelpers_printrevenuereport",
+      "app_admin_adminhelpers_printshippinglabel",
+      "app_admin_adminhelpers_promotionmodal",
+      "app_admin_adminhelpers_s",
+      "app_admin_adminhelpers_statcard",
+      "app_admin_adminhelpers_status_color",
+      "app_admin_adminhelpers_stockmodal",
+      "app_admin_adminhelpers_timeago",
+      "app_admin_adminhelpers_toslug",
+      "app_admin_adminhelpers_variationseditor",
+      "app_admin_page",
+      "app_admin_page_adminpage",
+      "app_admin_page_ordermodal",
+      "app_admin_page_productmodal",
+      "app_admin_page_usermodal"
+    ],
+    "5": [
+      "app_layout",
+      "app_layout_lato",
+      "app_layout_metadata",
+      "app_layout_playfair",
+      "app_layout_rootlayout",
+      "components_conditionallayout",
+      "components_conditionallayout_conditionallayout",
+      "components_conditionallayout_footer",
+      "components_conditionallayout_paymentbadge",
+      "components_header",
+      "components_header_carticon",
+      "components_header_header",
+      "components_header_moonicon",
+      "components_header_personicon",
+      "components_header_searchicon",
+      "components_header_sunicon",
+      "components_themeprovider",
+      "components_themeprovider_getinitialtheme",
+      "components_themeprovider_themecontext",
+      "components_themeprovider_themeprovider",
+      "components_themeprovider_usetheme",
+      "components_whatsappwidget",
+      "components_whatsappwidget_whatsappwidget",
+      "lib_supabase_client",
+      "lib_supabase_client_createclient"
+    ],
+    "6": [
+      "tsconfig",
+      "tsconfig_compileroptions",
+      "tsconfig_compileroptions_allowjs",
+      "tsconfig_compileroptions_esmoduleinterop",
+      "tsconfig_compileroptions_incremental",
+      "tsconfig_compileroptions_isolatedmodules",
+      "tsconfig_compileroptions_jsx",
+      "tsconfig_compileroptions_lib",
+      "tsconfig_compileroptions_module",
+      "tsconfig_compileroptions_moduleresolution",
+      "tsconfig_compileroptions_noemit",
+      "tsconfig_compileroptions_paths",
+      "tsconfig_compileroptions_plugins",
+      "tsconfig_compileroptions_resolvejsonmodule",
+      "tsconfig_compileroptions_skiplibcheck",
+      "tsconfig_compileroptions_strict",
+      "tsconfig_compileroptions_target",
+      "tsconfig_exclude",
+      "tsconfig_include",
+      "tsconfig_paths"
+    ],
+    "7": [
+      "app_account_page",
+      "app_account_page_accountpage",
+      "components_accountclient",
+      "components_accountclient_accountclient",
+      "components_accountclient_addressestab",
+      "components_accountclient_errorbox",
+      "components_accountclient_formatdate",
+      "components_accountclient_formatrwf",
+      "components_accountclient_inputstyle",
+      "components_accountclient_labelstyle",
+      "components_accountclient_ordercard",
+      "components_accountclient_orderstab",
+      "components_accountclient_profiletab",
+      "components_accountclient_returnform",
+      "components_accountclient_securitytab",
+      "components_accountclient_status_colors",
+      "components_accountclient_successbox"
+    ],
+    "8": [
+      "app_page",
+      "app_page_getnavcategories",
+      "app_page_getproducts",
+      "app_page_homepage",
+      "components_bannerslider",
+      "components_bannerslider_bannerslider",
+      "components_trustbar",
+      "components_trustbar_bolticon",
+      "components_trustbar_phoneicon",
+      "components_trustbar_shieldicon",
+      "components_trustbar_truckicon",
+      "components_trustbar_trustbar"
+    ],
+    "9": [
+      "app_api_irembopay_api_path_route",
+      "app_api_irembopay_api_path_route_fetchwithtimeout",
+      "app_api_irembopay_api_path_route_get",
+      "app_api_irembopay_api_path_route_getpath",
+      "app_api_irembopay_api_path_route_post",
+      "app_api_irembopay_api_path_route_proxyget",
+      "app_api_irembopay_api_path_route_proxywithbody",
+      "app_api_irembopay_api_path_route_put",
+      "app_api_irembopay_api_path_route_rationale_66",
+      "app_api_irembopay_api_path_route_rationale_7"
+    ],
+    "10": [
+      "app_contact_page",
+      "app_contact_page_clockicon",
+      "app_contact_page_contact",
+      "app_contact_page_contactcard",
+      "app_contact_page_contactpage",
+      "app_contact_page_emailicon",
+      "app_contact_page_instagramicon",
+      "app_contact_page_locationicon",
+      "app_contact_page_phoneicon",
+      "app_contact_page_whatsappicon"
+    ],
+    "11": [
+      "app_api_admin_dashboard_route",
+      "app_api_admin_dashboard_route_checkadminauth",
+      "app_api_admin_dashboard_route_delete",
+      "app_api_admin_dashboard_route_get",
+      "app_api_admin_dashboard_route_log",
+      "app_api_admin_dashboard_route_patch",
+      "app_api_admin_dashboard_route_periodstart",
+      "app_api_admin_dashboard_route_post",
+      "app_api_admin_dashboard_route_unauthorized"
+    ],
+    "12": [
+      "app_review_page",
+      "app_review_page_reviewpage",
+      "app_review_page_reviewpageinner",
+      "app_review_page_reviewview",
+      "app_review_page_starpicker",
+      "app_review_page_status_colors",
+      "app_review_page_status_labels",
+      "app_review_page_status_steps",
+      "app_review_page_trackingview"
+    ],
+    "13": [
+      "scripts_dump_schema",
+      "scripts_dump_schema_dirname",
+      "scripts_dump_schema_getrowcount",
+      "scripts_dump_schema_gettableschema",
+      "scripts_dump_schema_known_tables",
+      "scripts_dump_schema_loadenv",
+      "scripts_dump_schema_main",
+      "scripts_dump_schema_supabase"
+    ],
+    "14": [
+      "app_api_admin_orders_id_status_route",
+      "app_api_admin_orders_id_status_route_getadminuser",
+      "app_api_admin_orders_id_status_route_patch",
+      "app_api_admin_orders_id_status_route_rationale_53",
+      "app_api_admin_orders_id_status_route_sendstatussms",
+      "app_api_admin_orders_id_status_route_valid_statuses",
+      "app_api_admin_orders_id_status_route_valid_transitions"
+    ],
+    "15": [
+      "app_api_admin_upload_route",
+      "app_api_admin_upload_route_checkadminauth",
+      "app_api_admin_upload_route_delete",
+      "app_api_admin_upload_route_patch",
+      "app_api_admin_upload_route_post",
+      "lib_r2_client",
+      "lib_r2_client_r2client"
+    ],
+    "16": [
+      "app_middleware",
+      "app_middleware_checkratelimit",
+      "app_middleware_config",
+      "app_middleware_getratelimitconfig",
+      "app_middleware_middleware",
+      "app_middleware_rate_limit_config",
+      "app_middleware_ratelimitmap"
+    ],
+    "17": [
+      "app_api_admin_auth_route",
+      "app_api_admin_auth_route_createadmintoken",
+      "app_api_admin_auth_route_delete",
+      "app_api_admin_auth_route_get",
+      "app_api_admin_auth_route_jwt_secret",
+      "app_api_admin_auth_route_post"
+    ],
+    "18": [
+      "app_terms_page",
+      "app_terms_page_item",
+      "app_terms_page_metadata",
+      "app_terms_page_para",
+      "app_terms_page_section",
+      "app_terms_page_termspage"
+    ],
+    "19": [
+      "app_track_page",
+      "app_track_page_formatrwf",
+      "app_track_page_status_colors",
+      "app_track_page_status_labels",
+      "app_track_page_trackpage",
+      "app_track_page_trackpageinner"
+    ],
+    "20": [
+      "app_admin_middleware",
+      "app_admin_middleware_config",
+      "app_admin_middleware_isvalidadmintoken",
+      "app_admin_middleware_jwt_secret",
+      "app_admin_middleware_middleware"
+    ],
+    "21": [
+      "app_api_admin_reviews_route",
+      "app_api_admin_reviews_route_delete",
+      "app_api_admin_reviews_route_isauthorized",
+      "app_api_admin_reviews_route_jwt_secret",
+      "app_api_admin_reviews_route_patch"
+    ],
+    "22": [
+      "app_admin_layout",
+      "app_admin_layout_adminlayout",
+      "app_admin_layout_metadata",
+      "app_admin_layout_viewport"
+    ],
+    "23": [
+      "app_api_irembopay_dashboard_path_route",
+      "app_api_irembopay_dashboard_path_route_get",
+      "app_api_irembopay_dashboard_path_route_rationale_48",
+      "app_api_irembopay_dashboard_path_route_rationale_8"
+    ],
+    "24": [
+      "app_api_irembopay_widget_route",
+      "app_api_irembopay_widget_route_get",
+      "app_api_irembopay_widget_route_rationale_13",
+      "app_api_irembopay_widget_route_rationale_83"
+    ],
+    "25": [
+      "components_categorystrip",
+      "components_categorystrip_categorycard",
+      "components_categorystrip_categorystrip",
+      "components_categorystrip_cats"
+    ],
+    "26": [
+      "app_about_page",
+      "app_about_page_aboutpage",
+      "app_about_page_metadata"
+    ],
+    "27": [
+      "app_api_account_addresses_id_route",
+      "app_api_account_addresses_id_route_delete",
+      "app_api_account_addresses_id_route_getauthenticateduser"
+    ],
+    "28": [
+      "app_api_account_orders_route",
+      "app_api_account_orders_route_get",
+      "app_api_account_orders_route_getauthenticateduser"
+    ],
+    "29": [
+      "app_faq_page",
+      "app_faq_page_faqitem",
+      "app_faq_page_faqpage"
+    ],
+    "30": [
+      "app_register_page",
+      "app_register_page_errorbox",
+      "app_register_page_registerpage"
+    ],
+    "31": [
+      "app_returns_page",
+      "app_returns_page_metadata",
+      "app_returns_page_returnspage"
+    ],
+    "32": [
+      "app_category_slug_page",
+      "app_category_slug_page_categorypage"
+    ],
+    "33": [
+      "app_forgot_password_page",
+      "app_forgot_password_page_forgotpasswordpage"
+    ],
+    "34": [
+      "app_login_page",
+      "app_login_page_loginpage"
+    ],
+    "35": [
+      "app_not_found",
+      "app_not_found_notfound"
+    ],
+    "36": [
+      "app_robots",
+      "app_robots_robots"
+    ],
+    "37": [
+      "components_tabbutton",
+      "components_tabbutton_tabbutton"
+    ],
+    "38": [
+      "eslint_config",
+      "eslint_config_eslintconfig"
+    ],
+    "39": [
+      "next_config",
+      "next_config_nextconfig"
+    ],
+    "40": [
+      "postcss_config",
+      "postcss_config_config"
+    ]
+  },
+  "cohesion": {
+    "0": 0.05311676909569798,
+    "1": 0.07400555041628122,
+    "2": 0.058823529411764705,
+    "3": 0.11553030303030302,
+    "4": 0.18518518518518517,
+    "5": 0.11333333333333333,
+    "6": 0.1,
+    "7": 0.16176470588235295,
+    "8": 0.22727272727272727,
+    "9": 0.3111111111111111,
+    "10": 0.2,
+    "11": 0.5555555555555556,
+    "12": 0.25,
+    "13": 0.32142857142857145,
+    "14": 0.42857142857142855,
+    "15": 0.47619047619047616,
+    "16": 0.38095238095238093,
+    "17": 0.4,
+    "18": 0.3333333333333333,
+    "19": 0.4,
+    "20": 0.5,
+    "21": 0.6,
+    "22": 0.5,
+    "23": 0.5,
+    "24": 0.5,
+    "25": 0.5,
+    "26": 0.6666666666666666,
+    "27": 1.0,
+    "28": 1.0,
+    "29": 0.6666666666666666,
+    "30": 0.6666666666666666,
+    "31": 0.6666666666666666,
+    "32": 1.0,
+    "33": 1.0,
+    "34": 1.0,
+    "35": 1.0,
+    "36": 1.0,
+    "37": 1.0,
+    "38": 1.0,
+    "39": 1.0,
+    "40": 1.0
+  },
+  "gods": [
+    {
+      "id": "lib_supabase_server_createserviceclient",
+      "label": "createServiceClient()",
+      "degree": 98
+    },
+    {
+      "id": "lib_supabase_server_createserversupabaseclient",
+      "label": "createServerSupabaseClient()",
+      "degree": 30
+    },
+    {
+      "id": "tsconfig_compileroptions",
+      "label": "compilerOptions",
+      "degree": 16
+    },
+    {
+      "id": "components_cartcontext_usecart",
+      "label": "useCart()",
+      "degree": 15
+    },
+    {
+      "id": "app_admin_page_adminpage",
+      "label": "AdminPage()",
+      "degree": 9
+    },
+    {
+      "id": "app_admin_adminhelpers_formatrwf",
+      "label": "formatRWF()",
+      "degree": 7
+    },
+    {
+      "id": "app_admin_adminhelpers_apimutate",
+      "label": "apiMutate()",
+      "degree": 7
+    },
+    {
+      "id": "app_admin_page_ordermodal",
+      "label": "OrderModal()",
+      "degree": 6
+    },
+    {
+      "id": "app_admin_adminhelpers_formatdate",
+      "label": "formatDate()",
+      "degree": 5
+    },
+    {
+      "id": "app_admin_adminhelpers_apifetch",
+      "label": "apiFetch()",
+      "degree": 5
+    }
+  ],
+  "surprises": [
+    {
+      "source": "GET()",
+      "target": "createServiceClient()",
+      "source_files": [
+        "app/api/reviews/route.js",
+        "lib/supabase/server.js"
+      ],
+      "confidence": "EXTRACTED",
+      "relation": "calls",
+      "why": "connects across different repos/directories; bridges separate communities; peripheral node `GET()` unexpectedly reaches hub `createServiceClient()`"
+    },
+    {
+      "source": "generateMetadata()",
+      "target": "createServiceClient()",
+      "source_files": [
+        "app/products/[id]/page.js",
+        "lib/supabase/server.js"
+      ],
+      "confidence": "EXTRACTED",
+      "relation": "calls",
+      "why": "connects across different repos/directories; bridges separate communities; peripheral node `generateMetadata()` unexpectedly reaches hub `createServiceClient()`"
+    },
+    {
+      "source": "AccountPage()",
+      "target": "createServerSupabaseClient()",
+      "source_files": [
+        "app/account/page.js",
+        "lib/supabase/server.js"
+      ],
+      "confidence": "EXTRACTED",
+      "relation": "calls",
+      "why": "connects across different repos/directories; bridges separate communities"
+    },
+    {
+      "source": "AccountPage()",
+      "target": "createServiceClient()",
+      "source_files": [
+        "app/account/page.js",
+        "lib/supabase/server.js"
+      ],
+      "confidence": "EXTRACTED",
+      "relation": "calls",
+      "why": "connects across different repos/directories; bridges separate communities"
+    },
+    {
+      "source": "POST()",
+      "target": "createServiceClient()",
+      "source_files": [
+        "app/api/account/addresses/route.js",
+        "lib/supabase/server.js"
+      ],
+      "confidence": "EXTRACTED",
+      "relation": "calls",
+      "why": "connects across different repos/directories; bridges separate communities"
+    }
+  ],
+  "tokens": {
+    "input": 0,
+    "output": 0
+  }
+}
