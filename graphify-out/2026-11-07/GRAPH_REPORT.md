@@ -1,16 +1,16 @@
 # Graph Report - starlord-web  (2026-11-07)
 
 ## Corpus Check
-- 116 files · ~94,061 words
+- 116 files · ~94,464 words
 - Verdict: corpus is large enough that graph structure adds value.
 
 ## Summary
-- 570 nodes · 849 edges · 64 communities (44 shown, 20 thin omitted)
+- 570 nodes · 852 edges · 64 communities (44 shown, 20 thin omitted)
 - Extraction: 100% EXTRACTED · 0% INFERRED · 0% AMBIGUOUS
 - Token cost: 0 input · 0 output
 
 ## Graph Freshness
-- Built from commit: `75102b83`
+- Built from commit: `64d7e206`
 - Run `git rev-parse HEAD` and compare to check if the graph is stale.
 - Run `graphify update .` after code changes (no API cost).
 
@@ -73,7 +73,7 @@
 - route.js
 
 ## God Nodes (most connected - your core abstractions)
-1. `createServiceClient()` - 96 edges
+1. `createServiceClient()` - 98 edges
 2. `createServerSupabaseClient()` - 30 edges
 3. `compilerOptions` - 16 edges
 4. `useCart()` - 15 edges
@@ -253,10 +253,10 @@ Nodes (3): GET(), getAdminUser(), POST()
 ## Suggested Questions
 _Questions this graph is uniquely positioned to answer:_
 
-- **Why does `createServiceClient()` connect `createServiceClient` to `useCart`, `server.js`, `AccountClient.js`, `page.js`, `route.js`, `route.js`, `route.js`, `route.js`, `route.js`, `route.js`, `route.js`, `route.js`, `route.js`, `route.js`, `route.js`, `route.js`, `route.js`, `route.js`, `route.js`, `route.js`, `route.js`?**
-  _High betweenness centrality (0.110) - this node is a cross-community bridge._
+- **Why does `createServiceClient()` connect `createServiceClient` to `useCart`, `server.js`, `AccountClient.js`, `page.js`, `route.js`, `route.js`, `route.js`, `route.js`, `route.js`, `route.js`, `route.js`, `route.js`, `route.js`, `route.js`, `route.js`, `route.js`, `route.js`, `route.js`, `route.js`, `route.js`, `route.js`, `route.js`?**
+  _High betweenness centrality (0.115) - this node is a cross-community bridge._
 - **Why does `useCart()` connect `useCart` to `Header.js`?**
-  _High betweenness centrality (0.029) - this node is a cross-community bridge._
+  _High betweenness centrality (0.030) - this node is a cross-community bridge._
 - **Why does `createServerSupabaseClient()` connect `server.js` to `createServiceClient`, `useCart`, `route.js`, `AccountClient.js`?**
   _High betweenness centrality (0.014) - this node is a cross-community bridge._
 - **What connects `metadata`, `metadata`, `viewport` to the rest of the system?**
