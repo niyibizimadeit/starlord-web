@@ -449,6 +449,11 @@ export default function CheckoutPage() {
 
     setError('');
     setProcessing(true);
+    // A previous failed/expired attempt leaves these set; reset them so the
+    // terminal-state effect doesn't tear down the new widget immediately and
+    // the double-initiate guard doesn't block a fresh order.
+    setPaymentStatus('pending');
+    initiatedRef.current = false;
     const idempotencyKey = crypto.randomUUID();
     try {
       const res = await fetch('/api/checkout', {
@@ -578,6 +583,24 @@ export default function CheckoutPage() {
           return;
         }
 
+        const MODAL_ID = 'irembopay-iremboPayModalContainer';
+
+        // Detach any observer left over from a previous attempt before we
+        // touch the DOM, otherwise removing a stale modal would flip the
+        // new attempt to failed.
+        if (widgetModalObserverRef.current) {
+          widgetModalObserverRef.current.disconnect();
+          widgetModalObserverRef.current = null;
+        }
+
+        // The widget refuses to open a second modal while one exists
+        // (isModalOpen() checks for this element), so a stale modal from an
+        // earlier attempt silently produced no widget. Remove it first.
+        if (document.getElementById(MODAL_ID)) {
+          try { window.IremboPay?.closeModal?.(); } catch {}
+          document.getElementById(MODAL_ID)?.remove();
+        }
+
         console.log('[IremboPay] Calling initiate with invoice:', widgetPayload.invoiceNumber);
         try {
           window.IremboPay.initiate(widgetPayload);
@@ -589,13 +612,48 @@ export default function CheckoutPage() {
           return;
         }
 
+        // Do not advance to the waiting screen until the widget has actually
+        // put its modal in the DOM. initiate() returns synchronously and can
+        // decline to render; without this check the customer lands on
+        // "Processing your payment" with no card form and no way back.
+        const modalOpened = await new Promise((resolve) => {
+          const startedAt = Date.now();
+          const check = () => {
+            if (document.getElementById(MODAL_ID)) return resolve(true);
+            if (Date.now() - startedAt > 5000) return resolve(false);
+            setTimeout(check, 100);
+          };
+          check();
+        });
+
+        if (!modalOpened) {
+          console.error('[IremboPay] Modal did not appear after initiate()');
+          setError('The card payment form did not open. Please refresh the page and try again, or use MTN MoMo / Airtel Money.');
+          setProcessing(false);
+          submittingRef.current = false;
+          return;
+        }
+
+        // Safety net: if the widget created its modal but left it hidden
+        // (e.g. its stylesheet finished after its reveal callback), show it.
+        setTimeout(() => {
+          const modal = document.getElementById(MODAL_ID);
+          if (!modal) return;
+          const style = window.getComputedStyle(modal);
+          if (style.display === 'none' || style.visibility === 'hidden' || Number(style.opacity) === 0) {
+            console.warn('[IremboPay] Widget modal was hidden — forcing it visible');
+            modal.style.display = 'block';
+            modal.style.visibility = 'visible';
+            modal.style.opacity = '1';
+          }
+        }, 2000);
+
         // ── Watch for widget modal dismiss ──────────────────────────
         // The IremboPay widget may show an error message (e.g. "Sorry, we
         // have not received your payment") without calling the callback and
         // without auto-closing. When the user closes the modal manually, we
         // need to detect that and transition to the failed state — otherwise
         // the checkout stays stuck on "Processing your payment" forever.
-        const MODAL_ID = 'irembopay-iremboPayModalContainer';
         // Disconnect any previous observer (shouldn't exist, but be safe)
         if (widgetModalObserverRef.current) {
           widgetModalObserverRef.current.disconnect();
