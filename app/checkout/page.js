@@ -82,6 +82,7 @@ export default function CheckoutPage() {
   const submittingRef = useRef(false);  // prevents double-submit
   const initiatedRef  = useRef(false);  // prevents double-initiate
   const widgetModalObserverRef = useRef(null);  // watches for IremboPay modal dismiss
+  const widgetVisibilityGuardRef = useRef(null); // forces a hidden widget modal visible
   const savedCartRef = useRef(null);            // cart snapshot before clearCart()
 
   // ── Load IremboPay inline widget script ───────────────────────────
@@ -373,9 +374,21 @@ export default function CheckoutPage() {
   // stale "payment not received" modal.
   useEffect(() => {
     if (paymentStatus === 'paid' || paymentStatus === 'failed' || paymentStatus === 'expired') {
+      if (widgetVisibilityGuardRef.current) {
+        clearInterval(widgetVisibilityGuardRef.current);
+        widgetVisibilityGuardRef.current = null;
+      }
       closeIremboPayWidget();
     }
   }, [paymentStatus]);
+
+  // Stop the visibility guard if the page unmounts mid-attempt.
+  useEffect(() => () => {
+    if (widgetVisibilityGuardRef.current) {
+      clearInterval(widgetVisibilityGuardRef.current);
+      widgetVisibilityGuardRef.current = null;
+    }
+  }, []);
 
   // ── updateForm — simple setter, no auto-detection ─────────────────
   const updateForm = (key, value) => {
@@ -634,9 +647,15 @@ export default function CheckoutPage() {
           return;
         }
 
-        // Safety net: if the widget created its modal but left it hidden
-        // (e.g. its stylesheet finished after its reveal callback), show it.
-        setTimeout(() => {
+        // Safety net: the widget reveals its modal only after its stylesheet
+        // fires a ready signal. If that signal is missed (slow/blocked CSS,
+        // cached stale sheet), the modal stays hidden forever. Keep checking
+        // while the modal exists and force it visible; the terminal-state
+        // effect clears this guard.
+        if (widgetVisibilityGuardRef.current) {
+          clearInterval(widgetVisibilityGuardRef.current);
+        }
+        widgetVisibilityGuardRef.current = setInterval(() => {
           const modal = document.getElementById(MODAL_ID);
           if (!modal) return;
           const style = window.getComputedStyle(modal);
@@ -646,7 +665,7 @@ export default function CheckoutPage() {
             modal.style.visibility = 'visible';
             modal.style.opacity = '1';
           }
-        }, 2000);
+        }, 500);
 
         // ── Watch for widget modal dismiss ──────────────────────────
         // The IremboPay widget may show an error message (e.g. "Sorry, we
