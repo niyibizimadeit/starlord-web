@@ -18,13 +18,13 @@ function resolveBaseUrl() {
   }
 
   if (configured.endsWith('/payments')) {
-    // Log the actual value (it is a public API host, not a secret) so a
-    // misconfigured deployment can be diagnosed from the function logs.
-    console.error(
-      '[IremboPay] IREMBOPAY_BASE_URL must be the host root, got:',
-      JSON.stringify(configured),
+    // The docs quote the production resource base as .../payments, so this
+    // value is easy to paste by mistake. Strip it rather than refusing to
+    // take money: the routes below already add /payments/...
+    console.warn(
+      '[IremboPay] IREMBOPAY_BASE_URL includes /payments; normalising to the host root. Set it to https://api.irembopay.com.',
     );
-    return null;
+    return configured.slice(0, -'/payments'.length);
   }
 
   return configured;

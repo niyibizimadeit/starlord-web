@@ -18,12 +18,14 @@ export async function GET() {
     : 'https://api.sandbox.irembopay.com';
 
   const raw = (process.env.IREMBOPAY_BASE_URL || '').trim();
-  const base = (raw || fallbackBase).replace(/\/+$/, '');
+  let base = (raw || fallbackBase).replace(/\/+$/, '');
+
+  // The docs quote the resource base as .../payments; strip it so the widget
+  // routing matches what /api/payments/initiate actually uses.
+  const baseUrlNormalized = base.endsWith('/payments');
+  if (baseUrlNormalized) base = base.slice(0, -'/payments'.length);
 
   const isSandbox = base.includes('sandbox');
-  // Non-secret diagnostic: confirms what the *running deployment* actually
-  // received from Vercel. The API host is public, so exposing it is safe.
-  const baseUrlValid = raw.length > 0 && !raw.replace(/\/+$/, '').endsWith('/payments');
 
   return Response.json(
     {
@@ -31,8 +33,11 @@ export async function GET() {
       widgetUrl: isSandbox
         ? '/api/irembopay-widget'
         : 'https://dashboard.irembopay.com/assets/payment/inline.js',
-      baseUrl: raw || null,
-      baseUrlValid,
+      // Non-secret diagnostics: the API host is public. These show what the
+      // running deployment actually received and what it ended up using.
+      baseUrl: base,
+      baseUrlConfigured: raw.length > 0,
+      baseUrlNormalized,
     },
     { headers: { 'cache-control': 'no-store' } },
   );
