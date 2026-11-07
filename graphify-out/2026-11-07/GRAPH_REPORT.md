@@ -1,16 +1,16 @@
-# Graph Report - starlord-web  (2026-11-06)
+# Graph Report - starlord-web  (2026-11-07)
 
 ## Corpus Check
-- 116 files · ~93,689 words
+- 116 files · ~94,061 words
 - Verdict: corpus is large enough that graph structure adds value.
 
 ## Summary
-- 569 nodes · 850 edges · 64 communities (43 shown, 21 thin omitted)
+- 570 nodes · 849 edges · 64 communities (44 shown, 20 thin omitted)
 - Extraction: 100% EXTRACTED · 0% INFERRED · 0% AMBIGUOUS
 - Token cost: 0 input · 0 output
 
 ## Graph Freshness
-- Built from commit: `628bcfaa`
+- Built from commit: `75102b83`
 - Run `git rev-parse HEAD` and compare to check if the graph is stale.
 - Run `graphify update .` after code changes (no API cost).
 
@@ -73,7 +73,7 @@
 - route.js
 
 ## God Nodes (most connected - your core abstractions)
-1. `createServiceClient()` - 98 edges
+1. `createServiceClient()` - 96 edges
 2. `createServerSupabaseClient()` - 30 edges
 3. `compilerOptions` - 16 edges
 4. `useCart()` - 15 edges
@@ -86,36 +86,36 @@
 
 ## Surprising Connections (you probably didn't know these)
 - `GET()` --calls--> `createServiceClient()`  [EXTRACTED]
+  app/api/admin/banners/route.js → lib/supabase/server.js
+- `GET()` --calls--> `createServiceClient()`  [EXTRACTED]
   app/api/reviews/route.js → lib/supabase/server.js
 - `generateMetadata()` --calls--> `createServiceClient()`  [EXTRACTED]
   app/products/[id]/page.js → lib/supabase/server.js
+- `AccountPage()` --calls--> `createServerSupabaseClient()`  [EXTRACTED]
+  app/account/page.js → lib/supabase/server.js
 - `AccountPage()` --calls--> `createServiceClient()`  [EXTRACTED]
   app/account/page.js → lib/supabase/server.js
-- `printShippingLabel()` --references--> `qrcode`  [EXTRACTED]
-  app/admin/AdminHelpers.js → package.json
-- `getUser()` --calls--> `createServerSupabaseClient()`  [EXTRACTED]
-  app/api/account/addresses/route.js → lib/supabase/server.js
 
 ## Import Cycles
 - None detected.
 
-## Communities (64 total, 21 thin omitted)
+## Communities (64 total, 20 thin omitted)
 
 ### Community 0 - "createServiceClient"
 Cohesion: 0.14
-Nodes (17): GET(), getAuthenticatedUser(), PATCH(), checkAdminAuth(), DELETE(), GET(), PATCH(), POST() (+9 more)
+Nodes (15): DELETE(), getUser(), PATCH(), POST(), getAdminUser(), PATCH(), POST(), GET() (+7 more)
 
 ### Community 1 - "useCart"
 Cohesion: 0.07
-Nodes (32): CartPage(), formatRWF(), formatRWF(), metadata, OnSalePage(), CheckoutPage(), formatRWF(), hideIremboPayUi() (+24 more)
+Nodes (33): CartPage(), formatRWF(), formatRWF(), metadata, OnSalePage(), CheckoutPage(), closeIremboPayWidget(), formatRWF() (+25 more)
 
 ### Community 2 - "dependencies"
 Cohesion: 0.06
 Nodes (34): browserslist, dependencies, @aws-sdk/client-s3, jose, next, qrcode, react, react-dom (+26 more)
 
 ### Community 3 - "server.js"
-Cohesion: 0.13
-Nodes (15): AccountPage(), POST(), POST(), POST(), POST(), POST(), POST(), POST() (+7 more)
+Cohesion: 0.15
+Nodes (13): POST(), POST(), POST(), POST(), POST(), POST(), POST(), POST() (+5 more)
 
 ### Community 4 - "page.js"
 Cohesion: 0.19
@@ -130,8 +130,8 @@ Cohesion: 0.05
 Nodes (36): 1. Prerequisites, 2. Clone & Deps, 3. Supabase Setup, 4. Run, Clone & Run (5 mins), 🤝 Contributing, ☁️ Deployment (Vercel), 🔧 Development Workflow (+28 more)
 
 ### Community 7 - "AccountClient.js"
-Cohesion: 0.20
-Nodes (9): AddressesTab(), formatDate(), formatRWF(), inputStyle(), labelStyle, OrderCard(), ProfileTab(), SecurityTab() (+1 more)
+Cohesion: 0.16
+Nodes (11): AccountPage(), AccountClient(), AddressesTab(), formatDate(), formatRWF(), inputStyle(), labelStyle, OrderCard() (+3 more)
 
 ### Community 8 - "page.js"
 Cohesion: 0.19
@@ -221,13 +221,17 @@ Nodes (5): normalizePaymentMethod(), POST(), reDeductStock(), restoreStock(), TE
 Cohesion: 0.20
 Nodes (9): background_color, description, display, icons, name, orientation, short_name, start_url (+1 more)
 
+### Community 51 - "route.js"
+Cohesion: 0.53
+Nodes (5): checkAdminAuth(), DELETE(), GET(), PATCH(), POST()
+
 ### Community 52 - "route.js"
 Cohesion: 0.70
 Nodes (4): fetchInvoice(), GET(), normalizePaymentMethod(), restoreStock()
 
 ### Community 53 - "route.js"
-Cohesion: 0.70
-Nodes (4): DELETE(), getUser(), PATCH(), POST()
+Cohesion: 0.83
+Nodes (3): GET(), getAuthenticatedUser(), PATCH()
 
 ### Community 54 - "route.js"
 Cohesion: 0.83
@@ -244,22 +248,22 @@ Nodes (3): GET(), getAdminUser(), POST()
 ## Knowledge Gaps
 - **167 isolated node(s):** `metadata`, `metadata`, `viewport`, `JWT_SECRET`, `config` (+162 more)
   These have ≤1 connection - possible missing edges or undocumented components.
-- **21 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
+- **20 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
 
 ## Suggested Questions
 _Questions this graph is uniquely positioned to answer:_
 
-- **Why does `createServiceClient()` connect `createServiceClient` to `useCart`, `server.js`, `page.js`, `route.js`, `route.js`, `route.js`, `route.js`, `route.js`, `route.js`, `route.js`, `route.js`, `route.js`, `route.js`, `route.js`, `route.js`, `route.js`, `route.js`, `route.js`, `route.js`, `route.js`, `route.js`?**
-  _High betweenness centrality (0.115) - this node is a cross-community bridge._
+- **Why does `createServiceClient()` connect `createServiceClient` to `useCart`, `server.js`, `AccountClient.js`, `page.js`, `route.js`, `route.js`, `route.js`, `route.js`, `route.js`, `route.js`, `route.js`, `route.js`, `route.js`, `route.js`, `route.js`, `route.js`, `route.js`, `route.js`, `route.js`, `route.js`, `route.js`?**
+  _High betweenness centrality (0.110) - this node is a cross-community bridge._
 - **Why does `useCart()` connect `useCart` to `Header.js`?**
   _High betweenness centrality (0.029) - this node is a cross-community bridge._
-- **Why does `createServerSupabaseClient()` connect `server.js` to `route.js`, `useCart`, `route.js`?**
+- **Why does `createServerSupabaseClient()` connect `server.js` to `createServiceClient`, `useCart`, `route.js`, `AccountClient.js`?**
   _High betweenness centrality (0.014) - this node is a cross-community bridge._
 - **What connects `metadata`, `metadata`, `viewport` to the rest of the system?**
   _175 weakly-connected nodes found - possible documentation gaps or missing edges._
 - **Should `createServiceClient` be split into smaller, more focused modules?**
-  _Cohesion score 0.13538461538461538 - nodes in this community are weakly interconnected._
+  _Cohesion score 0.14130434782608695 - nodes in this community are weakly interconnected._
 - **Should `useCart` be split into smaller, more focused modules?**
-  _Cohesion score 0.0726950354609929 - nodes in this community are weakly interconnected._
+  _Cohesion score 0.07142857142857142 - nodes in this community are weakly interconnected._
 - **Should `dependencies` be split into smaller, more focused modules?**
   _Cohesion score 0.05714285714285714 - nodes in this community are weakly interconnected._
