@@ -7,15 +7,26 @@ const SANDBOX_BASE_URL = 'https://api.sandbox.irembopay.com';
 // resource base with a /payments suffix — that would produce
 // /payments/payments/... and every request would 404.
 function resolveBaseUrl() {
-  const configured = (process.env.IREMBOPAY_BASE_URL || '').trim().replace(/\/+$/, '');
+  const raw = (process.env.IREMBOPAY_BASE_URL || '').trim();
+  const configured = raw.replace(/\/+$/, '');
 
   if (!configured) {
     // Sandbox default is fine for local development, but never fall back
     // silently in production — that sends production keys to sandbox.
+    console.error('[IremboPay] IREMBOPAY_BASE_URL is empty');
     return process.env.NODE_ENV === 'production' ? null : SANDBOX_BASE_URL;
   }
 
-  if (configured.endsWith('/payments')) return null;
+  if (configured.endsWith('/payments')) {
+    // Log the actual value (it is a public API host, not a secret) so a
+    // misconfigured deployment can be diagnosed from the function logs.
+    console.error(
+      '[IremboPay] IREMBOPAY_BASE_URL must be the host root, got:',
+      JSON.stringify(configured),
+    );
+    return null;
+  }
+
   return configured;
 }
 

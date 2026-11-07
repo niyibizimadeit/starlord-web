@@ -17,11 +17,13 @@ export async function GET() {
     ? 'https://api.irembopay.com'
     : 'https://api.sandbox.irembopay.com';
 
-  const base = (process.env.IREMBOPAY_BASE_URL || fallbackBase)
-    .trim()
-    .replace(/\/+$/, '');
+  const raw = (process.env.IREMBOPAY_BASE_URL || '').trim();
+  const base = (raw || fallbackBase).replace(/\/+$/, '');
 
   const isSandbox = base.includes('sandbox');
+  // Non-secret diagnostic: confirms what the *running deployment* actually
+  // received from Vercel. The API host is public, so exposing it is safe.
+  const baseUrlValid = raw.length > 0 && !raw.replace(/\/+$/, '').endsWith('/payments');
 
   return Response.json(
     {
@@ -29,6 +31,8 @@ export async function GET() {
       widgetUrl: isSandbox
         ? '/api/irembopay-widget'
         : 'https://dashboard.irembopay.com/assets/payment/inline.js',
+      baseUrl: raw || null,
+      baseUrlValid,
     },
     { headers: { 'cache-control': 'no-store' } },
   );
