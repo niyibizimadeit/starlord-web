@@ -235,7 +235,10 @@ export async function POST(request) {
       const { data: updated, error: updateError } = await supabase
         .from('orders')
         .update({
-          status:         'payment_failed',
+          // The DB's orders_status_check rejects 'payment_failed' — using it
+          // made the update silently fail, leaving paid/failed orders stuck
+          // in pending. 'cancelled' is the allowed failure state.
+          status:         'cancelled',
           payment_status: 'failed',
         })
         .eq('id', order.id)

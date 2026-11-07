@@ -173,7 +173,9 @@ export async function GET(request) {
   // polls must not restore it twice.
   const { data: updated, error: updateError } = await supabase
     .from('orders')
-    .update({ status: 'payment_failed', payment_status: 'failed' })
+    // The DB's orders_status_check does not allow 'payment_failed'; use the
+    // cancelled state so the update actually applies and stock is restored.
+    .update({ status: 'cancelled', payment_status: 'failed' })
     .eq('id', order.id)
     .eq('status', 'pending')
     .eq('payment_status', 'pending')
@@ -194,7 +196,7 @@ export async function GET(request) {
 
   return Response.json({
     paymentStatus: 'failed',
-    orderStatus:   'payment_failed',
+    orderStatus:   'cancelled',
     expired:       true,
   });
 }
