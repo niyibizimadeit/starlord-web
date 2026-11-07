@@ -49,7 +49,7 @@ function closeIremboPayWidget() {
 }
 
 export default function CheckoutPage() {
-  const { cart, cartTotal, clearCart, restoreCart } = useCart();
+  const { cart, cartTotal, clearCart, restoreCart, hydrated } = useCart();
   const router = useRouter();
 
   const [step, setStep]               = useState(1);
@@ -199,8 +199,11 @@ export default function CheckoutPage() {
   }, []);
 
   useEffect(() => {
-    if (cart.length === 0 && !order) router.push('/');
-  }, [cart, order, router]);
+    // Wait for the cart to hydrate from localStorage before deciding it is
+    // empty. Without this the page can bounce to / on a slow first paint,
+    // before the provider has read the stored cart.
+    if (hydrated && cart.length === 0 && !order) router.push('/');
+  }, [hydrated, cart, order, router]);
 
   // ── Fetch session, profile, addresses + delivery fee ──────────────
   useEffect(() => {

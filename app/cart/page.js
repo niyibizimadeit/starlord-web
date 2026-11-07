@@ -11,7 +11,7 @@ function formatRWF(n) {
 }
 
 export default function CartPage() {
-  const { cart, removeFromCart, updateQty, cartTotal } = useCart();
+  const { cart, removeFromCart, updateQty, cartTotal, hydrated } = useCart();
   const router = useRouter();
   const [deliveryFee, setDeliveryFee] = useState(null);
 
@@ -29,6 +29,14 @@ export default function CartPage() {
         setDeliveryFee(data?.value ? Number(data.value) : 0);
       });
   }, []);
+
+  if (!hydrated) {
+    return (
+      <div style={{ padding: '80px 24px', textAlign: 'center', color: 'var(--text-muted)', fontSize: 13 }}>
+        Loading cart…
+      </div>
+    );
+  }
 
   if (cart.length === 0) {
     return (
