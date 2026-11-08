@@ -694,19 +694,12 @@ export default function CheckoutPage() {
         });
         widgetModalObserverRef.current.observe(document.body, { childList: true });
 
-        // ── Timeout: auto-dismiss stuck widget after 60s ────────────
-        // The IremboPay widget may show an error (e.g. "Sorry, we have not
-        // received your payment") WITHOUT firing the callback and WITHOUT
-        // auto-closing. Rather than trying to parse the widget's DOM (which
-        // risks false positives from init text), we set a generous timeout.
-        // If the modal is still open after 60s and payment isn't confirmed,
-        // we auto-dismiss it and transition to failed.
-        //
-        // 60s is long enough that the user has definitely entered card
-        // details and the payment has been processed one way or the other.
-        // A successful payment would have already closed the modal via the
-        // callback or the payment-status poll.
-        const STUCK_MODAL_TIMEOUT_MS = 60_000;
+        // ── Timeout: auto-dismiss a genuinely stuck widget ───────────
+        // 3-D Secure needs time: the buyer may be redirected to their bank,
+        // wait for an OTP/SMS, or hit a slow ACS. A 60s cap killed legitimate
+        // 3DS attempts mid-flight. The invoice itself expires after 15
+        // minutes, so this is a safety net, not a race against the customer.
+        const STUCK_MODAL_TIMEOUT_MS = 10 * 60_000;
         const stuckModalTimeout = setTimeout(() => {
           const modal = document.getElementById(MODAL_ID);
           if (modal) {
