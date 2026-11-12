@@ -1,16 +1,16 @@
-# Graph Report - starlord-web  (2026-11-07)
+# Graph Report - starlord-web  (2026-11-12)
 
 ## Corpus Check
-- 116 files · ~94,464 words
+- 116 files · ~94,625 words
 - Verdict: corpus is large enough that graph structure adds value.
 
 ## Summary
-- 570 nodes · 849 edges · 65 communities (45 shown, 20 thin omitted)
+- 570 nodes · 852 edges · 64 communities (44 shown, 20 thin omitted)
 - Extraction: 100% EXTRACTED · 0% INFERRED · 0% AMBIGUOUS
 - Token cost: 0 input · 0 output
 
 ## Graph Freshness
-- Built from commit: `9a3cc6a1`
+- Built from commit: `6584f0b5`
 - Run `git rev-parse HEAD` and compare to check if the graph is stale.
 - Run `graphify update .` after code changes (no API cost).
 
@@ -71,13 +71,12 @@
 - route.js
 - route.js
 - route.js
-- page.js
 
 ## God Nodes (most connected - your core abstractions)
 1. `createServiceClient()` - 98 edges
 2. `createServerSupabaseClient()` - 30 edges
 3. `compilerOptions` - 16 edges
-4. `useCart()` - 13 edges
+4. `useCart()` - 15 edges
 5. `StarlordGroup Web - starlordgroup.rw(live site)` - 11 edges
 6. `IremboPay Pre-Production Testing Checklist` - 10 edges
 7. `AdminPage()` - 9 edges
@@ -100,15 +99,15 @@
 ## Import Cycles
 - None detected.
 
-## Communities (65 total, 20 thin omitted)
+## Communities (64 total, 20 thin omitted)
 
 ### Community 0 - "createServiceClient"
 Cohesion: 0.14
 Nodes (15): DELETE(), getUser(), PATCH(), POST(), getAdminUser(), PATCH(), POST(), GET() (+7 more)
 
 ### Community 1 - "useCart"
-Cohesion: 0.08
-Nodes (28): CartPage(), formatRWF(), formatRWF(), metadata, OnSalePage(), formatRWF(), generateMetadata(), ProductPage() (+20 more)
+Cohesion: 0.07
+Nodes (33): CartPage(), formatRWF(), formatRWF(), metadata, OnSalePage(), CheckoutPage(), closeIremboPayWidget(), formatRWF() (+25 more)
 
 ### Community 2 - "dependencies"
 Cohesion: 0.06
@@ -246,10 +245,6 @@ Nodes (3): fail(), pass(), test-security.sh script
 Cohesion: 0.83
 Nodes (3): GET(), getAdminUser(), POST()
 
-### Community 64 - "page.js"
-Cohesion: 0.53
-Nodes (5): CheckoutPage(), closeIremboPayWidget(), formatRWF(), hideIremboPayUi(), IMPORTANT: we do NOT clearCart()/setStep(3) here anymore.
-
 ## Knowledge Gaps
 - **167 isolated node(s):** `metadata`, `metadata`, `viewport`, `JWT_SECRET`, `config` (+162 more)
   These have ≤1 connection - possible missing edges or undocumented components.
@@ -259,16 +254,16 @@ Nodes (5): CheckoutPage(), closeIremboPayWidget(), formatRWF(), hideIremboPayUi(
 _Questions this graph is uniquely positioned to answer:_
 
 - **Why does `createServiceClient()` connect `createServiceClient` to `useCart`, `server.js`, `AccountClient.js`, `page.js`, `route.js`, `route.js`, `route.js`, `route.js`, `route.js`, `route.js`, `route.js`, `route.js`, `route.js`, `route.js`, `route.js`, `route.js`, `route.js`, `route.js`, `route.js`, `route.js`, `route.js`, `route.js`?**
-  _High betweenness centrality (0.112) - this node is a cross-community bridge._
+  _High betweenness centrality (0.115) - this node is a cross-community bridge._
 - **Why does `useCart()` connect `useCart` to `Header.js`?**
-  _High betweenness centrality (0.023) - this node is a cross-community bridge._
+  _High betweenness centrality (0.030) - this node is a cross-community bridge._
 - **Why does `createServerSupabaseClient()` connect `server.js` to `createServiceClient`, `useCart`, `route.js`, `AccountClient.js`?**
-  _High betweenness centrality (0.013) - this node is a cross-community bridge._
-- **What connects `IMPORTANT: we do NOT clearCart()/setStep(3) here anymore.`, `metadata`, `metadata` to the rest of the system?**
+  _High betweenness centrality (0.014) - this node is a cross-community bridge._
+- **What connects `metadata`, `metadata`, `viewport` to the rest of the system?**
   _175 weakly-connected nodes found - possible documentation gaps or missing edges._
 - **Should `createServiceClient` be split into smaller, more focused modules?**
   _Cohesion score 0.14130434782608695 - nodes in this community are weakly interconnected._
 - **Should `useCart` be split into smaller, more focused modules?**
-  _Cohesion score 0.08084163898117387 - nodes in this community are weakly interconnected._
+  _Cohesion score 0.07142857142857142 - nodes in this community are weakly interconnected._
 - **Should `dependencies` be split into smaller, more focused modules?**
   _Cohesion score 0.05714285714285714 - nodes in this community are weakly interconnected._

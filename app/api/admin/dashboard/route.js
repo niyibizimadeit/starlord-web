@@ -328,12 +328,19 @@ export async function DELETE(request) {
   const { data: ex }     = await supabase.from('products').select('name').eq('id', body.id).single();
   const { data: images } = await supabase.from('product_images').select('url').eq('product_id', body.id);
 
-  // Null out product_id on any order_items that reference this product
-  // so order history is preserved even after deletion
-  await supabase
+  // order_items.product_id is NOT NULL and has no ON DELETE cascade, so a
+  // product that appears in any order cannot be deleted without damaging
+  // order history. Refuse with a clear message instead.
+  const { count: orderItemCount, error: countError } = await supabase
     .from('order_items')
-    .update({ product_id: null })
+    .select('id', { count: 'exact', head: true })
     .eq('product_id', body.id);
+  if (countError) return Response.json({ error: countError.message }, { status: 500 });
+  if (orderItemCount > 0) {
+    return Response.json({
+      error: `Cannot delete "${ex?.name || 'product'}" — it appears in ${orderItemCount} order item(s). Uncheck "Visible on site" in Edit to hide it instead.`,
+    }, { status: 400 });
+  }
 
   // Remove images from storage
   if (images?.length > 0) {

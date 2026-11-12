@@ -410,7 +410,9 @@ export default function AdminPage() {
   };
   const handleDeleteProduct = async (p) => {
     if (!confirm(`Delete "${p.name}"? Cannot be undone.`)) return;
-    await apiMutate('DELETE', { id: p.id }); await fetchProducts();
+    const result = await apiMutate('DELETE', { id: p.id });
+    if (result.error) { alert(result.error); return; }
+    await fetchProducts();
   };
 
   if (!authed) {
